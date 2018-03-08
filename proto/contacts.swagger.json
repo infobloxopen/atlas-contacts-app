@@ -33,63 +33,10 @@
         },
         "parameters": [
           {
-            "name": "criteria.id",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "uint64"
-          },
-          {
-            "name": "criteria.first_name",
+            "name": "first_name",
             "in": "query",
             "required": false,
             "type": "string"
-          },
-          {
-            "name": "criteria.middle_name",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "criteria.last_name",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "criteria.email_address",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "paging.limit",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int64"
-          },
-          {
-            "name": "paging.start",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int64"
-          },
-          {
-            "name": "paging.offset",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int64"
-          },
-          {
-            "name": "paging.total",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int64"
           }
         ],
         "tags": [
@@ -139,30 +86,6 @@
             "required": true,
             "type": "string",
             "format": "uint64"
-          },
-          {
-            "name": "first_name",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "middle_name",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "last_name",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "email_address",
-            "in": "query",
-            "required": false,
-            "type": "string"
           }
         ],
         "tags": [
@@ -250,83 +173,14 @@
     "contactsContactPage": {
       "type": "object",
       "properties": {
-        "paging": {
-          "$ref": "#/definitions/contactsPagingOptions"
-        },
-        "contacts": {
+        "results": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/apicontactsContact"
           }
         }
-      }
-    },
-    "contactsPagingOptions": {
-      "type": "object",
-      "properties": {
-        "limit": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "start": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "offset": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "total": {
-          "type": "integer",
-          "format": "int64"
-        }
-      }
-    },
-    "contactsSearchCriteria": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "uint64"
-        },
-        "first_name": {
-          "type": "string"
-        },
-        "middle_name": {
-          "type": "string"
-        },
-        "last_name": {
-          "type": "string"
-        },
-        "email_address": {
-          "type": "string"
-        }
-      }
-    },
-    "contactsTagCondition": {
-      "type": "object",
-      "properties": {
-        "tag": {
-          "type": "string"
-        },
-        "op": {
-          "type": "string"
-        },
-        "value": {
-          "type": "string"
-        }
-      }
-    },
-    "contactsTagQuery": {
-      "type": "object",
-      "properties": {
-        "conditions": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/contactsTagCondition"
-          }
-        }
-      }
+      },
+      "title": "eventually this will be replaced with a Page that uses the paging info"
     },
     "protobufEmpty": {
       "type": "object",

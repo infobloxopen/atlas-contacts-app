@@ -141,297 +141,6 @@ func (e ContactValidationError) Error() string {
 
 var _ error = ContactValidationError{}
 
-// Validate checks the field values on TagCondition with the rules defined in
-// the proto definition for this message. If any rules are violated, an error
-// is returned.
-func (m *TagCondition) Validate() error {
-	if m == nil {
-		return nil
-	}
-
-	// no validation rules for Tag
-
-	// no validation rules for Op
-
-	// no validation rules for Value
-
-	return nil
-}
-
-// TagConditionValidationError is the validation error returned by
-// TagCondition.Validate if the designated constraints aren't met.
-type TagConditionValidationError struct {
-	Field  string
-	Reason string
-	Cause  error
-	Key    bool
-}
-
-// Error satisfies the builtin error interface
-func (e TagConditionValidationError) Error() string {
-	cause := ""
-	if e.Cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
-	}
-
-	key := ""
-	if e.Key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sTagCondition.%s: %s%s",
-		key,
-		e.Field,
-		e.Reason,
-		cause)
-}
-
-var _ error = TagConditionValidationError{}
-
-// Validate checks the field values on TagQuery with the rules defined in the
-// proto definition for this message. If any rules are violated, an error is returned.
-func (m *TagQuery) Validate() error {
-	if m == nil {
-		return nil
-	}
-
-	for idx, item := range m.GetConditions() {
-		_, _ = idx, item
-
-		if v, ok := interface{}(item).(interface {
-			Validate() error
-		}); ok {
-			if err := v.Validate(); err != nil {
-				return TagQueryValidationError{
-					Field:  fmt.Sprintf("Conditions[%v]", idx),
-					Reason: "embedded message failed validation",
-					Cause:  err,
-				}
-			}
-		}
-
-	}
-
-	return nil
-}
-
-// TagQueryValidationError is the validation error returned by
-// TagQuery.Validate if the designated constraints aren't met.
-type TagQueryValidationError struct {
-	Field  string
-	Reason string
-	Cause  error
-	Key    bool
-}
-
-// Error satisfies the builtin error interface
-func (e TagQueryValidationError) Error() string {
-	cause := ""
-	if e.Cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
-	}
-
-	key := ""
-	if e.Key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sTagQuery.%s: %s%s",
-		key,
-		e.Field,
-		e.Reason,
-		cause)
-}
-
-var _ error = TagQueryValidationError{}
-
-// Validate checks the field values on PagingOptions with the rules defined in
-// the proto definition for this message. If any rules are violated, an error
-// is returned.
-func (m *PagingOptions) Validate() error {
-	if m == nil {
-		return nil
-	}
-
-	if val := m.GetLimit(); val < 0 || val >= 1000 {
-		return PagingOptionsValidationError{
-			Field:  "Limit",
-			Reason: "value must be inside range [0, 1000)",
-		}
-	}
-
-	// no validation rules for Start
-
-	// no validation rules for Offset
-
-	// no validation rules for Total
-
-	return nil
-}
-
-// PagingOptionsValidationError is the validation error returned by
-// PagingOptions.Validate if the designated constraints aren't met.
-type PagingOptionsValidationError struct {
-	Field  string
-	Reason string
-	Cause  error
-	Key    bool
-}
-
-// Error satisfies the builtin error interface
-func (e PagingOptionsValidationError) Error() string {
-	cause := ""
-	if e.Cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
-	}
-
-	key := ""
-	if e.Key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sPagingOptions.%s: %s%s",
-		key,
-		e.Field,
-		e.Reason,
-		cause)
-}
-
-var _ error = PagingOptionsValidationError{}
-
-// Validate checks the field values on SearchCriteria with the rules defined in
-// the proto definition for this message. If any rules are violated, an error
-// is returned.
-func (m *SearchCriteria) Validate() error {
-	if m == nil {
-		return nil
-	}
-
-	// no validation rules for Id
-
-	// no validation rules for FirstName
-
-	// no validation rules for MiddleName
-
-	// no validation rules for LastName
-
-	// no validation rules for EmailAddress
-
-	return nil
-}
-
-// SearchCriteriaValidationError is the validation error returned by
-// SearchCriteria.Validate if the designated constraints aren't met.
-type SearchCriteriaValidationError struct {
-	Field  string
-	Reason string
-	Cause  error
-	Key    bool
-}
-
-// Error satisfies the builtin error interface
-func (e SearchCriteriaValidationError) Error() string {
-	cause := ""
-	if e.Cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
-	}
-
-	key := ""
-	if e.Key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sSearchCriteria.%s: %s%s",
-		key,
-		e.Field,
-		e.Reason,
-		cause)
-}
-
-var _ error = SearchCriteriaValidationError{}
-
-// Validate checks the field values on SearchRequest with the rules defined in
-// the proto definition for this message. If any rules are violated, an error
-// is returned.
-func (m *SearchRequest) Validate() error {
-	if m == nil {
-		return nil
-	}
-
-	if v, ok := interface{}(m.GetCriteria()).(interface {
-		Validate() error
-	}); ok {
-		if err := v.Validate(); err != nil {
-			return SearchRequestValidationError{
-				Field:  "Criteria",
-				Reason: "embedded message failed validation",
-				Cause:  err,
-			}
-		}
-	}
-
-	if v, ok := interface{}(m.GetPaging()).(interface {
-		Validate() error
-	}); ok {
-		if err := v.Validate(); err != nil {
-			return SearchRequestValidationError{
-				Field:  "Paging",
-				Reason: "embedded message failed validation",
-				Cause:  err,
-			}
-		}
-	}
-
-	if v, ok := interface{}(m.GetTags()).(interface {
-		Validate() error
-	}); ok {
-		if err := v.Validate(); err != nil {
-			return SearchRequestValidationError{
-				Field:  "Tags",
-				Reason: "embedded message failed validation",
-				Cause:  err,
-			}
-		}
-	}
-
-	return nil
-}
-
-// SearchRequestValidationError is the validation error returned by
-// SearchRequest.Validate if the designated constraints aren't met.
-type SearchRequestValidationError struct {
-	Field  string
-	Reason string
-	Cause  error
-	Key    bool
-}
-
-// Error satisfies the builtin error interface
-func (e SearchRequestValidationError) Error() string {
-	cause := ""
-	if e.Cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
-	}
-
-	key := ""
-	if e.Key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sSearchRequest.%s: %s%s",
-		key,
-		e.Field,
-		e.Reason,
-		cause)
-}
-
-var _ error = SearchRequestValidationError{}
-
 // Validate checks the field values on ContactPage with the rules defined in
 // the proto definition for this message. If any rules are violated, an error
 // is returned.
@@ -440,19 +149,7 @@ func (m *ContactPage) Validate() error {
 		return nil
 	}
 
-	if v, ok := interface{}(m.GetPaging()).(interface {
-		Validate() error
-	}); ok {
-		if err := v.Validate(); err != nil {
-			return ContactPageValidationError{
-				Field:  "Paging",
-				Reason: "embedded message failed validation",
-				Cause:  err,
-			}
-		}
-	}
-
-	for idx, item := range m.GetContacts() {
+	for idx, item := range m.GetResults() {
 		_, _ = idx, item
 
 		if v, ok := interface{}(item).(interface {
@@ -460,7 +157,7 @@ func (m *ContactPage) Validate() error {
 		}); ok {
 			if err := v.Validate(); err != nil {
 				return ContactPageValidationError{
-					Field:  fmt.Sprintf("Contacts[%v]", idx),
+					Field:  fmt.Sprintf("Results[%v]", idx),
 					Reason: "embedded message failed validation",
 					Cause:  err,
 				}
@@ -502,3 +199,90 @@ func (e ContactPageValidationError) Error() string {
 }
 
 var _ error = ContactPageValidationError{}
+
+// Validate checks the field values on SearchRequest with the rules defined in
+// the proto definition for this message. If any rules are violated, an error
+// is returned.
+func (m *SearchRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	// no validation rules for FirstName
+
+	return nil
+}
+
+// SearchRequestValidationError is the validation error returned by
+// SearchRequest.Validate if the designated constraints aren't met.
+type SearchRequestValidationError struct {
+	Field  string
+	Reason string
+	Cause  error
+	Key    bool
+}
+
+// Error satisfies the builtin error interface
+func (e SearchRequestValidationError) Error() string {
+	cause := ""
+	if e.Cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
+	}
+
+	key := ""
+	if e.Key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sSearchRequest.%s: %s%s",
+		key,
+		e.Field,
+		e.Reason,
+		cause)
+}
+
+var _ error = SearchRequestValidationError{}
+
+// Validate checks the field values on GetRequest with the rules defined in the
+// proto definition for this message. If any rules are violated, an error is returned.
+func (m *GetRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	// no validation rules for Id
+
+	return nil
+}
+
+// GetRequestValidationError is the validation error returned by
+// GetRequest.Validate if the designated constraints aren't met.
+type GetRequestValidationError struct {
+	Field  string
+	Reason string
+	Cause  error
+	Key    bool
+}
+
+// Error satisfies the builtin error interface
+func (e GetRequestValidationError) Error() string {
+	cause := ""
+	if e.Cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
+	}
+
+	key := ""
+	if e.Key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetRequest.%s: %s%s",
+		key,
+		e.Field,
+		e.Reason,
+		cause)
+}
+
+var _ error = GetRequestValidationError{}

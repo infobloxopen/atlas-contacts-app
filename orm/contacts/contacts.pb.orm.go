@@ -9,12 +9,9 @@ It is generated from these files:
 
 It has these top-level messages:
 	Contact
-	TagCondition
-	TagQuery
-	PagingOptions
-	SearchCriteria
-	SearchRequest
 	ContactPage
+	SearchRequest
+	GetRequest
 */
 package contacts
 
