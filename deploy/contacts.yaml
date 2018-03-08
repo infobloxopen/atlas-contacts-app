@@ -1,0 +1,84 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: contacts-api
+spec:
+  selector:
+    app: contacts
+    component: api
+  type: ClusterIP
+  ports:
+  - name: grpc
+    port: 9091
+    protocol: TCP
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: contacts-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: contacts
+      component: api
+  template:
+    metadata:
+      labels:
+        app: contacts
+        component: api
+    spec:
+      containers:
+      - args:
+        - -dsn
+        - api:mypassword@tcp(mysql.db:3306)/contacts?charset=utf8&parseTime=True
+        image: johnbelamaric/atlas-contacts-app-contacts:latest
+        imagePullPolicy: Always
+        name: contacts-api
+        ports:
+        - containerPort: 9091
+          name: grpc
+          protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: contacts-rest
+spec:
+  selector:
+    app: contacts
+    component: gateway
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+    protocol: TCP
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: contacts-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: contacts
+      component: gateway
+  template:
+    metadata:
+      labels:
+        app: contacts
+        component: gateway
+    spec:
+      containers:
+      - args:
+        - -contacts
+        - contacts-api:9091
+        image: johnbelamaric/atlas-contacts-app-gateway:latest
+        imagePullPolicy: Always
+        name: contacts-gateway
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
