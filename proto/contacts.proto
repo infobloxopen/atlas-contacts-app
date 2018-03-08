@@ -33,6 +33,11 @@ message GetRequest {
     uint64 id = 1;
 }
 
+message SMSRequest {
+    uint64 id = 1;
+    string message = 2;
+}
+
 service Contacts {
     rpc Search (SearchRequest) returns (ContactPage) {
         option (google.api.http) = {
@@ -63,6 +68,13 @@ service Contacts {
     rpc Delete (GetRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
             delete: "/contacts/{id}"
+        };
+    }
+
+    rpc SendSMS (SMSRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/contacts/{id}/sms"
+            body: "*"
         };
     }
 }

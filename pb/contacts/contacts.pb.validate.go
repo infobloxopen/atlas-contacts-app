@@ -286,3 +286,48 @@ func (e GetRequestValidationError) Error() string {
 }
 
 var _ error = GetRequestValidationError{}
+
+// Validate checks the field values on SMSRequest with the rules defined in the
+// proto definition for this message. If any rules are violated, an error is returned.
+func (m *SMSRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	// no validation rules for Id
+
+	// no validation rules for Message
+
+	return nil
+}
+
+// SMSRequestValidationError is the validation error returned by
+// SMSRequest.Validate if the designated constraints aren't met.
+type SMSRequestValidationError struct {
+	Field  string
+	Reason string
+	Cause  error
+	Key    bool
+}
+
+// Error satisfies the builtin error interface
+func (e SMSRequestValidationError) Error() string {
+	cause := ""
+	if e.Cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
+	}
+
+	key := ""
+	if e.Key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sSMSRequest.%s: %s%s",
+		key,
+		e.Field,
+		e.Reason,
+		cause)
+}
+
+var _ error = SMSRequestValidationError{}
