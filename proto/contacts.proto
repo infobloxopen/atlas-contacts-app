@@ -1,0 +1,108 @@
+syntax = "proto3";
+
+package api.contacts;
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+import "github.com/lyft/protoc-gen-validate/validate/validate.proto";
+import "protoc-gen-swagger/options/annotations.proto";
+import "orm/orm.proto";
+
+option (orm.package) = "orm";
+
+message Contact {
+    option (orm.opts).ormable = true;
+    uint64 id = 1;
+    string first_name = 2;
+    string middle_name = 3;
+    string last_name = 4;
+    string email_address = 5 [(validate.rules).string.email = true];
+}
+
+message TagCondition {
+    string tag = 1;
+    string op = 2;
+    string value = 3;
+}
+
+message TagQuery {
+    repeated TagCondition conditions = 1;
+}
+
+message PagingOptions {
+    uint32 limit = 1 [(validate.rules).uint32 = {gte:0, lt: 1000}];
+    uint32 start = 2;
+    uint32 offset = 3;
+    uint32 total = 4;
+}
+
+message SearchCriteria {
+    uint64 id = 1;
+    string first_name = 2;
+    string middle_name = 3;
+    string last_name = 4;
+    string email_address = 5;
+}
+
+message SearchRequest {
+    SearchCriteria criteria = 1;
+    PagingOptions paging = 2;
+    TagQuery tags = 3;
+}
+
+message ContactPage {
+    PagingOptions paging = 1;
+    repeated Contact contacts = 2;
+}
+
+service Contacts {
+    rpc Search (SearchRequest) returns (ContactPage) {
+        option (google.api.http) = {
+            get: "/contacts"
+        };
+    }
+
+    rpc Create (Contact) returns (Contact) {
+        option (google.api.http) = {
+            post: "/contacts"
+            body: "*"
+        };
+    }
+
+    rpc Get (SearchCriteria) returns (Contact) {
+        option (google.api.http) = {
+            get: "/contacts/{id}"
+        };
+    }
+
+    rpc Update (Contact) returns (Contact) {
+        option (google.api.http) = {
+            put: "/contacts/{id}"
+            body: "*"
+        };
+    }
+
+    rpc Delete (SearchCriteria) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            delete: "/contacts/{id}"
+        };
+    }
+}
+
+option go_package = "github.com/infobloxopen/atlas-contacts-app/pb/contacts;contacts";
+
+option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
+  info: {
+    title: "Contacts";
+    version: "1.0";
+    contact: {
+      name: "John Belamaric";
+      url: "https://github.com/infobloxopen/atlas-contacts-app";
+      email: "jbelamaric@infoblox.com";
+    };
+  };
+  schemes: HTTP;
+  schemes: HTTPS;
+  consumes: "application/json";
+  produces: "application/json";
+};
