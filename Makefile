@@ -1,5 +1,6 @@
 # Absolute github repository name.
 REPO := github.com/infobloxopen/atlas-contacts-app
+DOCKER := johnbelamaric/atlas-contacts-app
 
 # Build directory absolute path.
 BINDIR = $(CURDIR)
@@ -37,45 +38,12 @@ fmt:
 	@go fmt -x "$(REPO)/..."
 
 image: build
-	cd docker && docker build -f Dockerfile.contacts -t contacts:latest .
-	cd docker && docker build -f Dockerfile.gateway -t gateway:latest .
+	cd docker && docker build -f Dockerfile.contacts -t $(DOCKER)-contacts:latest .
+	cd docker && docker build -f Dockerfile.gateway -t $(DOCKER)-gateway:latest .
 
-up: image
-	@docker network create exampleexternal
-
-	@docker run --name tagging -d -p "9091:91" \
-		--network exampleexternal \
-		--network-alias tagging.exampleexternal \
-		tagging:latest \
-			--listen 0.0.0.0:91
-
-	@docker run --name dnsconfig -d -p "9092:92" \
-		--network exampleexternal \
-		--network-alias dnsconfig.exampleexternal \
-		dnsconfig:latest \
-			--listen 0.0.0.0:92
-
-	@docker run --name gateway -d -p "8080:80" \
-		--network exampleexternal \
-		--network-alias gateway.exampleexternal \
-		gateway:latest \
-			--listen 0.0.0.0:80 \
-			--tagging tagging.exampleexternal:91 \
-			--dnsconfig dnsconfig.exampleexternal:92
-
-	@docker network inspect exampleexternal
-
-down:
-	@docker stop tagging
-	@docker rm -f tagging
-
-	@docker stop dnsconfig
-	@docker rm -f dnsconfig
-
-	@docker stop gateway
-	@docker rm -f gateway
-
-	@docker network rm exampleexternal
+push: image
+	@docker push $(DOCKER)-contacts:latest
+	@docker push $(DOCKER)-gateway:latest
 
 .PHONY:
 	default clean build fmt gen
