@@ -146,6 +146,39 @@
           "Contacts"
         ]
       }
+    },
+    "/contacts/{id}/sms": {
+      "post": {
+        "operationId": "SendSMS",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/protobufEmpty"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/contactsSMSRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Contacts"
+        ]
+      }
     }
   },
   "definitions": {
@@ -181,6 +214,18 @@
         }
       },
       "title": "eventually this will be replaced with a Page that uses the paging info"
+    },
+    "contactsSMSRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
     },
     "protobufEmpty": {
       "type": "object",

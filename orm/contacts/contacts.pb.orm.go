@@ -12,6 +12,7 @@ It has these top-level messages:
 	ContactPage
 	SearchRequest
 	GetRequest
+	SMSRequest
 */
 package contacts
 
