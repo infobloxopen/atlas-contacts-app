@@ -3,6 +3,8 @@
 *.dll
 *.so
 *.dylib
+docker/bin/contacts
+docker/bin/gateway
 
 # Test binary, build with `go test -c`
 *.test
