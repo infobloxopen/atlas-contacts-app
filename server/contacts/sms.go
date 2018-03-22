@@ -1,13 +1,12 @@
 package contacts
 
 import (
-	"context"
+	"golang.org/x/net/context"
 
 	google_protobuf "github.com/golang/protobuf/ptypes/empty"
 
 	pb "github.com/infobloxopen/atlas-contacts-app/pb/contacts"
 )
-
 
 // SendSMS is a hand-crafted method that adds onto the BasicServer
 // if this is not implemented then the server won't compile

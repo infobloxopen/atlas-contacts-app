@@ -10,11 +10,15 @@ import (
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 
-	"github.com/infobloxopen/atlas-contacts-app/server/contacts"
 	pb "github.com/infobloxopen/atlas-contacts-app/pb/contacts"
+	"github.com/infobloxopen/atlas-contacts-app/server/contacts"
 )
 
-var Addr, Dsn string
+// Addr is the address and port to listen on
+var Addr string
+
+// Dsn is the database connection string
+var Dsn string
 
 func main() {
 	logger := logrus.New()
@@ -32,7 +36,7 @@ func main() {
 			),
 		),
 	)
-	s, err := contacts.NewServer(Dsn)
+	s, err := contacts.NewBasicServer(Dsn)
 	if err != nil {
 		logger.Fatalln(err)
 	}

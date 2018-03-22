@@ -12,9 +12,9 @@ import (
 )
 
 var (
-	Addr          string
-	ContactsAddr  string
-	SwaggerDir    string
+	Addr         string
+	ContactsAddr string
+	SwaggerDir   string
 )
 
 func main() {
