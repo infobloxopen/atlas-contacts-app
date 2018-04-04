@@ -3,7 +3,7 @@ REPO := github.com/infobloxopen/atlas-contacts-app
 DOCKER := johnbelamaric/atlas-contacts-app
 
 # Build directory absolute path.
-BINDIR = $(CURDIR)
+BINDIR = $(CURDIR)/bin
 
 # Utility docker image to build Go binaries
 # https://github.com/infobloxopen/buildtool
@@ -24,11 +24,12 @@ gen:
 	--swagger_out=:. $(REPO)/proto/contacts.proto
 
 build:
+	mkdir -p bin
 	@docker run --rm -v ~:/root -v $(CURDIR):/go/src/$(REPO) -w /go/src/$(REPO) $(BUILDTOOL_IMAGE) \
-	/bin/sh -c 'go get $(REPO)/cmd/gateway && go build $(GO_BUILD_FLAGS) -o "bin/gateway" "$(REPO)/cmd/gateway"'
+	go build $(GO_BUILD_FLAGS) -o "bin/gateway" "$(REPO)/cmd/gateway"
 
 	@docker run --rm -v $(CURDIR):/go/src/$(REPO) -w /go/src/$(REPO) $(BUILDTOOL_IMAGE) \
-	/bin/sh -c 'go get $(REPO)/cmd/contacts && go build $(GO_BUILD_FLAGS) -o "bin/contacts" "$(REPO)/cmd/contacts"'
+	go build $(GO_BUILD_FLAGS) -o "bin/contacts" "$(REPO)/cmd/contacts"
 
 clean:
 	@rm -rf "$(BINDIR)"
@@ -38,8 +39,8 @@ fmt:
 	@go fmt -x "$(REPO)/..."
 
 image: build
-	cd docker && docker build -f Dockerfile.contacts -t $(DOCKER)-contacts:latest .
-	cd docker && docker build -f Dockerfile.gateway -t $(DOCKER)-gateway:latest .
+	docker build -f docker/Dockerfile.contacts -t $(DOCKER)-contacts:latest .
+	docker build -f docker/Dockerfile.gateway -t $(DOCKER)-gateway:latest .
 
 push: image
 	@docker push $(DOCKER)-contacts:latest
