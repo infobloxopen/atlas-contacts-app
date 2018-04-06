@@ -32,7 +32,7 @@ spec:
       - args:
         - -dsn
         - api:mypassword@tcp(mysql.db:3306)/contacts?charset=utf8&parseTime=True
-        image: johnbelamaric/atlas-contacts-app-contacts:latest
+        image: atlas-contacts-app:latest
         imagePullPolicy: Always
         name: contacts-api
         ports:
@@ -75,7 +75,7 @@ spec:
       - args:
         - -contacts
         - contacts-api:9091
-        image: johnbelamaric/atlas-contacts-app-gateway:latest
+        image: atlas-contacts-app-gateway:latest
         imagePullPolicy: Always
         name: contacts-gateway
         ports:
