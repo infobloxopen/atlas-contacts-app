@@ -1,0 +1,19 @@
+package contacts
+
+import (
+	"github.com/Infoblox-CTO/ngp.api.toolkit/gw"
+)
+
+func init() {
+	forward_Contacts_Create_0 = gw.ForwardResponseMessage
+
+	forward_Contacts_Get_0 = gw.ForwardResponseMessage
+
+	forward_Contacts_Update_0 = gw.ForwardResponseMessage
+
+	forward_Contacts_Delete_0 = gw.ForwardResponseMessage
+
+	forward_Contacts_List_0 = gw.ForwardResponseMessage
+
+	forward_Contacts_SendSMS_0 = gw.ForwardResponseMessage
+}

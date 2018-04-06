@@ -9,33 +9,40 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 
 	"github.com/Infoblox-CTO/ngp.api.toolkit/gw"
+	"github.com/infobloxopen/atlas-contacts-app/cmd/config"
 )
 
 var (
-	Addr         string
-	ContactsAddr string
-	SwaggerDir   string
+	ServerAddr  string
+	GatewayAddr string
+	SwaggerDir  string
 )
 
 func main() {
-	mux := http.NewServeMux()
-
+	// create HTTP handler for gateway
 	errHandler := runtime.WithProtoErrorHandler(gw.ProtoMessageErrorHandler)
-
-	contactsHandler, err := NewContactsHandler(context.Background(), ContactsAddr, errHandler)
+	opHandler := runtime.WithMetadata(gw.MetadataAnnotator)
+	serverHandler, err := NewAtlasContactsAppHandler(context.Background(), ServerAddr, errHandler, opHandler)
+	// strip all but trailing "/" on incoming requests
+	serverHandler = http.StripPrefix(
+		config.GATEWAY_URL[:len(config.GATEWAY_URL)-1],
+		serverHandler,
+	)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	mux.Handle("/contacts/v1/", http.StripPrefix("/contacts/v1", contactsHandler))
-
+	// map HTTP endpoints to handlers
+	mux := http.NewServeMux()
+	mux.Handle("/atlas-contacts-app/v1/", serverHandler)
 	mux.HandleFunc("/swagger/", SwaggerHandler)
-
-	http.ListenAndServe(Addr, mux)
+	// serve handlers on the gateway address
+	http.ListenAndServe(GatewayAddr, mux)
 }
 
 func init() {
-	flag.StringVar(&Addr, "listen", "0.0.0.0:8080", "")
-	flag.StringVar(&ContactsAddr, "contacts", "127.0.0.1:9091", "")
-	flag.StringVar(&SwaggerDir, "swagger-dir", "share", "")
+	// default gateway values; optionally configured via command-line flags
+	flag.StringVar(&ServerAddr, "server", config.SERVER_ADDRESS, "address of the gRPC server")
+	flag.StringVar(&GatewayAddr, "gateway", config.GATEWAY_ADDRESS, "address of the gateway server")
+	flag.StringVar(&SwaggerDir, "swagger-dir", config.SWAGGER_DIR, "directory of the swagger.json file")
 	flag.Parse()
 }
