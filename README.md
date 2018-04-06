@@ -10,29 +10,68 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-What things you need to install the software and how to install them.
+#### Local setup:
+Need `mysql` or `mariadb` installed.
+
+E.g.
+
+Install database engine:
+```
+    $ sudo dnf install mariadb mariadb-server
+```
+
+Start database server:
+```
+    $ systemctl start mariadb
+```
+
+Create `atlas-contacts-app` database:
 
 ```
-Give examples
+    $ mysql -u root
 ```
+
+```
+    MariaDB [(none)]> CREATE DATABASE atlas-contacts-app;
+```
+
+Create necessary table:
+```
+    $ mysql -u root atlas-contacts-app < ./migrations/0001_contacts.sql
+```
+
 
 ### Installing
 
-A step-by-step series of examples that tell you have to get a development environment running.
+#### Local setup:
 
-Say what the step will be.
-
+Build the project.
 ```
-Give the example
-```
-
-And repeat.
-
-```
-until finished
+make
 ```
 
-End with an example of getting some data out of the system or using it for a little demo.
+Run GRPC gateway:
+```
+./bin/gateway
+```
+
+Run GRPC server:
+```
+./bin/server -dsn root:@tcp/atlas-contacts-app
+```
+
+Try atlas-contacts-app:
+```
+curl http://localhost:8080/atlas-contacts-app/v1/contacts -d '{"first_name": "Mike", "email_address": "mike@gmail.com"}'
+```
+
+```
+curl http://localhost:8080/atlas-contacts-app/v1/contacts -d '{"first_name": "Bob", "email_address": "john@gmail.com"}'
+```
+
+```
+curl http://localhost:8080/atlas-contacts-app/v1/contacts?_filter='first_name=="Mike"'
+```
 
 ## Deployment
 
@@ -48,4 +87,4 @@ Give an example
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags).
