@@ -90,3 +90,20 @@ vendor:
 .PHONY: vendor-update
 vendor-update:
 	$(BUILDER) dep ensure
+
+.PHONY: image
+image:
+	docker build -f docker/Dockerfile.server -t infobloxopen/server:v1.0 .
+	docker build -f docker/Dockerfile.gateway -t infobloxopen/gateway:v1.0 .
+
+.PHONY: image-clean
+image-clean:
+	docker rmi -f infobloxopen/server:v1.0 infobloxopen/gateway:v1.0
+
+.PHONY: up
+up:
+	kubectl apply -f kube/kube.yaml
+
+.PHONY: down
+down:
+	kubectl delete -f kube/kube.yaml
