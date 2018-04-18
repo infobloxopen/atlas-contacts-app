@@ -19,18 +19,36 @@ message Contact {
     string email_address = 5 [(validate.rules).string.email = true];
 }
 
-// eventually this will be replaced with a Page that uses the paging info
-message ContactPage {
-    repeated Contact results = 1;
+message CreateContactRequest {
+    Contact payload = 1;
 }
 
-// eventually this will be replaced with a standard search request
-message SearchRequest {
-    string first_name = 1;
+message CreateContactResponse {
+    Contact result = 1;
 }
 
-message GetRequest {
+message GetContactRequest {
     uint64 id = 1;
+}
+
+message GetContactResponse {
+    Contact result = 1;
+}
+
+message UpdateContactRequest {
+    Contact payload = 1;
+}
+
+message UpdateContactResponse {
+    Contact result = 1;
+}
+
+message DeleteContactRequest {
+    uint64 id = 1;
+}
+
+message ListContactsResponse {
+    repeated Contact results = 1;
 }
 
 message SMSRequest {
@@ -39,35 +57,36 @@ message SMSRequest {
 }
 
 service Contacts {
-    rpc Search (SearchRequest) returns (ContactPage) {
-        option (google.api.http) = {
-            get: "/contacts"
-        };
-    }
-
-    rpc Create (Contact) returns (Contact) {
+    
+    rpc Create (CreateContactRequest) returns (CreateContactResponse) {
         option (google.api.http) = {
             post: "/contacts"
-            body: "*"
+            body: "payload"
         };
     }
-
-    rpc Get (GetRequest) returns (Contact) {
+    
+    rpc Get (GetContactRequest) returns (GetContactResponse) {
         option (google.api.http) = {
             get: "/contacts/{id}"
         };
     }
-
-    rpc Update (Contact) returns (Contact) {
+    
+    rpc Update (UpdateContactRequest) returns (UpdateContactResponse) {
         option (google.api.http) = {
-            put: "/contacts/{id}"
-            body: "*"
+            put: "/contacts/{payload.id}"
+            body: "payload"
         };
     }
-
-    rpc Delete (GetRequest) returns (google.protobuf.Empty) {
+    
+    rpc Delete (DeleteContactRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
             delete: "/contacts/{id}"
+        };
+    }
+    
+    rpc List (google.protobuf.Empty) returns (ListContactsResponse) {
+        option (google.api.http) = {
+            get: "/contacts"
         };
     }
 
@@ -78,7 +97,6 @@ service Contacts {
         };
     }
 }
-
 
 option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
   info: {

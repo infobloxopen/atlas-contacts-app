@@ -22,23 +22,15 @@
   "paths": {
     "/contacts": {
       "get": {
-        "operationId": "Search",
+        "operationId": "List",
         "responses": {
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/contactsContactPage"
+              "$ref": "#/definitions/contactsListContactsResponse"
             }
           }
         },
-        "parameters": [
-          {
-            "name": "first_name",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
         "tags": [
           "Contacts"
         ]
@@ -49,7 +41,7 @@
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/apicontactsContact"
+              "$ref": "#/definitions/contactsCreateContactResponse"
             }
           }
         },
@@ -75,7 +67,7 @@
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/apicontactsContact"
+              "$ref": "#/definitions/contactsGetContactResponse"
             }
           }
         },
@@ -109,37 +101,6 @@
             "required": true,
             "type": "string",
             "format": "uint64"
-          }
-        ],
-        "tags": [
-          "Contacts"
-        ]
-      },
-      "put": {
-        "operationId": "Update",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/apicontactsContact"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "format": "uint64"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/apicontactsContact"
-            }
           }
         ],
         "tags": [
@@ -179,6 +140,39 @@
           "Contacts"
         ]
       }
+    },
+    "/contacts/{payload.id}": {
+      "put": {
+        "operationId": "Update",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/contactsUpdateContactResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "payload.id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apicontactsContact"
+            }
+          }
+        ],
+        "tags": [
+          "Contacts"
+        ]
+      }
     }
   },
   "definitions": {
@@ -203,7 +197,23 @@
         }
       }
     },
-    "contactsContactPage": {
+    "contactsCreateContactResponse": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/definitions/apicontactsContact"
+        }
+      }
+    },
+    "contactsGetContactResponse": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/definitions/apicontactsContact"
+        }
+      }
+    },
+    "contactsListContactsResponse": {
       "type": "object",
       "properties": {
         "results": {
@@ -212,8 +222,7 @@
             "$ref": "#/definitions/apicontactsContact"
           }
         }
-      },
-      "title": "eventually this will be replaced with a Page that uses the paging info"
+      }
     },
     "contactsSMSRequest": {
       "type": "object",
@@ -224,6 +233,14 @@
         },
         "message": {
           "type": "string"
+        }
+      }
+    },
+    "contactsUpdateContactResponse": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/definitions/apicontactsContact"
         }
       }
     },
