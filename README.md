@@ -10,66 +10,105 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-#### Local setup:
+#### Local setup
+
 Need `mysql` or `mariadb` installed.
 
 E.g.
 
 Install database engine:
-```
-    $ sudo dnf install mariadb mariadb-server
+
+``` sh
+    sudo dnf install mariadb mariadb-server
 ```
 
 Start database server:
-```
-    $ systemctl start mariadb
+
+``` sh
+    systemctl start mariadb
 ```
 
 Create `atlas-contacts-app` database:
 
-```
-    $ mysql -u root
+``` sh
+    mysql -u root
 ```
 
-```
+``` sh
     MariaDB [(none)]> CREATE DATABASE atlas-contacts-app;
 ```
 
 Create necessary table:
-```
-    $ mysql -u root atlas-contacts-app < ./migrations/0001_contacts.sql
+
+``` sh
+    mysql -u root atlas-contacts-app < ./migrations/0001_contacts.sql
 ```
 
 
 ### Installing
 
-#### Local setup:
+#### Local setup
 
 Build the project.
-```
+
+``` sh
 make
 ```
 
-Run GRPC gateway:
-```
-./bin/gateway
-```
-
 Run GRPC server:
-```
+
+``` sh
 ./bin/server -dsn root:@tcp/atlas-contacts-app
 ```
 
-Try atlas-contacts-app:
+Run GRPC gateway:
+
+``` sh
+./bin/gateway
 ```
+
+#### Local Kubernetes setup
+
+Build gateway:
+
+``` sh
+cd cmd/gateway; go build -o ../../bin/gateway; cd ../..
+```
+
+Build server:
+
+``` sh
+cd cmd/server; go build -o ../../bin/server; cd ../..
+```
+
+Then open a seperate terminal session where execute `eval $(minikube docker-env)`. This is needed to make these images available for local kubernetes without pushing them to global repo.
+
+Then:
+
+``` sh
+make image
+make up
+```
+
+To shutdown and cleanup:
+
+``` sh
+make down
+make image-clean
+rm -rf bin
+```
+
+#### Try atlas-contacts-app
+
+``` sh
 curl http://localhost:8080/atlas-contacts-app/v1/contacts -d '{"first_name": "Mike", "email_address": "mike@gmail.com"}'
 ```
 
-```
+``` sh
 curl http://localhost:8080/atlas-contacts-app/v1/contacts -d '{"first_name": "Bob", "email_address": "john@gmail.com"}'
 ```
 
-```
+``` sh
 curl http://localhost:8080/atlas-contacts-app/v1/contacts?_filter='first_name=="Mike"'
 ```
 

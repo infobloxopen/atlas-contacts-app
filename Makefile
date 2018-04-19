@@ -93,12 +93,12 @@ vendor-update:
 
 .PHONY: image
 image:
-	docker build -f docker/Dockerfile.server -t infobloxopen/server:v1.0 .
-	docker build -f docker/Dockerfile.gateway -t infobloxopen/gateway:v1.0 .
+	docker build -f docker/Dockerfile.contacts-server -t infoblox/contacts-server:v1.0 .
+	docker build -f docker/Dockerfile.contacts-gateway -t infoblox/contacts-gateway:v1.0 .
 
 .PHONY: image-clean
 image-clean:
-	docker rmi -f infobloxopen/server:v1.0 infobloxopen/gateway:v1.0
+	docker rmi -f infoblox/contacts-server:v1.0 infoblox/contacts-gateway:v1.0
 
 .PHONY: up
 up:
