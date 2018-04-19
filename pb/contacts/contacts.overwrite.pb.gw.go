@@ -1,7 +1,7 @@
 package contacts
 
 import (
-	"github.com/Infoblox-CTO/ngp.api.toolkit/gw"
+	"github.com/infobloxopen/atlas-app-toolkit/gw"
 )
 
 func init() {

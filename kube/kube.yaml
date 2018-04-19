@@ -51,7 +51,7 @@ spec:
         - "0.0.0.0:8088"
         - "-shealth"
         - "0.0.0.0:8089"
-        image: infobloxopen/gateway:v1.0
+        image: infoblox/contacts-gateway:v1.0
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
@@ -82,7 +82,7 @@ spec:
           # note that authz also needs to be running in order to authorize
           # requests to the contacts-app
           # - "-auth"
-        image: infobloxopen/server:v1.0
+        image: infoblox/contacts-server:v1.0
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 9091

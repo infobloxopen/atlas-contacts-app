@@ -11,7 +11,7 @@ import (
 
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 
-	"github.com/Infoblox-CTO/ngp.api.toolkit/gw"
+	"github.com/infobloxopen/atlas-app-toolkit/gw"
 	"github.com/infobloxopen/atlas-app-toolkit/health"
 	"github.com/infobloxopen/atlas-contacts-app/cmd/config"
 )

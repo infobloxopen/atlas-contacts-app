@@ -44,16 +44,18 @@ Create necessary table:
     mysql -u root atlas-contacts-app < ./migrations/0001_contacts.sql
 ```
 
-
 ### Installing
 
-#### Local setup
-
-Build the project.
+#### Build the project
 
 ``` sh
+make vendor
 make
 ```
+
+If this process finished with errors it's likely that docker doesn't allow to mount host directory in its container. Therefore you are proposed to run `su -c "setenforce 0"` command to fix this issue.
+
+#### Local setup
 
 Run GRPC server:
 
@@ -67,21 +69,23 @@ Run GRPC gateway:
 ./bin/gateway
 ```
 
+#### Try atlas-contacts-app
+
+``` sh
+curl http://localhost:8080/atlas-contacts-app/v1/contacts -d '{"first_name": "Mike", "email_address": "mike@gmail.com"}'
+```
+
+``` sh
+curl http://localhost:8080/atlas-contacts-app/v1/contacts -d '{"first_name": "Bob", "email_address": "john@gmail.com"}'
+```
+
+``` sh
+curl http://localhost:8080/atlas-contacts-app/v1/contacts?_filter='first_name=="Mike"'
+```
+
 #### Local Kubernetes setup
 
-Build gateway:
-
-``` sh
-cd cmd/gateway; go build -o ../../bin/gateway; cd ../..
-```
-
-Build server:
-
-``` sh
-cd cmd/server; go build -o ../../bin/server; cd ../..
-```
-
-Then open a seperate terminal session where execute `eval $(minikube docker-env)`. This is needed to make these images available for local kubernetes without pushing them to global repo.
+Open a seperate terminal session where execute `eval $(minikube docker-env)`. This is needed to make these images available for local kubernetes without pushing them to global repo.
 
 Then:
 
@@ -98,18 +102,18 @@ make image-clean
 rm -rf bin
 ```
 
-#### Try atlas-contacts-app
+#### Try local Kubernetes atlas-contacts-app
 
 ``` sh
-curl http://localhost:8080/atlas-contacts-app/v1/contacts -d '{"first_name": "Mike", "email_address": "mike@gmail.com"}'
+curl http://$(minikube ip):31500/atlas-contacts-app/v1/contacts -d '{"first_name": "Mike", "email_address": "mike@gmail.com"}'
 ```
 
 ``` sh
-curl http://localhost:8080/atlas-contacts-app/v1/contacts -d '{"first_name": "Bob", "email_address": "john@gmail.com"}'
+curl http://$(minikube ip):31500/atlas-contacts-app/v1/contacts -d '{"first_name": "Bob", "email_address": "john@gmail.com"}'
 ```
 
 ``` sh
-curl http://localhost:8080/atlas-contacts-app/v1/contacts?_filter='first_name=="Mike"'
+curl http://$(minikube ip):31500/atlas-contacts-app/v1/contacts?_filter='first_name=="Mike"'
 ```
 
 ## Deployment
