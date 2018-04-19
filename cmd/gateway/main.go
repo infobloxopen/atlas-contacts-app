@@ -66,7 +66,8 @@ func isAppReady() error {
 	client := &http.Client{
 		Timeout: readinessTimeout,
 	}
-	resp, err := client.Get(path.Join(ServerHealth, "\ready"))
+
+	resp, err := client.Get("http://" + path.Join(ServerHealth, "ready"))
 	if err != nil {
 		return err
 	}

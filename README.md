@@ -10,39 +10,15 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-#### Local setup
-
-Need `mysql` or `mariadb` installed.
-
-E.g.
-
-Install database engine:
+Install go dep
 
 ``` sh
-    sudo dnf install mariadb mariadb-server
+go get -u github.com/golang/dep/cmd/dep
 ```
 
-Start database server:
-
-``` sh
-    systemctl start mariadb
-```
-
-Create `atlas-contacts-app` database:
-
-``` sh
-    mysql -u root
-```
-
-``` sh
-    MariaDB [(none)]> CREATE DATABASE atlas-contacts-app;
-```
-
-Create necessary table:
-
-``` sh
-    mysql -u root atlas-contacts-app < ./migrations/0001_contacts.sql
-```
+Need `postgresql` installed locally or running inside docker container within `contacts` database created.
+You can change the name of database in `dsn` parameter in `server` app.
+Table creation in this example is omitted as it will be done autmotically by `gorm`.
 
 ### Installing
 
@@ -53,14 +29,18 @@ make vendor
 make
 ```
 
-If this process finished with errors it's likely that docker doesn't allow to mount host directory in its container. Therefore you are proposed to run `su -c "setenforce 0"` command to fix this issue.
+If this process finished with errors it's likely that docker doesn't allow to mount host directory in its container.
+Therefore you are proposed to run `su -c "setenforce 0"` command to fix this issue.
 
 #### Local setup
+
+Please note that you should have the following ports opened on you local workstation: `:8080 :9090 :8088 :8089`.
+If they are busy - please change them via corresponding parameters of `gateway` and `server` binaries.
 
 Run GRPC server:
 
 ``` sh
-./bin/server -dsn root:@tcp/atlas-contacts-app
+./bin/server -dsn "host=localhost port=5432 user=postgres password=postgres sslmode=disable dbname=contacts"
 ```
 
 Run GRPC gateway:
@@ -81,7 +61,6 @@ curl http://localhost:8080/atlas-contacts-app/v1/contacts -d '{"first_name": "Bo
 
 ``` sh
 curl http://localhost:8080/atlas-contacts-app/v1/contacts?_filter='first_name=="Mike"'
-```
 
 #### Local Kubernetes setup
 

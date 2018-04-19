@@ -55,23 +55,23 @@ spec:
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
-        # livenessProbe:
-        #   httpGet:
-        #     path: /healthz
-        #     port: 8088
-        #     scheme: HTTP
-        #   initialDelaySeconds: 5
-        #   successThreshold: 1
-        #   timeoutSeconds: 10
-        # readinessProbe:
-        #   httpGet:
-        #     path: /ready
-        #     port: 8088
-        #     scheme: HTTP
-        #   initialDelaySeconds: 5
-        #   periodSeconds: 5
-        #   successThreshold: 1
-        #   failureThreshold: 10
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8088
+            scheme: HTTP
+          initialDelaySeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8088
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          successThreshold: 1
+          failureThreshold: 10
       - name: server
         args:
         - "-dsn"
