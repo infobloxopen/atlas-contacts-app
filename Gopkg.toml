@@ -24,11 +24,6 @@
 #   go-tests = true
 #   unused-packages = true
 
-
-[[constraint]]
-  name = "github.com/Infoblox-CTO/ngp.api.toolkit"
-  version = "0.0.3"
-
 [[constraint]]
   branch = "master"
   name = "github.com/golang/protobuf"

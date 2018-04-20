@@ -24,7 +24,7 @@ package contacts
 import context "context"
 import errors "errors"
 import gorm "github.com/jinzhu/gorm"
-import ops "github.com/Infoblox-CTO/ngp.api.toolkit/op/gorm"
+import ops "github.com/infobloxopen/atlas-app-toolkit/op/gorm"
 import proto "github.com/gogo/protobuf/proto"
 import fmt "fmt"
 import math "math"

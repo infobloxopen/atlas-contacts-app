@@ -9,12 +9,12 @@ IMAGE_VERSION		?= $(USERNAME)-dev-$(GIT_COMMIT)
 SERVER_BINARY 		:= $(BUILD_PATH)/server
 SERVER_PATH 		:= $(PROJECT_ROOT)/cmd/server
 SERVER_IMAGE		:= atlas-contacts-app:$(IMAGE_VERSION)
-SERVER_DOCKERFILE 	:= $(DOCKERFILE_PATH)/Dockerfile.server
+SERVER_DOCKERFILE 	:= $(DOCKERFILE_PATH)/Dockerfile.contacts-server
 
 GATEWAY_BINARY 		:= $(BUILD_PATH)/gateway
 GATEWAY_PATH		:= $(PROJECT_ROOT)/cmd/gateway
 GATEWAY_IMAGE		:= atlas-contacts-app-gateway:$(IMAGE_VERSION)
-GATEWAY_DOCKERFILE 	:= $(DOCKERFILE_PATH)/Dockerfile.gateway
+GATEWAY_DOCKERFILE 	:= $(DOCKERFILE_PATH)/Dockerfile.contacts-gateway
 
 GO_PATH              	:= /go
 SRCROOT_ON_HOST      	:= $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))
@@ -90,3 +90,20 @@ vendor:
 .PHONY: vendor-update
 vendor-update:
 	$(BUILDER) dep ensure
+
+.PHONY: image
+image:
+	docker build -f docker/Dockerfile.contacts-server -t infoblox/contacts-server:v1.0 .
+	docker build -f docker/Dockerfile.contacts-gateway -t infoblox/contacts-gateway:v1.0 .
+
+.PHONY: image-clean
+image-clean:
+	docker rmi -f infoblox/contacts-server:v1.0 infoblox/contacts-gateway:v1.0
+
+.PHONY: up
+up:
+	kubectl apply -f kube/kube.yaml
+
+.PHONY: down
+down:
+	kubectl delete -f kube/kube.yaml
