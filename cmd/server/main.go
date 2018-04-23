@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/grpc-ecosystem/go-grpc-middleware"
-	"github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
 	"github.com/grpc-ecosystem/go-grpc-middleware/validator"
 	toolkit_auth "github.com/infobloxopen/atlas-app-toolkit/mw/auth"
@@ -45,17 +44,9 @@ func main() {
 	}
 	// add authorization interceptor if authz service address is provided
 	if AuthzAddr != "" {
-		authorizer := toolkit_auth.Authorizer{
-			AuthzAddr,
-			toolkit_auth.NewBuilder(
-				toolkit_auth.WithJWT(nil),
-				toolkit_auth.WithRequest(),
-			),
-			toolkit_auth.NewHandler(),
-		}
 		interceptors = append(interceptors,
-			// validation interceptor
-			grpc_auth.UnaryServerInterceptor(authorizer.AuthFunc()),
+			// authorization interceptor
+			toolkit_auth.DefaultAuthInterceptor(AuthzAddr),
 		)
 	}
 	middleware := grpc_middleware.ChainUnaryServer(interceptors...)

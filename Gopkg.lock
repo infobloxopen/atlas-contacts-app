@@ -80,8 +80,8 @@
     "op",
     "op/gorm"
   ]
-  revision = "2fde752676ad546628535aedf8106b2579624bc8"
-  version = "v0.2.0"
+  revision = "be6ab7944a3944d29225baeeb143ad9e6241e710"
+  version = "v0.3.0"
 
 [[projects]]
   branch = "master"
@@ -251,6 +251,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "44a50237878ba8c817494110126093cece4daa5debca8767225d840c0672ae95"
+  inputs-digest = "fa31cac1746aada97321d8a9f08ce4ea1cac3ebad324e140c4935f7d18b71810"
   solver-name = "gps-cdcl"
   solver-version = 1
