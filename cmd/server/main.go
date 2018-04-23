@@ -26,7 +26,7 @@ var (
 	Address       string
 	HealthAddress string
 	Dsn           string
-	PDPAddr       string
+	AuthzAddr     string
 )
 
 func main() {
@@ -43,10 +43,10 @@ func main() {
 		// validation interceptor
 		grpc_logrus.UnaryServerInterceptor(logrus.NewEntry(logger)),
 	}
-	// add authorization interceptor if PDP address is provided
-	if PDPAddr != "" {
+	// add authorization interceptor if authz service address is provided
+	if AuthzAddr != "" {
 		authorizer := toolkit_auth.Authorizer{
-			PDPAddr,
+			AuthzAddr,
 			toolkit_auth.NewBuilder(
 				toolkit_auth.WithJWT(nil),
 				toolkit_auth.WithRequest(),
@@ -106,7 +106,7 @@ func init() {
 	flag.StringVar(&Address, "address", config.SERVER_ADDRESS, "the gRPC server address")
 	flag.StringVar(&HealthAddress, "health", "0.0.0.0:8089", "Address for health checking")
 	flag.StringVar(&Dsn, "dsn", "", "")
-	flag.StringVar(&PDPAddr, "pdp", "", "address of the pdp")
+	flag.StringVar(&AuthzAddr, "authz", "", "address of the authorization service")
 	flag.Parse()
 }
 

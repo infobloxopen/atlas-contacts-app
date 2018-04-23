@@ -83,7 +83,7 @@ spec:
         # uncomment to add authorization to the contacts-app example. Please
         # note that authz also needs to be running in order to authorize
         # requests to the contacts-app
-        # - "-pdp=pdpserver.authz:5555"
+        # - "-authz=pdpserver.authz:5555"
         image: infoblox/atlas-contacts-app:v1.0
         imagePullPolicy: IfNotPresent
         ports:
