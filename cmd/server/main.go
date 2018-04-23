@@ -8,8 +8,10 @@ import (
 	"time"
 
 	"github.com/grpc-ecosystem/go-grpc-middleware"
+	"github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
 	"github.com/grpc-ecosystem/go-grpc-middleware/validator"
+	toolkit_auth "github.com/infobloxopen/atlas-app-toolkit/mw/auth"
 	"github.com/jinzhu/gorm"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -24,6 +26,7 @@ var (
 	Address       string
 	HealthAddress string
 	Dsn           string
+	PDPAddr       string
 )
 
 func main() {
@@ -33,15 +36,31 @@ func main() {
 	if err != nil {
 		logger.Fatalln(err)
 	}
+
+	middleware := grpc_middleware.ChainUnaryServer(
+		grpc_validator.UnaryServerInterceptor(),                     // validation middleware
+		grpc_logrus.UnaryServerInterceptor(logrus.NewEntry(logger)), // logging middleware
+	)
+	// add authorization middleware if the pdp address is provided
+	if PDPAddr != "" {
+		authorizer := toolkit_auth.Authorizer{
+			PDPAddr,
+			toolkit_auth.NewBuilder(
+				toolkit_auth.WithJWT(nil),
+				toolkit_auth.WithRequest(),
+			),
+			toolkit_auth.NewHandler(),
+		}
+		middleware = grpc_middleware.ChainUnaryServer(
+			grpc_auth.UnaryServerInterceptor(authorizer.AuthFunc()),     // auth middleware
+			grpc_validator.UnaryServerInterceptor(),                     // validation middleware
+			grpc_logrus.UnaryServerInterceptor(logrus.NewEntry(logger)), // logging middleware
+		)
+	}
 	// create new gRPC server with middleware chain
 	server := grpc.NewServer(
 		grpc.UnaryInterceptor(
-			grpc_middleware.ChainUnaryServer(
-				// validation middleware
-				grpc_validator.UnaryServerInterceptor(),
-				// logging middleware
-				grpc_logrus.UnaryServerInterceptor(logrus.NewEntry(logger)),
-			),
+			middleware,
 		),
 	)
 
@@ -85,6 +104,7 @@ func init() {
 	flag.StringVar(&Address, "address", config.SERVER_ADDRESS, "the gRPC server address")
 	flag.StringVar(&HealthAddress, "health", "0.0.0.0:8089", "Address for health checking")
 	flag.StringVar(&Dsn, "dsn", "", "")
+	flag.StringVar(&PDPAddr, "pdp", "", "address of the pdp")
 	flag.Parse()
 }
 
