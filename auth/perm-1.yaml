@@ -1,8 +1,0 @@
-apiVersion: infoblox.com/v1
-kind: Permission
-metadata:
-  name: contacts-read
-  namespace: contacts
-operations:
-- List
-- Get

@@ -1,7 +1,0 @@
-apiVersion: infoblox.com/v1
-kind: SubjectGroup
-metadata:
-  name: all-users
-  namespace: default
-criteria:
-  type: User

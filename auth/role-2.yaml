@@ -1,8 +1,0 @@
-apiVersion: infoblox.com/v1
-kind: Role
-metadata:
-  name: contacts-read-write
-  namespace: contacts
-permissions:
-- contacts-read
-- contacts-write

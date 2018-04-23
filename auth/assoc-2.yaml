@@ -1,7 +1,0 @@
-apiVersion: infoblox.com/v1
-kind: Assoc
-metadata:
-  name: contacts-admin
-  namespace: contacts
-group: engineers
-role: contacts-read-write
