@@ -1,0 +1,10 @@
+apiVersion: infoblox.com/v1
+kind: Permission
+metadata:
+  name: contacts-write
+  namespace: contacts
+operations:
+- Create
+- Update
+- Delete
+- SendSMS

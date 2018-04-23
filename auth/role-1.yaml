@@ -1,0 +1,7 @@
+apiVersion: infoblox.com/v1
+kind: Role
+metadata:
+  name: contacts-read-only
+  namespace: contacts
+permissions:
+- contacts-read

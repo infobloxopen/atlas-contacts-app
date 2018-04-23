@@ -1,0 +1,7 @@
+apiVersion: infoblox.com/v1
+kind: Assoc
+metadata:
+  name: contacts-all-users
+  namespace: contacts
+group: all-users
+role: contacts-read-only

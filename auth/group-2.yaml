@@ -1,0 +1,8 @@
+apiVersion: infoblox.com/v1
+kind: SubjectGroup
+metadata:
+  name: engineers
+  namespace: default
+criteria:
+  type: User
+  department: Engineering
