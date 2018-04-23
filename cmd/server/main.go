@@ -37,11 +37,13 @@ func main() {
 		logger.Fatalln(err)
 	}
 
-	middleware := grpc_middleware.ChainUnaryServer(
-		grpc_validator.UnaryServerInterceptor(),                     // validation middleware
-		grpc_logrus.UnaryServerInterceptor(logrus.NewEntry(logger)), // logging middleware
-	)
-	// add authorization middleware if the pdp address is provided
+	interceptors := []grpc.UnaryServerInterceptor{
+		// validation interceptor
+		grpc_validator.UnaryServerInterceptor(),
+		// validation interceptor
+		grpc_logrus.UnaryServerInterceptor(logrus.NewEntry(logger)),
+	}
+	// add authorization interceptor if PDP address is provided
 	if PDPAddr != "" {
 		authorizer := toolkit_auth.Authorizer{
 			PDPAddr,
@@ -51,12 +53,12 @@ func main() {
 			),
 			toolkit_auth.NewHandler(),
 		}
-		middleware = grpc_middleware.ChainUnaryServer(
-			grpc_auth.UnaryServerInterceptor(authorizer.AuthFunc()),     // auth middleware
-			grpc_validator.UnaryServerInterceptor(),                     // validation middleware
-			grpc_logrus.UnaryServerInterceptor(logrus.NewEntry(logger)), // logging middleware
+		interceptors = append(interceptors,
+			// validation interceptor
+			grpc_auth.UnaryServerInterceptor(authorizer.AuthFunc()),
 		)
 	}
+	middleware := grpc_middleware.ChainUnaryServer(interceptors...)
 	// create new gRPC server with middleware chain
 	server := grpc.NewServer(
 		grpc.UnaryInterceptor(
