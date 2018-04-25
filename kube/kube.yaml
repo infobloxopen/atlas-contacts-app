@@ -1,8 +1,8 @@
----
 apiVersion: v1
 kind: Service
 metadata:
   name: contacts-app
+  namespace: contacts
   labels:
     app: contacts-app
 spec:
@@ -18,6 +18,7 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
+  namespace: contacts
   name: contacts-app-ingress
 spec:
   rules:
@@ -32,6 +33,7 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: contacts-app
+  namespace: contacts
   labels:
     app: contacts-app
 spec:
@@ -78,10 +80,10 @@ spec:
         - "host=postgres port=5432 user=postgres password=postgres sslmode=disable dbname=contacts"
         - "-health"
         - "0.0.0.0:8089"
-          # uncomment to add authorization to the contacts-app example. Please
-          # note that authz also needs to be running in order to authorize
-          # requests to the contacts-app
-          # - "-auth"
+        # uncomment to add authorization to the contacts-app example. Please
+        # note that authz also needs to be running in order to authorize
+        # requests to the contacts-app
+        # - "-authz=pdpserver.authz:5555"
         image: infoblox/contacts-server:v1.0
         imagePullPolicy: IfNotPresent
         ports:
@@ -110,6 +112,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: postgres
+  namespace: contacts
   labels:
     app: postgres
 spec:
@@ -124,6 +127,7 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: postgres
+  namespace: contacts
   labels:
     app: api-example
 spec:

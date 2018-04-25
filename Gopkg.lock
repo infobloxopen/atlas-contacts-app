@@ -2,6 +2,12 @@
 
 
 [[projects]]
+  name = "github.com/dgrijalva/jwt-go"
+  packages = ["."]
+  revision = "06ea1031745cb8b3dab3f6a236daf2b0aa468b7e"
+  version = "v3.2.0"
+
+[[projects]]
   name = "github.com/gogo/protobuf"
   packages = [
     "proto",
@@ -27,15 +33,23 @@
   revision = "e09c5db296004fbe3f74490e84dcd62c3c5ddb1b"
 
 [[projects]]
+  name = "github.com/google/uuid"
+  packages = ["."]
+  revision = "064e2069ce9c359c118179501254f67d7d37ba24"
+  version = "0.2"
+
+[[projects]]
   branch = "master"
   name = "github.com/grpc-ecosystem/go-grpc-middleware"
   packages = [
     ".",
+    "auth",
     "logging",
     "logging/logrus",
     "logging/logrus/ctxlogrus",
     "tags",
     "tags/logrus",
+    "util/metautils",
     "validator"
   ]
   revision = "bc372cc64f55abd91995ba3f219b380ffbc59e9d"
@@ -52,21 +66,50 @@
   version = "v1.3.1"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/grpc-ecosystem/grpc-opentracing"
+  packages = ["go/otgrpc"]
+  revision = "0e7658f8ee99ee5aa683e2a032b8880091b7a055"
+
+[[projects]]
   name = "github.com/infobloxopen/atlas-app-toolkit"
   packages = [
     "gw",
     "health",
+    "mw/auth",
     "op",
     "op/gorm"
   ]
-  revision = "2fde752676ad546628535aedf8106b2579624bc8"
-  version = "v0.2.0"
+  revision = "be6ab7944a3944d29225baeeb143ad9e6241e710"
+  version = "v0.3.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/infobloxopen/go-trees"
+  packages = [
+    "dltree",
+    "domaintree",
+    "iptree",
+    "numtree",
+    "strtree"
+  ]
+  revision = "ba3cf0abf6c4176275bfdabf40f4da38da29becb"
 
 [[projects]]
   name = "github.com/infobloxopen/protoc-gen-gorm"
   packages = ["options"]
   revision = "4e80bd638eff6c49d9ea45398e3a9e47ff5b5c49"
   version = "v0.1.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/infobloxopen/themis"
+  packages = [
+    "pdp",
+    "pdp-service",
+    "pep"
+  ]
+  revision = "b96549da41c733dfbfdfd09f0d558d3ba14b030f"
 
 [[projects]]
   name = "github.com/jinzhu/gorm"
@@ -98,6 +141,16 @@
   packages = ["validate"]
   revision = "8e6aaf55f4954f1ef9d3ee2e8f5a50e79cc04f8f"
   version = "v0.0.5"
+
+[[projects]]
+  name = "github.com/opentracing/opentracing-go"
+  packages = [
+    ".",
+    "ext",
+    "log"
+  ]
+  revision = "1949ddbfd147afd4d964a9f00b24eb291e0e7c38"
+  version = "v1.0.2"
 
 [[projects]]
   name = "github.com/sirupsen/logrus"
@@ -198,6 +251,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "778f5d48e9e57fd2d6bf24c002aae86156e920119b18b86223cfa97338b6cecd"
+  inputs-digest = "fa31cac1746aada97321d8a9f08ce4ea1cac3ebad324e140c4935f7d18b71810"
   solver-name = "gps-cdcl"
   solver-version = 1

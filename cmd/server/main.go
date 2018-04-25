@@ -10,6 +10,7 @@ import (
 	"github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
 	"github.com/grpc-ecosystem/go-grpc-middleware/validator"
+	toolkit_auth "github.com/infobloxopen/atlas-app-toolkit/mw/auth"
 	"github.com/jinzhu/gorm"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -24,6 +25,7 @@ var (
 	Address       string
 	HealthAddress string
 	Dsn           string
+	AuthzAddr     string
 )
 
 func main() {
@@ -33,15 +35,25 @@ func main() {
 	if err != nil {
 		logger.Fatalln(err)
 	}
+
+	interceptors := []grpc.UnaryServerInterceptor{
+		// validation interceptor
+		grpc_validator.UnaryServerInterceptor(),
+		// validation interceptor
+		grpc_logrus.UnaryServerInterceptor(logrus.NewEntry(logger)),
+	}
+	// add authorization interceptor if authz service address is provided
+	if AuthzAddr != "" {
+		interceptors = append(interceptors,
+			// authorization interceptor
+			toolkit_auth.DefaultAuthInterceptor(AuthzAddr),
+		)
+	}
+	middleware := grpc_middleware.ChainUnaryServer(interceptors...)
 	// create new gRPC server with middleware chain
 	server := grpc.NewServer(
 		grpc.UnaryInterceptor(
-			grpc_middleware.ChainUnaryServer(
-				// validation middleware
-				grpc_validator.UnaryServerInterceptor(),
-				// logging middleware
-				grpc_logrus.UnaryServerInterceptor(logrus.NewEntry(logger)),
-			),
+			middleware,
 		),
 	)
 
@@ -85,6 +97,7 @@ func init() {
 	flag.StringVar(&Address, "address", config.SERVER_ADDRESS, "the gRPC server address")
 	flag.StringVar(&HealthAddress, "health", "0.0.0.0:8089", "Address for health checking")
 	flag.StringVar(&Dsn, "dsn", "", "")
+	flag.StringVar(&AuthzAddr, "authz", "", "address of the authorization service")
 	flag.Parse()
 }
 
