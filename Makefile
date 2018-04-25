@@ -8,12 +8,12 @@ IMAGE_VERSION		?= v1.0
 
 SERVER_BINARY 		:= $(BUILD_PATH)/server
 SERVER_PATH 		:= $(PROJECT_ROOT)/cmd/server
-SERVER_IMAGE		:= infoblox/atlas-contacts-app:$(IMAGE_VERSION)
+SERVER_IMAGE		:= infoblox/contacts-server:$(IMAGE_VERSION)
 SERVER_DOCKERFILE 	:= $(DOCKERFILE_PATH)/Dockerfile.contacts-server
 
 GATEWAY_BINARY 		:= $(BUILD_PATH)/gateway
 GATEWAY_PATH		:= $(PROJECT_ROOT)/cmd/gateway
-GATEWAY_IMAGE		:= infoblox/atlas-contacts-app-gateway:$(IMAGE_VERSION)
+GATEWAY_IMAGE		:= infoblox/contacts-gateway:$(IMAGE_VERSION)
 GATEWAY_DOCKERFILE 	:= $(DOCKERFILE_PATH)/Dockerfile.contacts-gateway
 
 GO_PATH              	:= /go
