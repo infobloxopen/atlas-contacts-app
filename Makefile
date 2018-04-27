@@ -103,3 +103,11 @@ up:
 .PHONY: down
 down:
 	kubectl delete -f kube/kube.yaml
+
+.PHONY: nginx-up
+nginx-up:
+	kubectl apply -f kube/nginx.yaml
+
+.PHONY: nginx-down
+nginx-down:
+	kubectl delete -f kube/nginx.yaml
