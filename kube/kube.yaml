@@ -24,7 +24,7 @@ spec:
   rules:
   - http:
       paths:
-      - path: /contacts
+      - path: /atlas-contacts-app
         backend:
           serviceName: contacts-app
           servicePort: 8080
@@ -53,7 +53,7 @@ spec:
         - "0.0.0.0:8088"
         - "-shealth"
         - "0.0.0.0:8089"
-        image: infoblox/contacts-gateway:v1.0
+        image: infoblox/contacts-gateway:latest
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
@@ -84,7 +84,7 @@ spec:
         # note that authz also needs to be running in order to authorize
         # requests to the contacts-app
         # - "-authz=pdpserver.authz:5555"
-        image: infoblox/contacts-server:v1.0
+        image: infoblox/contacts-server:latest
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 9091
