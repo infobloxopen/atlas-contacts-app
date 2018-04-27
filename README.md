@@ -61,38 +61,64 @@ curl http://localhost:8080/atlas-contacts-app/v1/contacts -d '{"first_name": "Bo
 
 ``` sh
 curl http://localhost:8080/atlas-contacts-app/v1/contacts?_filter='first_name=="Mike"'
+```
 
 #### Local Kubernetes setup
 
-Open a seperate terminal session where execute `eval $(minikube docker-env)`. This is needed to make these images available for local kubernetes without pushing them to global repo.
+##### Prerequisites
 
-Then:
+Make sure nginx is deployed in you K8s. Otherwise you can deploy it using
 
 ``` sh
-make image
+make nginx-up
+```
+
+or by running
+
+``` sh
+kubectl apply -f kube/nginx.yaml
+```
+
+If you launching atlas-contacts-app for the first time you need to create `contacts` namespace for it in Kubernetes. This can be done by running
+
+``` sh
+kubectl apply -f kube/ns.yaml
+```
+
+or
+
+``` sh
+kubectl create ns contacts
+```
+
+##### Deployment
+
+To deploy atlas-contacts-app use
+
+``` sh
 make up
 ```
 
-To shutdown and cleanup:
+or as alternative you can run
 
 ``` sh
-make down
-make image-clean
-rm -rf bin
+kubectl apply -f kube/kube.yaml
 ```
 
-#### Try local Kubernetes atlas-contacts-app
+##### Usage
+
+Try it out by executing following curl commangs:
 
 ``` sh
-curl http://$(minikube ip):31500/atlas-contacts-app/v1/contacts -d '{"first_name": "Mike", "email_address": "mike@gmail.com"}'
-```
-
-``` sh
-curl http://$(minikube ip):31500/atlas-contacts-app/v1/contacts -d '{"first_name": "Bob", "email_address": "john@gmail.com"}'
+curl https://minikube/atlas-contacts-app/v1/contacts -d '{"first_name": "Mike", "email_address": "mike@gmail.com"}'
 ```
 
 ``` sh
-curl http://$(minikube ip):31500/atlas-contacts-app/v1/contacts?_filter='first_name=="Mike"'
+curl https://minikube/atlas-contacts-app/v1/contacts -d '{"first_name": "Bob", "email_address": "john@gmail.com"}'
+```
+
+``` sh
+curl https://minikube/atlas-contacts-app/v1/contacts?_filter='first_name=="Mike"'
 ```
 
 ## Deployment
