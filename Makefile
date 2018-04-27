@@ -2,9 +2,7 @@ PROJECT_ROOT		:= github.com/infobloxopen/atlas-contacts-app
 BUILD_PATH  		:= bin
 DOCKERFILE_PATH		:= $(CURDIR)/docker
 
-USERNAME		:= $(USER)
-GIT_COMMIT 		:= $(shell git describe --dirty=-unsupported --always || echo pre-commit)
-IMAGE_VERSION		?= v1.0
+IMAGE_VERSION		?= latest
 
 SERVER_BINARY 		:= $(BUILD_PATH)/server
 SERVER_PATH 		:= $(PROJECT_ROOT)/cmd/server
@@ -92,13 +90,11 @@ vendor-update:
 	$(BUILDER) dep ensure
 
 .PHONY: image
-image:
-	docker build -f docker/Dockerfile.contacts-server -t infoblox/contacts-server:v1.0 .
-	docker build -f docker/Dockerfile.contacts-gateway -t infoblox/contacts-gateway:v1.0 .
+image: server gateway
 
 .PHONY: image-clean
 image-clean:
-	docker rmi -f infoblox/contacts-server:v1.0 infoblox/contacts-gateway:v1.0
+	docker rmi -f $(SERVER_IMAGE) $(GATEWAY_IMAGE)
 
 .PHONY: up
 up:
