@@ -4,7 +4,7 @@ DOCKERFILE_PATH		:= $(CURDIR)/docker
 
 USERNAME		:= $(USER)
 GIT_COMMIT 		:= $(shell git describe --dirty=-unsupported --always || echo pre-commit)
-IMAGE_VERSION		?= v1.0
+IMAGE_VERSION		?= v1.1
 
 SERVER_BINARY 		:= $(BUILD_PATH)/server
 SERVER_PATH 		:= $(PROJECT_ROOT)/cmd/server
@@ -93,12 +93,12 @@ vendor-update:
 
 .PHONY: image
 image:
-	docker build -f docker/Dockerfile.contacts-server -t infoblox/contacts-server:v1.0 .
-	docker build -f docker/Dockerfile.contacts-gateway -t infoblox/contacts-gateway:v1.0 .
+	docker build -f docker/Dockerfile.contacts-server -t infoblox/contacts-server:$(IMAGE_VERSION) .
+	docker build -f docker/Dockerfile.contacts-gateway -t infoblox/contacts-gateway:$(IMAGE_VERSION) .
 
 .PHONY: image-clean
 image-clean:
-	docker rmi -f infoblox/contacts-server:v1.0 infoblox/contacts-gateway:v1.0
+	docker rmi -f infoblox/contacts-server:$(IMAGE_VERSION) infoblox/contacts-gateway:$(IMAGE_VERSION)
 
 .PHONY: up
 up:
