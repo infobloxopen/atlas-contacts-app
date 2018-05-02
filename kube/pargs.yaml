@@ -2,7 +2,9 @@ apiVersion: infoblox.com/v1
 kind: SubjectGroup
 metadata:
   name: all-users
-  namespace: default
+  namespace: authz
+  labels:
+    pargset: authz
 criteria:
   type: User
 ---
@@ -10,7 +12,9 @@ apiVersion: infoblox.com/v1
 kind: SubjectGroup
 metadata:
   name: engineers
-  namespace: default
+  namespace: authz
+  labels:
+    pargset: authz
 criteria:
   type: User
   department: Engineering
@@ -20,6 +24,8 @@ kind: Assoc
 metadata:
   name: contacts-all-users
   namespace: contacts
+  labels:
+    pargset: authz
 group: all-users
 role: contacts-read-only
 ---
@@ -28,6 +34,8 @@ kind: Assoc
 metadata:
   name: contacts-admin
   namespace: contacts
+  labels:
+    pargset: authz
 group: engineers
 role: contacts-read-write
 ---
@@ -36,6 +44,8 @@ kind: Role
 metadata:
   name: contacts-read-only
   namespace: contacts
+  labels:
+    pargset: authz
 permissions:
   - contacts-read
 ---
@@ -44,6 +54,8 @@ kind: Role
 metadata:
   name: contacts-read-write
   namespace: contacts
+  labels:
+    pargset: authz
 permissions:
   - contacts-read
   - contacts-write
@@ -53,6 +65,8 @@ kind: Permission
 metadata:
   name: contacts-read
   namespace: contacts
+  labels:
+    pargset: authz
 operations:
   - List
   - Get
@@ -62,6 +76,8 @@ kind: Permission
 metadata:
   name: contacts-write
   namespace: contacts
+  labels:
+    pargset: authz
 operations:
   - Create
   - Update
