@@ -54,7 +54,7 @@ spec:
         - "-shealth"
         - "0.0.0.0:8089"
         image: infoblox/contacts-gateway:latest
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
         livenessProbe:
@@ -85,7 +85,7 @@ spec:
         # requests to the contacts-app
         # - "-authz=pdpserver.authz:5555"
         image: infoblox/contacts-server:latest
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
         - containerPort: 9091
           protocol: TCP
@@ -146,7 +146,7 @@ spec:
       containers:
       - name: postgres
         image: postgres:9.4
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         env:
         - name: POSTGRES_USER
           value: postgres
