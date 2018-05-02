@@ -23,9 +23,10 @@ package contacts
 
 import context "context"
 import errors "errors"
+
 import gorm "github.com/jinzhu/gorm"
 import ops "github.com/infobloxopen/atlas-app-toolkit/op/gorm"
-import proto "github.com/gogo/protobuf/proto"
+
 import fmt "fmt"
 import math "math"
 import _ "github.com/golang/protobuf/ptypes/empty"
@@ -34,13 +35,12 @@ import _ "github.com/lyft/protoc-gen-validate/validate"
 import _ "github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger/options"
 
 // Reference imports to suppress errors if they are not otherwise used.
-var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
 
 // ContactORM no comment was provided for message type
 type ContactORM struct {
-	ID           uint64
+	Id           uint64
 	FirstName    string
 	MiddleName   string
 	LastName     string
@@ -56,7 +56,7 @@ func (ContactORM) TableName() string {
 func ConvertContactToORM(from Contact) (ContactORM, error) {
 	to := ContactORM{}
 	var err error
-	to.ID = from.Id
+	to.Id = from.Id
 	to.FirstName = from.FirstName
 	to.MiddleName = from.MiddleName
 	to.LastName = from.LastName
@@ -68,7 +68,7 @@ func ConvertContactToORM(from Contact) (ContactORM, error) {
 func ConvertContactFromORM(from ContactORM) (Contact, error) {
 	to := Contact{}
 	var err error
-	to.Id = from.ID
+	to.Id = from.Id
 	to.FirstName = from.FirstName
 	to.MiddleName = from.MiddleName
 	to.LastName = from.LastName
@@ -168,15 +168,12 @@ func DefaultStrictUpdateContact(ctx context.Context, in *Contact, db *gorm.DB) (
 	if err != nil {
 		return nil, err
 	}
-	tx := db.Begin()
-	if err = tx.Save(&ormObj).Error; err != nil {
-		tx.Rollback()
+	if err = db.Save(&ormObj).Error; err != nil {
 		return nil, err
 	}
 	pbResponse, err := ConvertContactFromORM(ormObj)
 	if err != nil {
 		return nil, err
 	}
-	tx.Commit()
 	return &pbResponse, nil
 }
