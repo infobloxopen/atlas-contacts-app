@@ -249,10 +249,10 @@ func (e CreateContactResponseValidationError) Error() string {
 
 var _ error = CreateContactResponseValidationError{}
 
-// Validate checks the field values on GetContactRequest with the rules defined
-// in the proto definition for this message. If any rules are violated, an
-// error is returned.
-func (m *GetContactRequest) Validate() error {
+// Validate checks the field values on ReadContactRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *ReadContactRequest) Validate() error {
 	if m == nil {
 		return nil
 	}
@@ -262,9 +262,9 @@ func (m *GetContactRequest) Validate() error {
 	return nil
 }
 
-// GetContactRequestValidationError is the validation error returned by
-// GetContactRequest.Validate if the designated constraints aren't met.
-type GetContactRequestValidationError struct {
+// ReadContactRequestValidationError is the validation error returned by
+// ReadContactRequest.Validate if the designated constraints aren't met.
+type ReadContactRequestValidationError struct {
 	Field  string
 	Reason string
 	Cause  error
@@ -272,7 +272,7 @@ type GetContactRequestValidationError struct {
 }
 
 // Error satisfies the builtin error interface
-func (e GetContactRequestValidationError) Error() string {
+func (e ReadContactRequestValidationError) Error() string {
 	cause := ""
 	if e.Cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
@@ -284,19 +284,19 @@ func (e GetContactRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sGetContactRequest.%s: %s%s",
+		"invalid %sReadContactRequest.%s: %s%s",
 		key,
 		e.Field,
 		e.Reason,
 		cause)
 }
 
-var _ error = GetContactRequestValidationError{}
+var _ error = ReadContactRequestValidationError{}
 
-// Validate checks the field values on GetContactResponse with the rules
+// Validate checks the field values on ReadContactResponse with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, an error is returned.
-func (m *GetContactResponse) Validate() error {
+func (m *ReadContactResponse) Validate() error {
 	if m == nil {
 		return nil
 	}
@@ -305,7 +305,7 @@ func (m *GetContactResponse) Validate() error {
 		Validate() error
 	}); ok {
 		if err := v.Validate(); err != nil {
-			return GetContactResponseValidationError{
+			return ReadContactResponseValidationError{
 				Field:  "Result",
 				Reason: "embedded message failed validation",
 				Cause:  err,
@@ -316,9 +316,9 @@ func (m *GetContactResponse) Validate() error {
 	return nil
 }
 
-// GetContactResponseValidationError is the validation error returned by
-// GetContactResponse.Validate if the designated constraints aren't met.
-type GetContactResponseValidationError struct {
+// ReadContactResponseValidationError is the validation error returned by
+// ReadContactResponse.Validate if the designated constraints aren't met.
+type ReadContactResponseValidationError struct {
 	Field  string
 	Reason string
 	Cause  error
@@ -326,7 +326,7 @@ type GetContactResponseValidationError struct {
 }
 
 // Error satisfies the builtin error interface
-func (e GetContactResponseValidationError) Error() string {
+func (e ReadContactResponseValidationError) Error() string {
 	cause := ""
 	if e.Cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
@@ -338,14 +338,14 @@ func (e GetContactResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sGetContactResponse.%s: %s%s",
+		"invalid %sReadContactResponse.%s: %s%s",
 		key,
 		e.Field,
 		e.Reason,
 		cause)
 }
 
-var _ error = GetContactResponseValidationError{}
+var _ error = ReadContactResponseValidationError{}
 
 // Validate checks the field values on UpdateContactRequest with the rules
 // defined in the proto definition for this message. If any rules are

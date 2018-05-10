@@ -42,8 +42,8 @@ func request_Contacts_Create_0(ctx context.Context, marshaler runtime.Marshaler,
 
 }
 
-func request_Contacts_Get_0(ctx context.Context, marshaler runtime.Marshaler, client ContactsClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetContactRequest
+func request_Contacts_Read_0(ctx context.Context, marshaler runtime.Marshaler, client ContactsClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq ReadContactRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -64,7 +64,7 @@ func request_Contacts_Get_0(ctx context.Context, marshaler runtime.Marshaler, cl
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
 
-	msg, err := client.Get(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.Read(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
@@ -234,7 +234,7 @@ func RegisterContactsHandlerClient(ctx context.Context, mux *runtime.ServeMux, c
 
 	})
 
-	mux.Handle("GET", pattern_Contacts_Get_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Contacts_Read_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		if cn, ok := w.(http.CloseNotifier); ok {
@@ -252,14 +252,14 @@ func RegisterContactsHandlerClient(ctx context.Context, mux *runtime.ServeMux, c
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Contacts_Get_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Contacts_Read_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Contacts_Get_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Contacts_Read_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -385,7 +385,7 @@ func RegisterContactsHandlerClient(ctx context.Context, mux *runtime.ServeMux, c
 var (
 	pattern_Contacts_Create_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"contacts"}, ""))
 
-	pattern_Contacts_Get_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"contacts", "id"}, ""))
+	pattern_Contacts_Read_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"contacts", "id"}, ""))
 
 	pattern_Contacts_Update_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"contacts", "payload.id"}, ""))
 
@@ -399,7 +399,7 @@ var (
 var (
 	forward_Contacts_Create_0 = runtime.ForwardResponseMessage
 
-	forward_Contacts_Get_0 = runtime.ForwardResponseMessage
+	forward_Contacts_Read_0 = runtime.ForwardResponseMessage
 
 	forward_Contacts_Update_0 = runtime.ForwardResponseMessage
 

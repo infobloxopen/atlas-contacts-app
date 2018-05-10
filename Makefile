@@ -22,7 +22,7 @@ GO_CACHE             	:= -pkgdir $(SRCROOT_IN_CONTAINER)/$(BUILD_PATH)/go-cache
 DOCKER_RUNNER        	:= docker run --rm
 DOCKER_RUNNER        	+= -v $(SRCROOT_ON_HOST):$(SRCROOT_IN_CONTAINER)
 DOCKER_BUILDER       	:= infoblox/buildtool:v8
-DOCKER_GENERATOR     	:= infoblox/atlas-gentool:v1
+DOCKER_GENERATOR     	:= infoblox/atlas-gentool:v2
 GENERATOR            	:= $(DOCKER_RUNNER) $(DOCKER_GENERATOR)
 
 BUILD_TYPE ?= "default"

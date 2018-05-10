@@ -7,7 +7,7 @@ import (
 func init() {
 	forward_Contacts_Create_0 = gw.ForwardResponseMessage
 
-	forward_Contacts_Get_0 = gw.ForwardResponseMessage
+	forward_Contacts_Read_0 = gw.ForwardResponseMessage
 
 	forward_Contacts_Update_0 = gw.ForwardResponseMessage
 

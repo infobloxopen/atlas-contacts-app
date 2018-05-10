@@ -62,12 +62,12 @@
     },
     "/contacts/{id}": {
       "get": {
-        "operationId": "Get",
+        "operationId": "Read",
         "responses": {
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/contactsGetContactResponse"
+              "$ref": "#/definitions/contactsReadContactResponse"
             }
           }
         },
@@ -205,14 +205,6 @@
         }
       }
     },
-    "contactsGetContactResponse": {
-      "type": "object",
-      "properties": {
-        "result": {
-          "$ref": "#/definitions/apicontactsContact"
-        }
-      }
-    },
     "contactsListContactsResponse": {
       "type": "object",
       "properties": {
@@ -221,6 +213,14 @@
           "items": {
             "$ref": "#/definitions/apicontactsContact"
           }
+        }
+      }
+    },
+    "contactsReadContactResponse": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/definitions/apicontactsContact"
         }
       }
     },
