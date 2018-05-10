@@ -1,7 +1,0 @@
-FROM ubuntu:16.04
-
-WORKDIR /app
-
-COPY bin/server bin/server
-
-ENTRYPOINT ["bin/server"]

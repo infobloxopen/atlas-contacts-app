@@ -7,7 +7,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"google.golang.org/grpc"
 
-	pb "github.com/infobloxopen/atlas-contacts-app/pb/contacts"
+	pb "github.com/infobloxopen/atlas-contacts-app/pkg/pb"
 )
 
 // NewAtlasContactsAppHandler returns an HTTP handler that serves the gRPC gateway

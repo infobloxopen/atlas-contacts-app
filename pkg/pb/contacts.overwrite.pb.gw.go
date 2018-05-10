@@ -1,4 +1,4 @@
-package contacts
+package pb
 
 import (
 	"github.com/infobloxopen/atlas-app-toolkit/gw"

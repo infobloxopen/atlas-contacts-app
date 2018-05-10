@@ -2,112 +2,108 @@ PROJECT_ROOT		:= github.com/infobloxopen/atlas-contacts-app
 BUILD_PATH  		:= bin
 DOCKERFILE_PATH		:= $(CURDIR)/docker
 
-IMAGE_VERSION		?= latest
+# configuration for image names
+USERNAME        := $(USER)
+GIT_COMMIT      := $(shell git describe --dirty=-unsupported --always || echo pre-commit)
+IMAGE_VERSION   ?= $(USERNAME)-dev-$(GIT_COMMIT)
+IMAGE_REGISTRY  ?= infoblox
 
+# configuration for server binary and image
 SERVER_BINARY 		:= $(BUILD_PATH)/server
-SERVER_PATH 		:= $(PROJECT_ROOT)/cmd/server
-SERVER_IMAGE		:= infoblox/contacts-server:$(IMAGE_VERSION)
-SERVER_DOCKERFILE 	:= $(DOCKERFILE_PATH)/Dockerfile.contacts-server
+SERVER_PATH 			:= $(PROJECT_ROOT)/cmd/server
+SERVER_IMAGE			:= $(IMAGE_REGISTRY)/contacts
+SERVER_DOCKERFILE := $(DOCKERFILE_PATH)/Dockerfile.server
 
-GATEWAY_BINARY 		:= $(BUILD_PATH)/gateway
-GATEWAY_PATH		:= $(PROJECT_ROOT)/cmd/gateway
-GATEWAY_IMAGE		:= infoblox/contacts-gateway:$(IMAGE_VERSION)
-GATEWAY_DOCKERFILE 	:= $(DOCKERFILE_PATH)/Dockerfile.contacts-gateway
+# configuration for gateway binary and image
+GATEWAY_BINARY 	   := $(BUILD_PATH)/gateway
+GATEWAY_PATH		   := $(PROJECT_ROOT)/cmd/gateway
+GATEWAY_IMAGE		   := $(IMAGE_REGISTRY)/contacts-gateway
+GATEWAY_DOCKERFILE := $(DOCKERFILE_PATH)/Dockerfile.gateway
 
-GO_PATH              	:= /go
-SRCROOT_ON_HOST      	:= $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))
-SRCROOT_IN_CONTAINER	:= $(GO_PATH)/src/$(PROJECT_ROOT)
-GO_CACHE             	:= -pkgdir $(SRCROOT_IN_CONTAINER)/$(BUILD_PATH)/go-cache
-
+# configuration for the protobuf gentool
+SRCROOT_ON_HOST		:= $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))
+SRCROOT_IN_CONTAINER	:= /go/src/$(PROJECT_ROOT)
 DOCKER_RUNNER        	:= docker run --rm
 DOCKER_RUNNER        	+= -v $(SRCROOT_ON_HOST):$(SRCROOT_IN_CONTAINER)
-DOCKER_BUILDER       	:= infoblox/buildtool:v8
-DOCKER_GENERATOR     	:= infoblox/atlas-gentool:v2
-GENERATOR            	:= $(DOCKER_RUNNER) $(DOCKER_GENERATOR)
+DOCKER_GENERATOR	:= infoblox/atlas-gentool:v2
+GENERATOR		:= $(DOCKER_RUNNER) $(DOCKER_GENERATOR)
 
-BUILD_TYPE ?= "default"
-ifeq ($(BUILD_TYPE), "default")
-	BUILDER        := $(DOCKER_RUNNER) -w $(SRCROOT_IN_CONTAINER) $(DOCKER_BUILDER)
-endif
+# configuration for the database
+DATBASE_ADDRESS		:= localhost:5432
 
+# configuration for building on host machine
+GO_CACHE		:= -pkgdir $(BUILD_PATH)/go-cache
 GO_BUILD_FLAGS		?= $(GO_CACHE) -i -v
 GO_TEST_FLAGS		?= -v -cover
-GO_TEST_PACKAGES	:= $(shell $(BUILDER) go list ./... | grep -v "./vendor/")
-SEARCH_GOFILES		:= $(BUILDER) find . -not -path '*/vendor/*' -type f -name "*.go"
-
-.PHONY: default
-default: test server gateway
+GO_PACKAGES		:= $(shell go list ./... | grep -v vendor)
 
 .PHONY: all
-all: vendor protobuf test server gateway
+all: vendor protobuf server-docker gateway-docker
 
 .PHONY: fmt
 fmt:
-	@$(SEARCH_GOFILES) -exec gofmt -s -w {} \;
+	@go fmt $(GO_PACKAGES)
 
 .PHONY: test
 test: fmt
-	@$(BUILDER) go test $(GO_TEST_FLAGS) $(GO_TEST_PACKAGES)
-
-.PHONY: server
-server: server-build server-docker
-
-.PHONY: server-build
-server-build:
-	@$(BUILDER) go build $(GO_BUILD_FLAGS) -o $(SERVER_BINARY) $(SERVER_PATH)
+	@go test $(GO_TEST_FLAGS) $(GO_PACKAGES)
 
 .PHONY: server-docker
-server-docker: server-build
-	@docker build -f $(SERVER_DOCKERFILE) -t $(SERVER_IMAGE) .
-
-.PHONY: gateway
-gateway: gateway-build gateway-docker
-	@$(BUILDER) go build $(GO_BUILD_FLAGS) -o $(SERVER_BINARY) $(SERVER_PATH)
-
-.PHONY: gateway-build
-gateway-build:
-	@$(BUILDER) go build $(GO_BUILD_FLAGS) -o $(GATEWAY_BINARY) $(GATEWAY_PATH)
+server-docker:
+	@docker build -f $(SERVER_DOCKERFILE) -t $(SERVER_IMAGE):$(IMAGE_VERSION) .
 
 .PHONY: gateway-docker
 gateway-docker:
-	@docker build -f $(GATEWAY_DOCKERFILE) -t $(GATEWAY_IMAGE) .
+	@docker build -f $(GATEWAY_DOCKERFILE) -t $(GATEWAY_IMAGE):$(IMAGE_VERSION) .
+
+.PHONY: push
+push:
+	@docker push $(SERVER_IMAGE)
+	@docker push $(GATEWAY_IMAGE)
 
 .PHONY: protobuf
 protobuf:
 	@$(GENERATOR) \
 	--go_out=plugins=grpc:. \
 	--grpc-gateway_out=logtostderr=true:. \
-	--validate_out="lang=go:." \
 	--gorm_out=. \
-	--swagger_out=:. $(PROJECT_ROOT)/proto/contacts.proto
+	--validate_out="lang=go:." \
+	--swagger_out=:. $(PROJECT_ROOT)/pkg/pb/contacts.proto
 
 .PHONY: vendor
 vendor:
-	$(BUILDER) dep ensure -vendor-only
+	@dep ensure -vendor-only
 
 .PHONY: vendor-update
 vendor-update:
-	$(BUILDER) dep ensure
+	@dep ensure
 
-.PHONY: image
-image: server gateway
+.PHONY: clean
+clean:
+	@docker rmi -f $(shell docker images -q $(SERVER_IMAGE)) || true
+	@docker rmi -f $(shell docker images -q $(GATEWAY_IMAGE)) || true
+	@docker rmi `docker images --filter "label=intermediate=true" -q`
 
-.PHONY: image-clean
-image-clean:
-	docker rmi -f $(SERVER_IMAGE) $(GATEWAY_IMAGE)
+.PHONY: migrate-up
+migrate-up:
+	@migrate -database 'postgres://$(DATABASE_ADDRESS)/contacts?sslmode=disable' -path ./db/migrations up
+
+.PHONY: migrate-down
+migrate-down:
+	@migrate -database 'postgres://$(DATABASE_ADDRESS)/contacts?sslmode=disable' -path ./db/migrations down
 
 .PHONY: up
 up:
-	kubectl apply -f kube/kube.yaml
+	kubectl apply -f deploy/kube.yaml
 
 .PHONY: down
 down:
-	kubectl delete -f kube/kube.yaml
+	kubectl delete -f deploy/kube.yaml
 
 .PHONY: nginx-up
 nginx-up:
-	kubectl apply -f kube/nginx.yaml
+	kubectl apply -f deploy/nginx.yaml
 
 .PHONY: nginx-down
 nginx-down:
-	kubectl delete -f kube/nginx.yaml
+	kubectl delete -f deploy/nginx.yaml
