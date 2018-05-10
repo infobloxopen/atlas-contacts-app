@@ -11,8 +11,8 @@ It has these top-level messages:
 	Contact
 	CreateContactRequest
 	CreateContactResponse
-	GetContactRequest
-	GetContactResponse
+	ReadContactRequest
+	ReadContactResponse
 	UpdateContactRequest
 	UpdateContactResponse
 	DeleteContactRequest
@@ -29,7 +29,7 @@ import ops "github.com/infobloxopen/atlas-app-toolkit/op/gorm"
 
 import fmt "fmt"
 import math "math"
-import _ "github.com/golang/protobuf/ptypes/empty"
+import google_protobuf "github.com/golang/protobuf/ptypes/empty"
 import _ "google.golang.org/genproto/googleapis/api/annotations"
 import _ "github.com/lyft/protoc-gen-validate/validate"
 import _ "github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger/options"
@@ -52,28 +52,63 @@ func (ContactORM) TableName() string {
 	return "contacts"
 }
 
-// ConvertContactToORM takes a pb object and returns an orm object
-func ConvertContactToORM(from Contact) (ContactORM, error) {
+// ToORM adds a pb object function that returns an orm object
+func (m *Contact) ToORM() (ContactORM, error) {
 	to := ContactORM{}
+	if prehook, ok := interface{}(m).(ContactWithBeforeToORM); ok {
+		prehook.BeforeToORM(&to)
+	}
 	var err error
-	to.Id = from.Id
-	to.FirstName = from.FirstName
-	to.MiddleName = from.MiddleName
-	to.LastName = from.LastName
-	to.EmailAddress = from.EmailAddress
+	to.Id = m.Id
+	to.FirstName = m.FirstName
+	to.MiddleName = m.MiddleName
+	to.LastName = m.LastName
+	to.EmailAddress = m.EmailAddress
+	if posthook, ok := interface{}(m).(ContactWithAfterToORM); ok {
+		posthook.AfterToORM(&to)
+	}
 	return to, err
 }
 
-// ConvertContactFromORM takes an orm object and returns a pb object
-func ConvertContactFromORM(from ContactORM) (Contact, error) {
+// FromORM returns a pb object
+func (m *ContactORM) ToPB() (Contact, error) {
 	to := Contact{}
+	if prehook, ok := interface{}(m).(ContactWithBeforeToPB); ok {
+		prehook.BeforeToPB(&to)
+	}
 	var err error
-	to.Id = from.Id
-	to.FirstName = from.FirstName
-	to.MiddleName = from.MiddleName
-	to.LastName = from.LastName
-	to.EmailAddress = from.EmailAddress
+	to.Id = m.Id
+	to.FirstName = m.FirstName
+	to.MiddleName = m.MiddleName
+	to.LastName = m.LastName
+	to.EmailAddress = m.EmailAddress
+	if posthook, ok := interface{}(m).(ContactWithAfterToPB); ok {
+		posthook.AfterToPB(&to)
+	}
 	return to, err
+}
+
+// The following are interfaces you can implement for special behavior during ORM/PB conversions
+// of type Contact the arg will be the target, the caller the one being converted from
+
+// ContactBeforeToORM called before default ToORM code
+type ContactWithBeforeToORM interface {
+	BeforeToORM(*ContactORM)
+}
+
+// ContactAfterToORM called after default ToORM code
+type ContactWithAfterToORM interface {
+	AfterToORM(*ContactORM)
+}
+
+// ContactBeforeToPB called before default ToPB code
+type ContactWithBeforeToPB interface {
+	BeforeToPB(*Contact)
+}
+
+// ContactAfterToPB called after default ToPB code
+type ContactWithAfterToPB interface {
+	AfterToPB(*Contact)
 }
 
 ////////////////////////// CURDL for objects
@@ -82,14 +117,14 @@ func DefaultCreateContact(ctx context.Context, in *Contact, db *gorm.DB) (*Conta
 	if in == nil {
 		return nil, errors.New("Nil argument to DefaultCreateContact")
 	}
-	ormObj, err := ConvertContactToORM(*in)
+	ormObj, err := in.ToORM()
 	if err != nil {
 		return nil, err
 	}
 	if err = db.Create(&ormObj).Error; err != nil {
 		return nil, err
 	}
-	pbResponse, err := ConvertContactFromORM(ormObj)
+	pbResponse, err := ormObj.ToPB()
 	return &pbResponse, err
 }
 
@@ -98,7 +133,7 @@ func DefaultReadContact(ctx context.Context, in *Contact, db *gorm.DB) (*Contact
 	if in == nil {
 		return nil, errors.New("Nil argument to DefaultReadContact")
 	}
-	ormParams, err := ConvertContactToORM(*in)
+	ormParams, err := in.ToORM()
 	if err != nil {
 		return nil, err
 	}
@@ -106,7 +141,7 @@ func DefaultReadContact(ctx context.Context, in *Contact, db *gorm.DB) (*Contact
 	if err = db.Set("gorm:auto_preload", true).Where(&ormParams).First(&ormResponse).Error; err != nil {
 		return nil, err
 	}
-	pbResponse, err := ConvertContactFromORM(ormResponse)
+	pbResponse, err := ormResponse.ToPB()
 	return &pbResponse, err
 }
 
@@ -115,14 +150,14 @@ func DefaultUpdateContact(ctx context.Context, in *Contact, db *gorm.DB) (*Conta
 	if in == nil {
 		return nil, errors.New("Nil argument to DefaultUpdateContact")
 	}
-	ormObj, err := ConvertContactToORM(*in)
+	ormObj, err := in.ToORM()
 	if err != nil {
 		return nil, err
 	}
 	if err = db.Save(&ormObj).Error; err != nil {
 		return nil, err
 	}
-	pbResponse, err := ConvertContactFromORM(ormObj)
+	pbResponse, err := ormObj.ToPB()
 	return &pbResponse, err
 }
 
@@ -130,7 +165,7 @@ func DefaultDeleteContact(ctx context.Context, in *Contact, db *gorm.DB) error {
 	if in == nil {
 		return errors.New("Nil argument to DefaultDeleteContact")
 	}
-	ormObj, err := ConvertContactToORM(*in)
+	ormObj, err := in.ToORM()
 	if err != nil {
 		return err
 	}
@@ -150,7 +185,7 @@ func DefaultListContact(ctx context.Context, db *gorm.DB) ([]*Contact, error) {
 	}
 	pbResponse := []*Contact{}
 	for _, responseEntry := range ormResponse {
-		temp, err := ConvertContactFromORM(responseEntry)
+		temp, err := responseEntry.ToPB()
 		if err != nil {
 			return nil, err
 		}
@@ -164,16 +199,66 @@ func DefaultStrictUpdateContact(ctx context.Context, in *Contact, db *gorm.DB) (
 	if in == nil {
 		return nil, fmt.Errorf("Nil argument to DefaultCascadedUpdateContact")
 	}
-	ormObj, err := ConvertContactToORM(*in)
+	ormObj, err := in.ToORM()
 	if err != nil {
 		return nil, err
 	}
 	if err = db.Save(&ormObj).Error; err != nil {
 		return nil, err
 	}
-	pbResponse, err := ConvertContactFromORM(ormObj)
+	pbResponse, err := ormObj.ToPB()
 	if err != nil {
 		return nil, err
 	}
 	return &pbResponse, nil
+}
+
+type ContactsDefaultServer struct {
+	DB *gorm.DB
+}
+
+// Create ...
+func (m *ContactsDefaultServer) Create(ctx context.Context, in *CreateContactRequest) (*CreateContactResponse, error) {
+	res, err := DefaultCreateContact(ctx, in.GetPayload(), m.DB)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateContactResponse{Result: res}, nil
+}
+
+// Read ...
+func (m *ContactsDefaultServer) Read(ctx context.Context, in *ReadContactRequest) (*ReadContactResponse, error) {
+	res, err := DefaultReadContact(ctx, &Contact{Id: in.GetId()}, m.DB)
+	if err != nil {
+		return nil, err
+	}
+	return &ReadContactResponse{Result: res}, nil
+}
+
+// Update ...
+func (m *ContactsDefaultServer) Update(ctx context.Context, in *UpdateContactRequest) (*UpdateContactResponse, error) {
+	res, err := DefaultStrictUpdateContact(ctx, in.GetPayload(), m.DB)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateContactResponse{Result: res}, nil
+}
+
+// Delete ...
+func (m *ContactsDefaultServer) Delete(ctx context.Context, in *DeleteContactRequest) (*google_protobuf.Empty, error) {
+	return &google_protobuf.Empty{}, DefaultDeleteContact(ctx, &Contact{Id: in.GetId()}, m.DB)
+}
+
+// List ...
+func (m *ContactsDefaultServer) List(ctx context.Context, in *google_protobuf.Empty) (*ListContactsResponse, error) {
+	res, err := DefaultListContact(ctx, m.DB)
+	if err != nil {
+		return nil, err
+	}
+	return &ListContactsResponse{Results: res}, nil
+}
+
+// SendSMS ...
+func (m *ContactsDefaultServer) SendSMS(ctx context.Context, in *SMSRequest) (*google_protobuf.Empty, error) {
+	return &google_protobuf.Empty{}, nil
 }

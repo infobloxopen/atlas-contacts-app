@@ -27,11 +27,11 @@ message CreateContactResponse {
     Contact result = 1;
 }
 
-message GetContactRequest {
+message ReadContactRequest {
     uint64 id = 1;
 }
 
-message GetContactResponse {
+message ReadContactResponse {
     Contact result = 1;
 }
 
@@ -57,7 +57,7 @@ message SMSRequest {
 }
 
 service Contacts {
-    
+    option (gorm.server).autogen = true;    
     rpc Create (CreateContactRequest) returns (CreateContactResponse) {
         option (google.api.http) = {
             post: "/contacts"
@@ -65,7 +65,7 @@ service Contacts {
         };
     }
     
-    rpc Get (GetContactRequest) returns (GetContactResponse) {
+    rpc Read (ReadContactRequest) returns (ReadContactResponse) {
         option (google.api.http) = {
             get: "/contacts/{id}"
         };
@@ -82,6 +82,7 @@ service Contacts {
         option (google.api.http) = {
             delete: "/contacts/{id}"
         };
+        option (gorm.method).object_type = "Contact";
     }
     
     rpc List (google.protobuf.Empty) returns (ListContactsResponse) {
