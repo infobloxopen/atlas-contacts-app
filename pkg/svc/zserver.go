@@ -14,14 +14,6 @@ func NewBasicServer(dsn string) (pb.ContactsServer, error) {
 		return nil, err
 	}
 
-	// This string creates table for Contact objects.
-	// In case you didn't have one already.
-	// This is done to make current example up and running
-	// without having contacts DB configured properly.
-	//if err := db.AutoMigrate(&pb.Contact{}).Error; err != nil {
-	//	return nil, err
-	//}
-
 	return &server{&pb.ContactsDefaultServer{db}}, nil
 }
 

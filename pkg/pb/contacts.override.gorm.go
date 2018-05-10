@@ -1,19 +1,19 @@
 package pb
 
-// BeforeToORM ...
+// BeforeToORM will add the primary e-mail to the list of e-mails if it isn't
+// present already
 func (m *Contact) BeforeToORM(c *ContactORM) {
 	if m.PrimaryEmail != "" {
-		primary := &EmailORM{Address: m.PrimaryEmail, IsPrimary: true}
 		for _, mail := range m.Emails {
-			if mail.Address == primary.Address {
+			if mail.Address == m.PrimaryEmail {
 				return
 			}
 		}
-		c.Emails = append(c.Emails, primary)
+		c.Emails = append(c.Emails, &EmailORM{Address: m.PrimaryEmail, IsPrimary: true})
 	}
 }
 
-// AfterToPB move the primary e-mail to the special field
+// AfterToPB copies the primary e-mail address from the DB to the special PB field
 func (m *ContactORM) AfterToPB(c *Contact) {
 	if len(m.Emails) == 0 {
 		return
