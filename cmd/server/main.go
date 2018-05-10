@@ -1,10 +1,8 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"net"
-	"net/http"
 	"time"
 
 	"github.com/grpc-ecosystem/go-grpc-middleware"
@@ -16,16 +14,16 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/infobloxopen/atlas-app-toolkit/health"
-	"github.com/infobloxopen/atlas-contacts-app/cmd/config"
+	"github.com/infobloxopen/atlas-app-toolkit/pkg/appserver"
+	atflag "github.com/infobloxopen/atlas-app-toolkit/pkg/flag"
 	pb "github.com/infobloxopen/atlas-contacts-app/pb/contacts"
 	svc "github.com/infobloxopen/atlas-contacts-app/svc/contacts"
 )
 
 var (
-	Address       string
-	HealthAddress string
-	Dsn           string
-	AuthzAddr     string
+	InitTimeout int64
+	Dsn         string
+	AuthzAddr   string
 )
 
 func main() {
@@ -50,55 +48,57 @@ func main() {
 		)
 	}
 	middleware := grpc_middleware.ChainUnaryServer(interceptors...)
+
 	// create new gRPC server with middleware chain
 	server := grpc.NewServer(
 		grpc.UnaryInterceptor(
 			middleware,
 		),
 	)
-
-	healthChecker := health.NewChecksHandler("/healthz", "/ready")
-	healthChecker.AddReadiness("DB ready check", dbReady)
-	go http.ListenAndServe(HealthAddress, healthChecker.Handler())
-
-	// waiting for database is available.
-	dbCheckContext, cancel := context.WithTimeout(context.Background(), time.Minute*5)
-
-	for {
-		select {
-		case <-time.After(time.Second * 3):
-			if err = dbReady(); err != nil {
-				continue
-			}
-			cancel()
-		case <-dbCheckContext.Done():
-			cancel()
+	// define an initializer function for server initialization
+	initializer := func() error {
+		// register service implementation with the grpc server
+		s, err := svc.NewBasicServer(Dsn)
+		if err != nil {
+			return err
 		}
-		break
-	}
-	if err != nil {
-		logger.Fatalf("Couldn't initialize server due to: %v\n", err)
+		pb.RegisterContactsServer(server, s)
+		return nil
 	}
 
-	// register service implementation with the grpc server
-	s, err := svc.NewBasicServer(Dsn)
+	healthFlags := atflag.NewHealthProbesFlags()
+	grpcFlags := atflag.NewGRPCFlags()
+	flag.Parse()
+
+	var opts []appserver.Option
+
+	// TODO: Provide mechanism for determination of what flags user set
+	// and what he didn't. This is needed to determine whether to include particular option or not.
+	// Simplest method is to remove default values for corresponding flags.
+	healthChecker := health.NewChecksHandler(healthFlags.HealthPath(), healthFlags.ReadyPath())
+
+	opts = append(opts, appserver.WithHealthOptions(healthFlags.Addr(), healthChecker.Handler()))
+	opts = append(opts, appserver.WithGRPC(grpcFlags.Addr(), server))
+
+	initOption := appserver.WithInitializer(initializer, time.Duration(InitTimeout)*time.Second)
+	opts = append(opts, initOption)
+
+	appServer, err := appserver.NewAppServer(opts...)
 	if err != nil {
 		logger.Fatalln(err)
 	}
-	pb.RegisterContactsServer(server, s)
 
-	if err := server.Serve(ln); err != nil {
+	if err = appServer.Serve(); err != nil {
 		logger.Fatalln(err)
 	}
 }
 
 func init() {
 	// default server address; optionally set via command-line flags
-	flag.StringVar(&Address, "address", config.SERVER_ADDRESS, "the gRPC server address")
-	flag.StringVar(&HealthAddress, "health", "0.0.0.0:8089", "Address for health checking")
 	flag.StringVar(&Dsn, "dsn", "", "")
 	flag.StringVar(&AuthzAddr, "authz", "", "address of the authorization service")
-	flag.Parse()
+	flag.Int64Var(&InitTimeout, "init-timeout", 10,
+		"Timeout in seconds needed for initialization procedure to pass")
 }
 
 func dbReady() error {
