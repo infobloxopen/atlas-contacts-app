@@ -82,7 +82,7 @@ vendor-update:
 clean:
 	@docker rmi -f $(shell docker images -q $(SERVER_IMAGE)) || true
 	@docker rmi -f $(shell docker images -q $(GATEWAY_IMAGE)) || true
-	@docker rmi `docker images --filter "label=intermediate=true" -q`
+	@docker rmi -f $(shell docker images --filter "label=intermediate=true" -q) || true
 
 .PHONY: migrate-up
 migrate-up:

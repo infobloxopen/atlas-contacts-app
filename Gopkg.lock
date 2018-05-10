@@ -28,8 +28,7 @@
     "ptypes/duration",
     "ptypes/empty",
     "ptypes/struct",
-    "ptypes/timestamp",
-    "ptypes/wrappers"
+    "ptypes/timestamp"
   ]
   revision = "e09c5db296004fbe3f74490e84dcd62c3c5ddb1b"
 

@@ -5,7 +5,7 @@ CREATE TABLE emails (
   updated_at timestamptz DEFAULT NULL,
   is_primary boolean DEFAULT false,
   address varchar(255) DEFAULT NULL,
-  contact_id int REFERENCES contacts(id)
+  contact_id int REFERENCES contacts(id) ON DELETE CASCADE
 );
 
 CREATE TRIGGER emails_updated_at
