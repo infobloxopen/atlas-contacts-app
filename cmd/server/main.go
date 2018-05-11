@@ -46,7 +46,7 @@ func main() {
 	if AuthzAddr != "" {
 		interceptors = append(interceptors,
 			// authorization interceptor
-			toolkit_auth.DefaultAuthInterceptor(AuthzAddr),
+			toolkit_auth.DefaultAuthInterceptor(AuthzAddr, "contacts"),
 		)
 	}
 	middleware := grpc_middleware.ChainUnaryServer(interceptors...)
