@@ -21,6 +21,13 @@ import (
 	svc "github.com/infobloxopen/atlas-contacts-app/svc/contacts"
 )
 
+const (
+	// applicationID associates a microservice with an application. the atlas
+	// contacts application consists of only one service, so we identify both the
+	// service and the application as "contacts"
+	applicationID = "contacts"
+)
+
 var (
 	Address       string
 	HealthAddress string
@@ -46,7 +53,7 @@ func main() {
 	if AuthzAddr != "" {
 		interceptors = append(interceptors,
 			// authorization interceptor
-			toolkit_auth.DefaultAuthInterceptor(AuthzAddr, "contacts"),
+			toolkit_auth.DefaultAuthInterceptor(AuthzAddr, applicationID),
 		)
 	}
 	middleware := grpc_middleware.ChainUnaryServer(interceptors...)
