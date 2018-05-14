@@ -1,7 +1,0 @@
-FROM ubuntu:16.04
-
-WORKDIR /app
-
-COPY bin/gateway bin/gateway
-
-ENTRYPOINT ["bin/gateway"]

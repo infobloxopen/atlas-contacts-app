@@ -16,22 +16,22 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/infobloxopen/atlas-app-toolkit/health"
-	"github.com/infobloxopen/atlas-contacts-app/cmd/config"
-	pb "github.com/infobloxopen/atlas-contacts-app/pb/contacts"
-	svc "github.com/infobloxopen/atlas-contacts-app/svc/contacts"
+	"github.com/infobloxopen/atlas-contacts-app/cmd"
+	"github.com/infobloxopen/atlas-contacts-app/pkg/pb"
+	"github.com/infobloxopen/atlas-contacts-app/pkg/svc"
 )
 
 var (
-	Address       string
-	HealthAddress string
-	Dsn           string
-	AuthzAddr     string
+	ServerAddress      string
+	HealthAddress      string
+	DBConnectionString string
+	AuthzAddr          string
 )
 
 func main() {
 	logger := logrus.New()
 	// create new tcp listenerf
-	ln, err := net.Listen("tcp", Address)
+	ln, err := net.Listen("tcp", ServerAddress)
 	if err != nil {
 		logger.Fatalln(err)
 	}
@@ -77,16 +77,15 @@ func main() {
 		break
 	}
 	if err != nil {
-		logger.Fatalf("Couldn't initialize server due to: %v\n", err)
+		logger.Fatalln(err)
 	}
 
 	// register service implementation with the grpc server
-	s, err := svc.NewBasicServer(Dsn)
+	s, err := svc.NewBasicServer(DBConnectionString)
 	if err != nil {
 		logger.Fatalln(err)
 	}
 	pb.RegisterContactsServer(server, s)
-
 	if err := server.Serve(ln); err != nil {
 		logger.Fatalln(err)
 	}
@@ -94,15 +93,15 @@ func main() {
 
 func init() {
 	// default server address; optionally set via command-line flags
-	flag.StringVar(&Address, "address", config.SERVER_ADDRESS, "the gRPC server address")
+	flag.StringVar(&ServerAddress, "address", cmd.ServerAddress, "the gRPC server address")
+	flag.StringVar(&DBConnectionString, "db", "", "the database address")
 	flag.StringVar(&HealthAddress, "health", "0.0.0.0:8089", "Address for health checking")
-	flag.StringVar(&Dsn, "dsn", "", "")
 	flag.StringVar(&AuthzAddr, "authz", "", "address of the authorization service")
 	flag.Parse()
 }
 
 func dbReady() error {
-	db, err := gorm.Open("postgres", Dsn)
+	db, err := gorm.Open("postgres", DBConnectionString)
 	if err != nil {
 		return err
 	}

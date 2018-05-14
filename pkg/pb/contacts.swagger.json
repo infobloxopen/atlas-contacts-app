@@ -192,8 +192,14 @@
         "last_name": {
           "type": "string"
         },
-        "email_address": {
+        "primary_email": {
           "type": "string"
+        },
+        "emails": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/contactsEmail"
+          }
         }
       }
     },
@@ -202,6 +208,18 @@
       "properties": {
         "result": {
           "$ref": "#/definitions/apicontactsContact"
+        }
+      }
+    },
+    "contactsEmail": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "address": {
+          "type": "string"
         }
       }
     },

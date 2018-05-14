@@ -8,7 +8,7 @@ import "github.com/lyft/protoc-gen-validate/validate/validate.proto";
 import "protoc-gen-swagger/options/annotations.proto";
 import "github.com/infobloxopen/protoc-gen-gorm/options/gorm.proto";
 
-option go_package = "github.com/infobloxopen/atlas-contacts-app/pb/contacts;contacts";
+option go_package = "github.com/infobloxopen/atlas-contacts-app/pkg/pb;pb";
 
 message Contact {
     option (gorm.opts).ormable = true;
@@ -16,7 +16,18 @@ message Contact {
     string first_name = 2;
     string middle_name = 3;
     string last_name = 4;
-    string email_address = 5 [(validate.rules).string.email = true];
+    string primary_email = 6 [(gorm.field).drop = true, (validate.rules).string.email = true];
+    repeated Email emails = 7;
+}
+
+message Email {
+    option (gorm.opts) = {
+      ormable: true,
+      include: [
+      {type: "bool", name: "is_primary"}, {type: "uint64", name: "Contact_id"}]
+    };
+    uint64 id = 1;
+    string address = 2 [(validate.rules).string.email = true];
 }
 
 message CreateContactRequest {
@@ -57,34 +68,34 @@ message SMSRequest {
 }
 
 service Contacts {
-    option (gorm.server).autogen = true;    
+    option (gorm.server).autogen = true;
     rpc Create (CreateContactRequest) returns (CreateContactResponse) {
         option (google.api.http) = {
             post: "/contacts"
             body: "payload"
         };
     }
-    
+
     rpc Read (ReadContactRequest) returns (ReadContactResponse) {
         option (google.api.http) = {
             get: "/contacts/{id}"
         };
     }
-    
+
     rpc Update (UpdateContactRequest) returns (UpdateContactResponse) {
         option (google.api.http) = {
             put: "/contacts/{payload.id}"
             body: "payload"
         };
     }
-    
+
     rpc Delete (DeleteContactRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
             delete: "/contacts/{id}"
         };
         option (gorm.method).object_type = "Contact";
     }
-    
+
     rpc List (google.protobuf.Empty) returns (ListContactsResponse) {
         option (google.api.http) = {
             get: "/contacts"
