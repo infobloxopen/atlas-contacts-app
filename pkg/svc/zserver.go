@@ -7,9 +7,9 @@ import (
 	pb "github.com/infobloxopen/atlas-contacts-app/pkg/pb"
 )
 
-// NewBasicServer constructs a new BasicServer and connects to a postgres db
-func NewBasicServer(db *gorm.DB) (pb.ContactsServer, error) {
-	return &server{&pb.ContactsDefaultServer{db}}, nil
+// NewBasicServer returns an instance of the default server interface
+func NewBasicServer(database *gorm.DB) (pb.ContactsServer, error) {
+	return &pb.ContactsDefaultServer{DB: database}, nil
 }
 
 type server struct {
