@@ -68,8 +68,8 @@ metadata:
   labels:
     pargset: authz
 operations:
-  - List
-  - Get
+  - Contacts.List
+  - Contacts.Get
 ---
 apiVersion: infoblox.com/v1
 kind: Permission
@@ -79,7 +79,7 @@ metadata:
   labels:
     pargset: authz
 operations:
-  - Create
-  - Update
-  - Delete
-  - SendSMS
+  - Contacts.Create
+  - Contacts.Update
+  - Contacts.Delete
+  - Contacts.SendSMS

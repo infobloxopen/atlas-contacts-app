@@ -74,14 +74,14 @@
 [[projects]]
   name = "github.com/infobloxopen/atlas-app-toolkit"
   packages = [
-    "gw",
+    "auth",
+    "gateway",
+    "gorm",
     "health",
-    "mw/auth",
-    "op",
-    "op/gorm"
+    "query"
   ]
-  revision = "be6ab7944a3944d29225baeeb143ad9e6241e710"
-  version = "v0.3.0"
+  revision = "15c62e35fecc14720fcfc0df37ca46338af14ceb"
+  version = "v0.4.0"
 
 [[projects]]
   branch = "master"
@@ -251,6 +251,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "43716e2cbe0f15d6d1a87db1e217f61815e05ab80d85cd3beb31c2237e29eb50"
+  inputs-digest = "e530ce10aab9b67cdd878dbc3868573a160f536cf7f5c8951b8ed02f02a4f498"
   solver-name = "gps-cdcl"
   solver-version = 1

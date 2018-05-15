@@ -10,7 +10,7 @@ import (
 	"github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
 	"github.com/grpc-ecosystem/go-grpc-middleware/validator"
-	toolkit_auth "github.com/infobloxopen/atlas-app-toolkit/mw/auth"
+	toolkit_auth "github.com/infobloxopen/atlas-app-toolkit/auth"
 	"github.com/jinzhu/gorm"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -26,6 +26,13 @@ var (
 	HealthAddress      string
 	DBConnectionString string
 	AuthzAddr          string
+)
+
+const (
+	// applicationID associates a microservice with an application. the atlas
+	// contacts application consists of only one service, so we identify both the
+	// service and the application as "contacts"
+	applicationID = "contacts"
 )
 
 func main() {
@@ -46,7 +53,7 @@ func main() {
 	if AuthzAddr != "" {
 		interceptors = append(interceptors,
 			// authorization interceptor
-			toolkit_auth.DefaultAuthInterceptor(AuthzAddr),
+			toolkit_auth.UnaryServerInterceptor(AuthzAddr, applicationID),
 		)
 	}
 	middleware := grpc_middleware.ChainUnaryServer(interceptors...)
