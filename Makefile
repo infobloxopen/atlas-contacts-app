@@ -11,7 +11,7 @@ IMAGE_REGISTRY  ?= infoblox
 # configuration for server binary and image
 SERVER_BINARY 		:= $(BUILD_PATH)/server
 SERVER_PATH 			:= $(PROJECT_ROOT)/cmd/server
-SERVER_IMAGE			:= $(IMAGE_REGISTRY)/contacts
+SERVER_IMAGE			:= $(IMAGE_REGISTRY)/contacts-server
 SERVER_DOCKERFILE := $(DOCKERFILE_PATH)/Dockerfile.server
 
 # configuration for gateway binary and image

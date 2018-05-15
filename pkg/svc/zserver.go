@@ -8,12 +8,7 @@ import (
 )
 
 // NewBasicServer constructs a new BasicServer and connects to a postgres db
-func NewBasicServer(dsn string) (pb.ContactsServer, error) {
-	db, err := gorm.Open("postgres", dsn)
-	if err != nil {
-		return nil, err
-	}
-
+func NewBasicServer(db *gorm.DB) (pb.ContactsServer, error) {
 	return &server{&pb.ContactsDefaultServer{db}}, nil
 }
 

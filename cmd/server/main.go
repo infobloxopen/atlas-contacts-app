@@ -86,9 +86,15 @@ func main() {
 	if err != nil {
 		logger.Fatalln(err)
 	}
+	db, err := gorm.Open("postgres", DBConnectionString)
+	if err != nil {
+		logger.Fatalln(err)
+	}
 
-	// register service implementation with the grpc server
-	s, err := svc.NewBasicServer(DBConnectionString)
+	if err := db.AutoMigrate(&pb.ContactORM{}, &pb.EmailORM{}).Error; err != nil {
+		logger.Fatalln(err)
+	}
+	s, err := svc.NewBasicServer(db)
 	if err != nil {
 		logger.Fatalln(err)
 	}
