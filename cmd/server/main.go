@@ -91,6 +91,9 @@ func main() {
 		logger.Fatalln(err)
 	}
 
+	// NOTE: Using db.AutoMigrate is a temporary measure to structure the contacts
+	// database schema. The atlas-app-toolkit team will come up with a better
+	// solution that uses database migration files.
 	if err := db.AutoMigrate(&pb.ContactORM{}, &pb.EmailORM{}).Error; err != nil {
 		logger.Fatalln(err)
 	}
