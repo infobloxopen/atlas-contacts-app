@@ -11,7 +11,7 @@ IMAGE_REGISTRY  ?= infoblox
 # configuration for server binary and image
 SERVER_BINARY 		:= $(BUILD_PATH)/server
 SERVER_PATH 			:= $(PROJECT_ROOT)/cmd/server
-SERVER_IMAGE			:= $(IMAGE_REGISTRY)/contacts
+SERVER_IMAGE			:= $(IMAGE_REGISTRY)/contacts-server
 SERVER_DOCKERFILE := $(DOCKERFILE_PATH)/Dockerfile.server
 
 # configuration for gateway binary and image
@@ -25,7 +25,7 @@ SRCROOT_ON_HOST		:= $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))
 SRCROOT_IN_CONTAINER	:= /go/src/$(PROJECT_ROOT)
 DOCKER_RUNNER        	:= docker run --rm
 DOCKER_RUNNER        	+= -v $(SRCROOT_ON_HOST):$(SRCROOT_IN_CONTAINER)
-DOCKER_GENERATOR	:= infoblox/atlas-gentool:v2
+DOCKER_GENERATOR	:= infoblox/atlas-gentool:v3
 GENERATOR		:= $(DOCKER_RUNNER) $(DOCKER_GENERATOR)
 
 # configuration for the database

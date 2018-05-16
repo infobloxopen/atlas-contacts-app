@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/infobloxopen/atlas-app-toolkit/gw"
+	"github.com/infobloxopen/atlas-app-toolkit/gateway"
 	"github.com/infobloxopen/atlas-app-toolkit/health"
 	"github.com/infobloxopen/atlas-contacts-app/cmd"
 )
@@ -27,8 +27,8 @@ var (
 
 func main() {
 	// create HTTP handler for gateway
-	errHandler := runtime.WithProtoErrorHandler(gw.ProtoMessageErrorHandler)
-	opHandler := runtime.WithMetadata(gw.MetadataAnnotator)
+	errHandler := runtime.WithProtoErrorHandler(gateway.ProtoMessageErrorHandler)
+	opHandler := runtime.WithMetadata(gateway.MetadataAnnotator)
 	serverHandler, err := NewAtlasContactsAppHandler(context.Background(), ServerAddress, errHandler, opHandler)
 	// strip all but trailing "/" on incoming requests
 	serverHandler = http.StripPrefix(
