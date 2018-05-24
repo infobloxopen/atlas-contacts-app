@@ -51,17 +51,29 @@ Run GRPC gateway:
 
 #### Try atlas-contacts-app
 
-``` sh
-curl http://localhost:8080/atlas-contacts-app/v1/contacts -d '{"first_name": "Mike", "email_address": "mike@gmail.com"}'
+For Multi-Account environment, Authorization token is required. You can generate it using https://jwt.io/ with following Payload:
+```
+{
+  "AccountID": YourAccountID
+}
 ```
 
 ``` sh
-curl http://localhost:8080/atlas-contacts-app/v1/contacts -d '{"first_name": "Bob", "email_address": "john@gmail.com"}'
+curl -H "Grpc-Metadata-Authorization: Token $JWT" \
+http://localhost:8080/atlas-contacts-app/v1/contacts -d '{"first_name": "Mike", "email_address": "mike@gmail.com"}'
 ```
 
 ``` sh
-curl http://localhost:8080/atlas-contacts-app/v1/contacts?_filter='first_name=="Mike"'
+curl -H "Grpc-Metadata-Authorization: Token $JWT" \
+http://localhost:8080/atlas-contacts-app/v1/contacts -d '{"first_name": "Bob", "email_address": "john@gmail.com"}'
 ```
+
+``` sh
+curl -H "Grpc-Metadata-Authorization: Token $JWT" \
+http://localhost:8080/atlas-contacts-app/v1/contacts?_filter='first_name=="Mike"'
+```
+
+Note, that JWT should contain AccountID field.
 
 #### Local Kubernetes setup
 
@@ -91,6 +103,17 @@ or
 kubectl create ns contacts
 ```
 
+To enable multiaccounting example, run following command:
+
+``` sh
+make auths-up
+```
+
+which will start AuthS[Tub] that maps `Username` header on JWT tokens, with following meaning:
+
+admin1: AccountID=1
+admin2: AccountID=2
+
 ##### Deployment
 
 To deploy atlas-contacts-app use
@@ -110,15 +133,18 @@ kubectl apply -f kube/kube.yaml
 Try it out by executing following curl commangs:
 
 ``` sh
-curl https://minikube/atlas-contacts-app/v1/contacts -d '{"first_name": "Mike", "email_address": "mike@gmail.com"}'
+curl -H "Username: admin1" \
+https://minikube/atlas-contacts-app/v1/contacts -d '{"first_name": "Mike", "email_address": "mike@gmail.com"}'
 ```
 
 ``` sh
-curl https://minikube/atlas-contacts-app/v1/contacts -d '{"first_name": "Bob", "email_address": "john@gmail.com"}'
+curl -H "Username: admin1" \
+https://minikube/atlas-contacts-app/v1/contacts -d '{"first_name": "Bob", "email_address": "john@gmail.com"}'
 ```
 
 ``` sh
-curl https://minikube/atlas-contacts-app/v1/contacts?_filter='first_name=="Mike"'
+curl -H "Username: admin1" \
+https://minikube/atlas-contacts-app/v1/contacts?_filter='first_name=="Mike"'
 ```
 
 ## Deployment
