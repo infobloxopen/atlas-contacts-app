@@ -20,10 +20,16 @@ GATEWAY_PATH		   := $(PROJECT_ROOT)/cmd/gateway
 GATEWAY_IMAGE		   := $(IMAGE_REGISTRY)/contacts-gateway
 GATEWAY_DOCKERFILE := $(DOCKERFILE_PATH)/Dockerfile.gateway
 
+# configuration for gateway binary and image
+AUTHS_BINARY 	   := $(BUILD_PATH)/auths
+AUTHS_PATH		   := $(PROJECT_ROOT)/cmd/auths
+AUTHS_IMAGE		   := $(IMAGE_REGISTRY)/contacts-auths
+AUTHS_DOCKERFILE := $(DOCKERFILE_PATH)/Dockerfile.auths
+
 # configuration for the protobuf gentool
 SRCROOT_ON_HOST		:= $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))
 SRCROOT_IN_CONTAINER	:= /go/src/$(PROJECT_ROOT)
-DOCKER_RUNNER        	:= docker run --rm
+DOCKER_RUNNER        	:= docker run --privileged --rm
 DOCKER_RUNNER        	+= -v $(SRCROOT_ON_HOST):$(SRCROOT_IN_CONTAINER)
 DOCKER_GENERATOR	:= infoblox/atlas-gentool:v3
 GENERATOR		:= $(DOCKER_RUNNER) $(DOCKER_GENERATOR)
@@ -38,7 +44,7 @@ GO_TEST_FLAGS		?= -v -cover
 GO_PACKAGES		:= $(shell go list ./... | grep -v vendor)
 
 .PHONY: all
-all: vendor protobuf server-docker gateway-docker
+all: vendor protobuf server-docker gateway-docker auths-docker
 
 .PHONY: fmt
 fmt:
@@ -56,10 +62,15 @@ server-docker:
 gateway-docker:
 	@docker build -f $(GATEWAY_DOCKERFILE) -t $(GATEWAY_IMAGE):$(IMAGE_VERSION) .
 
+.PHONY: auths-docker
+auths-docker:
+	@docker build -f $(AUTHS_DOCKERFILE) -t $(AUTHS_IMAGE):$(IMAGE_VERSION) .
+
 .PHONY: push
 push:
 	@docker push $(SERVER_IMAGE)
 	@docker push $(GATEWAY_IMAGE)
+	@docker push $(AUTHS_IMAGE)
 
 .PHONY: protobuf
 protobuf:
@@ -82,6 +93,7 @@ vendor-update:
 clean:
 	@docker rmi -f $(shell docker images -q $(SERVER_IMAGE)) || true
 	@docker rmi -f $(shell docker images -q $(GATEWAY_IMAGE)) || true
+	@docker rmi -f $(shell docker images -q $(AUTHS_IMAGE)) || true
 	@docker rmi -f $(shell docker images --filter "label=intermediate=true" -q) || true
 
 .PHONY: migrate-up
@@ -107,3 +119,11 @@ nginx-up:
 .PHONY: nginx-down
 nginx-down:
 	kubectl delete -f deploy/nginx.yaml
+
+.PHONY: auths-up
+auths-up:
+	kubectl apply -f deploy/auths.yaml
+
+.PHONY: auths-down
+auths-down:
+	kubectl delete -f deploy/auths.yaml
