@@ -21,7 +21,7 @@ metadata:
   namespace: contacts
   name: contacts-app-ingress
   annotations:
-    ingress.kubernetes.io/auth-url: http://auths.contacts.svc.cluster.local/auth
+    ingress.kubernetes.io/auth-url: http://authn-stub.atlas-stubs.svc.cluster.local/auth
     ingress.kubernetes.io/auth-response-headers: Grpc-Metadata-Authorization
 spec:
   rules:

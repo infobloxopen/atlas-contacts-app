@@ -106,10 +106,10 @@ kubectl create ns contacts
 To enable multiaccounting example, run following command:
 
 ``` sh
-make auths-up
+make authn-stub-up
 ```
 
-which will start AuthS[Tub] that maps `Username` header on JWT tokens, with following meaning:
+which will start AuthN stub that maps `User-And-Pass` header on JWT tokens, with following meaning:
 
 admin1: AccountID=1
 admin2: AccountID=2
@@ -133,17 +133,17 @@ kubectl apply -f kube/kube.yaml
 Try it out by executing following curl commangs:
 
 ``` sh
-curl -H "Username: admin1" \
+curl -H "User-And-Pass: admin1:admin" \
 https://minikube/atlas-contacts-app/v1/contacts -d '{"first_name": "Mike", "email_address": "mike@gmail.com"}'
 ```
 
 ``` sh
-curl -H "Username: admin1" \
+curl -H "User-And-Pass: admin1:admin" \
 https://minikube/atlas-contacts-app/v1/contacts -d '{"first_name": "Bob", "email_address": "john@gmail.com"}'
 ```
 
 ``` sh
-curl -H "Username: admin1" \
+curl -H "User-And-Pass: admin1:admin" \
 https://minikube/atlas-contacts-app/v1/contacts?_filter='first_name=="Mike"'
 ```
 
