@@ -146,7 +146,6 @@ spec:
       containers:
       - name: postgres
         image: postgres:9.4
-        imagePullPolicy: IfNotPresent
         env:
         - name: POSTGRES_USER
           value: postgres
