@@ -128,6 +128,14 @@ or as alternative you can run
 kubectl apply -f kube/kube.yaml
 ```
 
+To deploy authN stub clone atlas-stubs repo, and then execute deployment
+script inside authn-stub package:
+
+``` sh
+cd $GOPATH/src/github.com/src/infobloxopen && git clone https://github.com/infobloxopen/atlas-stubs.git
+cd atlas-stubs/authn-stub && make up
+```
+
 ##### Usage
 
 Try it out by executing following curl commangs:
