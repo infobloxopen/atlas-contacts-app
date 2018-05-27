@@ -121,29 +121,24 @@ curl https://minikube/atlas-contacts-app/v1/contacts -d '{"first_name": "Bob", "
 curl https://minikube/atlas-contacts-app/v1/contacts?_filter='first_name=="Mike"'
 ```
 
-##### Pagination
+##### Pagination (page token)
 
-Contacts App implements pagination in by adding application specific page token implementation.
+**DISCLAIMER**: it is intended only for demonstration purposes and should not be emulated.
+
+Contacts App implements pagination in by adding application **specific** page token implementation.
 
 Actually the service supports "composite" pagination in a specific way:
 
 - limit and offset are still supported but without page token
 
 - if an user requests page token and provides limit then limit value will be used as a step for all further requests
-		`page_toke = null & limit = 2 -> page_token=base64(offset=2:limit=2)`
+		`page_token = null & limit = 2 -> page_token=base64(offset=2:limit=2)`
 		
 - if an user requests page token and provides offset then only first time the provided offset is applied
 		`page_token = null & offset = 2 & limit = 2 -> page_token=base64(offset=4:limit=2)`
 
-```shell
-GET http://localhost:8080/atlas-contacts-app/v1/contacts
-
-HTTP/1.1 200 OK
-Content-Type: application/json
-Grpc-Metadata-Content-Type: application/grpc
-Date: Fri, 25 May 2018 16:40:12 GMT
-Content-Length: 603
-
+Get all contacts: `GET http://localhost:8080/atlas-contacts-app/v1/contacts`
+```json
 {
   "results": [
     {
@@ -178,28 +173,6 @@ Content-Length: 603
       "first_name": "Mike",
       "id": "3",
       "primary_email": "three@mail.com"
-    },
-    {
-      "emails": [
-        {
-          "address": "four@mail.com",
-          "id": "4"
-        }
-      ],
-      "first_name": "Mike",
-      "id": "4",
-      "primary_email": "four@mail.com"
-    },
-    {
-      "emails": [
-        {
-          "address": "five@mail.com",
-          "id": "5"
-        }
-      ],
-      "first_name": "Mike",
-      "id": "5",
-      "primary_email": "five@mail.com"
     }
   ],
   "success": {
@@ -209,38 +182,20 @@ Content-Length: 603
 }
 ```
 
-```
-GET http://localhost:8080/atlas-contacts-app/v1/contacts?_limit=2&_offset=2
-
-HTTP/1.1 200 OK
-Content-Type: application/json
-Grpc-Metadata-Content-Type: application/grpc
-Date: Fri, 25 May 2018 16:43:39 GMT
-Content-Length: 274
-
+Default pagination (supported by atlas-app-toolkit): `GET http://localhost:8080/atlas-contacts-app/v1/contacts?_limit=1&_offset=1`
+```json
 {
   "results": [
     {
       "emails": [
         {
-          "address": "three@mail.com",
-          "id": "3"
+          "address": "two@mail.com",
+          "id": "2"
         }
       ],
       "first_name": "Mike",
-      "id": "3",
-      "primary_email": "three@mail.com"
-    },
-    {
-      "emails": [
-        {
-          "address": "four@mail.com",
-          "id": "4"
-        }
-      ],
-      "first_name": "Mike",
-      "id": "4",
-      "primary_email": "four@mail.com"
+      "id": "2",
+      "primary_email": "two@mail.com"
     }
   ],
   "success": {
@@ -250,16 +205,8 @@ Content-Length: 274
 }
 ```
 
-```
-GET http://localhost:8080/atlas-contacts-app/v1/contacts?_page_token=null&_limit=4
-
-HTTP/1.1 200 OK
-Content-Type: application/json
-Grpc-Metadata-Content-Type: application/grpc
-Grpc-Metadata-Status-Page-Info-Page_token: NDo0
-Date: Fri, 25 May 2018 16:54:40 GMT
-Content-Length: 513
-
+Request **specific** page token: `GET http://localhost:8080/atlas-contacts-app/v1/contacts?_page_token=null&_limit=2`
+```json
 {
   "results": [
     {
@@ -283,28 +230,6 @@ Content-Length: 513
       "first_name": "Mike",
       "id": "2",
       "primary_email": "two@mail.com"
-    },
-    {
-      "emails": [
-        {
-          "address": "three@mail.com",
-          "id": "3"
-        }
-      ],
-      "first_name": "Mike",
-      "id": "3",
-      "primary_email": "three@mail.com"
-    },
-    {
-      "emails": [
-        {
-          "address": "four@mail.com",
-          "id": "4"
-        }
-      ],
-      "first_name": "Mike",
-      "id": "4",
-      "primary_email": "four@mail.com"
     }
   ],
   "success": {
@@ -315,28 +240,20 @@ Content-Length: 513
 }
 ```
 
-```
-GET http://localhost:8080/atlas-contacts-app/v1/contacts?_page_token=NDo0
-
-HTTP/1.1 200 OK
-Content-Type: application/json
-Grpc-Metadata-Content-Type: application/grpc
-Grpc-Metadata-Status-Page-Info-Page_token: NTo0
-Date: Fri, 25 May 2018 16:55:09 GMT
-Content-Length: 182
-
+Get next page via page token: `GET http://localhost:8080/atlas-contacts-app/v1/contacts?_page_token=NDo0`
+```json
 {
   "results": [
     {
       "emails": [
         {
-          "address": "five@mail.com",
-          "id": "5"
+          "address": "three@mail.com",
+          "id": "3"
         }
       ],
       "first_name": "Mike",
-      "id": "5",
-      "primary_email": "five@mail.com"
+      "id": "3",
+      "primary_email": "three@mail.com"
     }
   ],
   "success": {
@@ -347,16 +264,9 @@ Content-Length: 182
 }
 ```
 
-```
-GET http://localhost:8080/atlas-contacts-app/v1/contacts?_page_token=NTo0
-
-HTTP/1.1 200 OK
-Content-Type: application/json
-Grpc-Metadata-Content-Type: application/grpc
-Grpc-Metadata-Status-Page-Info-Page_token: null
-Date: Fri, 25 May 2018 16:55:28 GMT
-Content-Length: 59
-
+Get next page: `GET http://localhost:8080/atlas-contacts-app/v1/contacts?_page_token=NTo0`
+The `"_page_token": "null"` means there are no more pages
+```json
 {
   "success": {
     "status": 200,
