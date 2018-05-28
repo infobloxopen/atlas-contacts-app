@@ -103,17 +103,6 @@ or
 kubectl create ns contacts
 ```
 
-To enable multiaccounting example, run following command:
-
-``` sh
-make authn-stub-up
-```
-
-which will start AuthN stub that maps `User-And-Pass` header on JWT tokens, with following meaning:
-
-admin1: AccountID=1
-admin2: AccountID=2
-
 ##### Deployment
 
 To deploy atlas-contacts-app use
@@ -128,12 +117,18 @@ or as alternative you can run
 kubectl apply -f kube/kube.yaml
 ```
 
-To deploy authN stub clone atlas-stubs repo, and then execute deployment
-script inside authn-stub package:
+To deploy authN stub, clone atlas-stubs repo and then execute deployment script inside authn-stub package:
 
 ``` sh
-cd $GOPATH/src/github.com/src/infobloxopen && git clone https://github.com/infobloxopen/atlas-stubs.git
-cd atlas-stubs/authn-stub && make up
+	cd $GOPATH/src/github.com/src/infobloxopen && git clone https://github.com/infobloxopen/atlas-stubs.git
+	cd atlas-stubs/authn-stub && make up
+```
+
+This will start AuthN stub that maps `User-And-Pass` header on JWT tokens, with following meaning:
+
+```
+admin1:admin -> AccountID=1
+admin2:admin -> AccountID=2
 ```
 
 ##### Usage
