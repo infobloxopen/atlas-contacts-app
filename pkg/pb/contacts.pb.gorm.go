@@ -25,6 +25,7 @@ package pb
 import context "context"
 import errors "errors"
 
+import auth "github.com/infobloxopen/atlas-app-toolkit/auth"
 import gorm "github.com/jinzhu/gorm"
 import ops "github.com/infobloxopen/atlas-app-toolkit/gorm"
 
@@ -41,6 +42,7 @@ var _ = math.Inf
 
 // ContactORM no comment was provided for message type
 type ContactORM struct {
+	AccountID  string
 	Id         uint64
 	FirstName  string
 	MiddleName string
@@ -223,6 +225,11 @@ func DefaultCreateContact(ctx context.Context, in *Contact, db *gorm.DB) (*Conta
 	if err != nil {
 		return nil, err
 	}
+	accountID, err := auth.GetAccountID(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	ormObj.AccountID = accountID
 	if err = db.Create(&ormObj).Error; err != nil {
 		return nil, err
 	}
@@ -239,6 +246,11 @@ func DefaultReadContact(ctx context.Context, in *Contact, db *gorm.DB) (*Contact
 	if err != nil {
 		return nil, err
 	}
+	accountID, err := auth.GetAccountID(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	ormParams.AccountID = accountID
 	ormResponse := ContactORM{}
 	if err = db.Set("gorm:auto_preload", true).Where(&ormParams).First(&ormResponse).Error; err != nil {
 		return nil, err
@@ -251,6 +263,11 @@ func DefaultReadContact(ctx context.Context, in *Contact, db *gorm.DB) (*Contact
 func DefaultUpdateContact(ctx context.Context, in *Contact, db *gorm.DB) (*Contact, error) {
 	if in == nil {
 		return nil, errors.New("Nil argument to DefaultUpdateContact")
+	}
+	if exists, err := DefaultReadContact(ctx, &Contact{Id: in.GetId()}, db); err != nil {
+		return nil, err
+	} else if exists == nil {
+		return nil, errors.New("Contact not found")
 	}
 	ormObj, err := in.ToORM(ctx)
 	if err != nil {
@@ -271,6 +288,11 @@ func DefaultDeleteContact(ctx context.Context, in *Contact, db *gorm.DB) error {
 	if err != nil {
 		return err
 	}
+	accountID, err := auth.GetAccountID(ctx, nil)
+	if err != nil {
+		return err
+	}
+	ormObj.AccountID = accountID
 	err = db.Where(&ormObj).Delete(&ContactORM{}).Error
 	return err
 }
@@ -282,6 +304,11 @@ func DefaultListContact(ctx context.Context, db *gorm.DB) ([]*Contact, error) {
 	if err != nil {
 		return nil, err
 	}
+	accountID, err := auth.GetAccountID(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	db = db.Where(&ContactORM{AccountID: accountID})
 	if err := db.Set("gorm:auto_preload", true).Find(&ormResponse).Error; err != nil {
 		return nil, err
 	}
@@ -313,6 +340,11 @@ func DefaultStrictUpdateContact(ctx context.Context, in *Contact, db *gorm.DB) (
 	if err = db.Where(filterObjEmail).Delete(Email{}).Error; err != nil {
 		return nil, err
 	}
+	accountID, err := auth.GetAccountID(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	db = db.Where(&ContactORM{AccountID: accountID})
 	if err = db.Save(&ormObj).Error; err != nil {
 		return nil, err
 	}

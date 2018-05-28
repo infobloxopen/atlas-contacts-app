@@ -51,17 +51,29 @@ Run GRPC gateway:
 
 #### Try atlas-contacts-app
 
-``` sh
-curl http://localhost:8080/atlas-contacts-app/v1/contacts -d '{"first_name": "Mike", "email_address": "mike@gmail.com"}'
+For Multi-Account environment, Authorization token is required. You can generate it using https://jwt.io/ with following Payload:
+```
+{
+  "AccountID": YourAccountID
+}
 ```
 
 ``` sh
-curl http://localhost:8080/atlas-contacts-app/v1/contacts -d '{"first_name": "Bob", "email_address": "john@gmail.com"}'
+curl -H "Grpc-Metadata-Authorization: Token $JWT" \
+http://localhost:8080/atlas-contacts-app/v1/contacts -d '{"first_name": "Mike", "email_address": "mike@gmail.com"}'
 ```
 
 ``` sh
-curl http://localhost:8080/atlas-contacts-app/v1/contacts?_filter='first_name=="Mike"'
+curl -H "Grpc-Metadata-Authorization: Token $JWT" \
+http://localhost:8080/atlas-contacts-app/v1/contacts -d '{"first_name": "Bob", "email_address": "john@gmail.com"}'
 ```
+
+``` sh
+curl -H "Grpc-Metadata-Authorization: Token $JWT" \
+http://localhost:8080/atlas-contacts-app/v1/contacts?_filter='first_name=="Mike"'
+```
+
+Note, that JWT should contain AccountID field.
 
 #### Local Kubernetes setup
 
@@ -105,20 +117,37 @@ or as alternative you can run
 kubectl apply -f kube/kube.yaml
 ```
 
+To deploy authN stub, clone atlas-stubs repo and then execute deployment script inside authn-stub package:
+
+``` sh
+	cd $GOPATH/src/github.com/src/infobloxopen && git clone https://github.com/infobloxopen/atlas-stubs.git
+	cd atlas-stubs/authn-stub && make up
+```
+
+This will start AuthN stub that maps `User-And-Pass` header on JWT tokens, with following meaning:
+
+```
+admin1:admin -> AccountID=1
+admin2:admin -> AccountID=2
+```
+
 ##### Usage
 
 Try it out by executing following curl commangs:
 
 ``` sh
-curl https://minikube/atlas-contacts-app/v1/contacts -d '{"first_name": "Mike", "email_address": "mike@gmail.com"}'
+curl -H "User-And-Pass: admin1:admin" \
+https://minikube/atlas-contacts-app/v1/contacts -d '{"first_name": "Mike", "email_address": "mike@gmail.com"}'
 ```
 
 ``` sh
-curl https://minikube/atlas-contacts-app/v1/contacts -d '{"first_name": "Bob", "email_address": "john@gmail.com"}'
+curl -H "User-And-Pass: admin1:admin" \
+https://minikube/atlas-contacts-app/v1/contacts -d '{"first_name": "Bob", "email_address": "john@gmail.com"}'
 ```
 
 ``` sh
-curl https://minikube/atlas-contacts-app/v1/contacts?_filter='first_name=="Mike"'
+curl -H "User-And-Pass: admin1:admin" \
+https://minikube/atlas-contacts-app/v1/contacts?_filter='first_name=="Mike"'
 ```
 
 ## Deployment

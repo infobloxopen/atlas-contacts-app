@@ -1,6 +1,7 @@
 
 CREATE TABLE contacts (
   id serial primary key,
+  account_id integer,
   created_at timestamptz DEFAULT current_timestamp,
   updated_at timestamptz DEFAULT NULL,
   first_name varchar(255) DEFAULT NULL,
