@@ -150,6 +150,161 @@ curl -H "User-And-Pass: admin1:admin" \
 https://minikube/atlas-contacts-app/v1/contacts?_filter='first_name=="Mike"'
 ```
 
+##### Pagination (page token)
+
+**DISCLAIMER**: it is intended only for demonstration purposes and should not be emulated.
+
+Contacts App implements pagination in by adding application **specific** page token implementation.
+
+Actually the service supports "composite" pagination in a specific way:
+
+- limit and offset are still supported but without page token
+
+- if an user requests page token and provides limit then limit value will be used as a step for all further requests
+		`page_token = null & limit = 2 -> page_token=base64(offset=2:limit=2)`
+		
+- if an user requests page token and provides offset then only first time the provided offset is applied
+		`page_token = null & offset = 2 & limit = 2 -> page_token=base64(offset=4:limit=2)`
+
+Get all contacts: `GET http://localhost:8080/atlas-contacts-app/v1/contacts`
+```json
+{
+  "results": [
+    {
+      "emails": [
+        {
+          "address": "one@mail.com",
+          "id": "1"
+        }
+      ],
+      "first_name": "Mike",
+      "id": "1",
+      "primary_email": "one@mail.com"
+    },
+    {
+      "emails": [
+        {
+          "address": "two@mail.com",
+          "id": "2"
+        }
+      ],
+      "first_name": "Mike",
+      "id": "2",
+      "primary_email": "two@mail.com"
+    },
+    {
+      "emails": [
+        {
+          "address": "three@mail.com",
+          "id": "3"
+        }
+      ],
+      "first_name": "Mike",
+      "id": "3",
+      "primary_email": "three@mail.com"
+    }
+  ],
+  "success": {
+    "status": 200,
+    "code": "OK"
+  }
+}
+```
+
+Default pagination (supported by atlas-app-toolkit): `GET http://localhost:8080/atlas-contacts-app/v1/contacts?_limit=1&_offset=1`
+```json
+{
+  "results": [
+    {
+      "emails": [
+        {
+          "address": "two@mail.com",
+          "id": "2"
+        }
+      ],
+      "first_name": "Mike",
+      "id": "2",
+      "primary_email": "two@mail.com"
+    }
+  ],
+  "success": {
+    "status": 200,
+    "code": "OK"
+  }
+}
+```
+
+Request **specific** page token: `GET http://localhost:8080/atlas-contacts-app/v1/contacts?_page_token=null&_limit=2`
+```json
+{
+  "results": [
+    {
+      "emails": [
+        {
+          "address": "one@mail.com",
+          "id": "1"
+        }
+      ],
+      "first_name": "Mike",
+      "id": "1",
+      "primary_email": "one@mail.com"
+    },
+    {
+      "emails": [
+        {
+          "address": "two@mail.com",
+          "id": "2"
+        }
+      ],
+      "first_name": "Mike",
+      "id": "2",
+      "primary_email": "two@mail.com"
+    }
+  ],
+  "success": {
+    "status": 200,
+    "code": "OK",
+    "_page_token": "NDo0"
+  }
+}
+```
+
+Get next page via page token: `GET http://localhost:8080/atlas-contacts-app/v1/contacts?_page_token=NDo0`
+```json
+{
+  "results": [
+    {
+      "emails": [
+        {
+          "address": "three@mail.com",
+          "id": "3"
+        }
+      ],
+      "first_name": "Mike",
+      "id": "3",
+      "primary_email": "three@mail.com"
+    }
+  ],
+  "success": {
+    "status": 200,
+    "code": "OK",
+    "_page_token": "NTo0"
+  }
+}
+```
+
+Get next page: `GET http://localhost:8080/atlas-contacts-app/v1/contacts?_page_token=NTo0`
+The `"_page_token": "null"` means there are no more pages
+```json
+{
+  "success": {
+    "status": 200,
+    "code": "OK",
+    "_page_token": "null"
+  }
+}
+```
+
 ## Deployment
 
 Add additional notes about how to deploy this application. Maybe list some common pitfalls or debugging strategies.

@@ -1,4 +1,7 @@
 bin
-.vscode
 debug
 vendor
+
+# IDE stuff
+.vscode
+.idea
