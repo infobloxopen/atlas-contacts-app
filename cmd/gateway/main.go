@@ -48,7 +48,10 @@ func main() {
 	go http.ListenAndServe(HealthAddress, healthChecker.Handler())
 
 	// serve handlers on the gateway address
-	http.ListenAndServe(GatewayAddress, mux)
+	err = http.ListenAndServe(GatewayAddress, mux)
+	if err != nil {
+		log.Fatalln(err)
+	}
 }
 
 func init() {
