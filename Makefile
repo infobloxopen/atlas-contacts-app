@@ -2,6 +2,11 @@ PROJECT_ROOT		:= github.com/infobloxopen/atlas-contacts-app
 BUILD_PATH  		:= bin
 DOCKERFILE_PATH		:= $(CURDIR)/docker
 
+# configuration for minikube SSH connection
+K8S_NODE=`minikube ip`
+SSH_USER="docker"
+SSH_KEY_FILE="~/.minikube/machines/minikube/id_rsa"
+
 # configuration for image names
 USERNAME        := $(USER)
 GIT_COMMIT      := $(shell git describe --dirty=-unsupported --always || echo pre-commit)
@@ -51,10 +56,12 @@ test: fmt
 .PHONY: server-docker
 server-docker:
 	@docker build -f $(SERVER_DOCKERFILE) -t $(SERVER_IMAGE):$(IMAGE_VERSION) .
+	@docker tag $(SERVER_IMAGE):$(IMAGE_VERSION) $(SERVER_IMAGE):latest
 
 .PHONY: gateway-docker
 gateway-docker:
 	@docker build -f $(GATEWAY_DOCKERFILE) -t $(GATEWAY_IMAGE):$(IMAGE_VERSION) .
+	@docker tag $(GATEWAY_IMAGE):$(IMAGE_VERSION) $(GATEWAY_IMAGE):latest
 
 .PHONY: push
 push:
@@ -94,11 +101,12 @@ migrate-down:
 
 .PHONY: up
 up:
+	kubectl apply -f deploy/ns.yaml
 	kubectl apply -f deploy/kube.yaml
 
 .PHONY: down
 down:
-	kubectl delete -f deploy/kube.yaml
+	kubectl delete -f deploy/ns.yaml
 
 .PHONY: nginx-up
 nginx-up:
@@ -107,3 +115,7 @@ nginx-up:
 .PHONY: nginx-down
 nginx-down:
 	kubectl delete -f deploy/nginx.yaml
+
+push-minikube:
+	@docker save "$(SERVER_IMAGE):latest" | ssh -i "${SSH_KEY_FILE}" ${SSH_USER}@${K8S_NODE} docker load || exit 1
+	@docker save "$(GATEWAY_IMAGE):latest" | ssh -i "${SSH_KEY_FILE}" ${SSH_USER}@${K8S_NODE} docker load || exit 1

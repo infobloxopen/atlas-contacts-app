@@ -40,13 +40,13 @@ If they are busy - please change them via corresponding parameters of `gateway` 
 Run GRPC server:
 
 ``` sh
-go run cmd/server/main.go -db "host=localhost port=5432 user=postgres password=postgres sslmode=disable dbname=contacts"
+go run ./cmd/server/main.go -db "host=localhost port=5432 user=postgres password=postgres sslmode=disable dbname=contacts"
 ```
 
 Run GRPC gateway:
 
 ``` sh
-go run cmd/gateway/* .
+go run ./cmd/gateway/* .
 ```
 
 #### Try atlas-contacts-app
@@ -85,25 +85,11 @@ Make sure nginx is deployed in your K8s. Otherwise you can deploy it using
 make nginx-up
 ```
 
-or by running
-
-``` sh
-kubectl apply -f kube/nginx.yaml
-```
-
-If you launching atlas-contacts-app for the first time you need to create `contacts` namespace for it in Kubernetes. This can be done by running
-
-``` sh
-kubectl apply -f kube/ns.yaml
-```
-
-or
-
-``` sh
-kubectl create ns contacts
-```
-
 ##### Deployment
+Upload atlas-contacts-app images into minikube
+```
+make push-minikube
+```
 
 To deploy atlas-contacts-app use
 
@@ -111,17 +97,11 @@ To deploy atlas-contacts-app use
 make up
 ```
 
-or as alternative you can run
-
-``` sh
-kubectl apply -f kube/kube.yaml
-```
-
 To deploy authN stub, clone atlas-stubs repo and then execute deployment script inside authn-stub package:
 
 ``` sh
-	cd $GOPATH/src/github.com/src/infobloxopen && git clone https://github.com/infobloxopen/atlas-stubs.git
-	cd atlas-stubs/authn-stub && make up
+	cd $GOPATH/src/github.com/infobloxopen && git clone https://github.com/infobloxopen/atlas-stubs.git
+	cd atlas-stubs/authn-stub && make && make up
 ```
 
 This will start AuthN stub that maps `User-And-Pass` header on JWT tokens, with following meaning:
@@ -136,17 +116,17 @@ admin2:admin -> AccountID=2
 Try it out by executing following curl commangs:
 
 ``` sh
-curl -H "User-And-Pass: admin1:admin" \
-https://minikube/atlas-contacts-app/v1/contacts -d '{"first_name": "Mike", "email_address": "mike@gmail.com"}'
+curl -k -H "User-And-Pass: admin1:admin" \
+https://minikube/atlas-contacts-app/v1/contacts -d '{"first_name": "Mike", "primary_email": "mike@gmail.com"}'
 ```
 
 ``` sh
-curl -H "User-And-Pass: admin1:admin" \
-https://minikube/atlas-contacts-app/v1/contacts -d '{"first_name": "Bob", "email_address": "john@gmail.com"}'
+curl -k -H "User-And-Pass: admin1:admin" \
+https://minikube/atlas-contacts-app/v1/contacts -d '{"first_name": "Bob", "primary_email": "john@gmail.com"}'
 ```
 
 ``` sh
-curl -H "User-And-Pass: admin1:admin" \
+curl -k -H "User-And-Pass: admin1:admin" \
 https://minikube/atlas-contacts-app/v1/contacts?_filter='first_name=="Mike"'
 ```
 
