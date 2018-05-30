@@ -4,7 +4,7 @@ CREATE TABLE emails (
   created_at timestamptz DEFAULT current_timestamp,
   updated_at timestamptz DEFAULT NULL,
   is_primary boolean DEFAULT false,
-  address varchar(255) DEFAULT NULL,
+  address varchar(255) UNIQUE DEFAULT NULL,
   contact_id int REFERENCES contacts(id) ON DELETE CASCADE
 );
 
