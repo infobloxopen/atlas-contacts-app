@@ -166,7 +166,7 @@ spec:
             - "/bin/sh"
             - "-i"
             - "-c"
-            - "pg_isready -h 127.0.0.1 -p 5432"
+            - "pg_isready -h 127.0.0.1 -p 5432 -U $POSTGRES_USER"
           initialDelaySeconds: 20
           timeoutSeconds: 1
           successThreshold: 1
@@ -182,3 +182,4 @@ spec:
             - "-i"
             - "-c"
             - "psql -h 127.0.0.1 -U $POSTGRES_USER -q -d $POSTGRES_PASSWORD -c 'SELECT 1'"
+            
