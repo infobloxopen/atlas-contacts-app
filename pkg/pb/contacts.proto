@@ -30,7 +30,7 @@ message Email {
       {type: "bool", name: "is_primary"}, {type: "uint64", name: "Contact_id"}]
     };
     uint64 id = 1;
-    string address = 2 [(validate.rules).string.email = true];
+    string address = 2 [(gorm.field).tags = "gorm:\"UNIQUE\"", (validate.rules).string.email = true];
 }
 
 message CreateContactRequest {

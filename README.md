@@ -17,7 +17,7 @@ go get -u github.com/golang/dep/cmd/dep
 ```
 
 Need `postgresql` installed locally or running inside docker container within `contacts` database created.
-You can change the name of database in `dsn` parameter in `server` app.
+You can change the name of database in `db` parameter in `server` app.
 Table creation in this example is omitted as it will be done autmotically by `gorm`.
 
 ### Installing
@@ -40,13 +40,13 @@ If they are busy - please change them via corresponding parameters of `gateway` 
 Run GRPC server:
 
 ``` sh
-./bin/server -dsn "host=localhost port=5432 user=postgres password=postgres sslmode=disable dbname=contacts"
+go run cmd/server/main.go -db "host=localhost port=5432 user=postgres password=postgres sslmode=disable dbname=contacts"
 ```
 
 Run GRPC gateway:
 
 ``` sh
-./bin/gateway
+go run cmd/gateway/* .
 ```
 
 #### Try atlas-contacts-app
@@ -79,7 +79,7 @@ Note, that JWT should contain AccountID field.
 
 ##### Prerequisites
 
-Make sure nginx is deployed in you K8s. Otherwise you can deploy it using
+Make sure nginx is deployed in your K8s. Otherwise you can deploy it using
 
 ``` sh
 make nginx-up
