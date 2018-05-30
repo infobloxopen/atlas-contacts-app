@@ -2,11 +2,6 @@ PROJECT_ROOT		:= github.com/infobloxopen/atlas-contacts-app
 BUILD_PATH  		:= bin
 DOCKERFILE_PATH		:= $(CURDIR)/docker
 
-# configuration for minikube SSH connection
-K8S_NODE=`minikube ip`
-SSH_USER="docker"
-SSH_KEY_FILE="~/.minikube/machines/minikube/id_rsa"
-
 # configuration for image names
 USERNAME        := $(USER)
 GIT_COMMIT      := $(shell git describe --dirty=-unsupported --always || echo pre-commit)
@@ -115,7 +110,3 @@ nginx-up:
 .PHONY: nginx-down
 nginx-down:
 	kubectl delete -f deploy/nginx.yaml
-
-push-minikube:
-	@docker save "$(SERVER_IMAGE):latest" | ssh -i "${SSH_KEY_FILE}" ${SSH_USER}@${K8S_NODE} docker load || exit 1
-	@docker save "$(GATEWAY_IMAGE):latest" | ssh -i "${SSH_KEY_FILE}" ${SSH_USER}@${K8S_NODE} docker load || exit 1
