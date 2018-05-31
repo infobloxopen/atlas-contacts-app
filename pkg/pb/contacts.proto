@@ -10,27 +10,206 @@ import "github.com/infobloxopen/protoc-gen-gorm/options/gorm.proto";
 
 option go_package = "github.com/infobloxopen/atlas-contacts-app/pkg/pb;pb";
 
+message Profile {
+    option (gorm.opts) = {
+      ormable: true,
+      // multi_account: true
+    };
+    string id = 1;
+    string notes = 2;
+    repeated Contact contacts = 3;
+    repeated Group groups = 4;
+}
+
+message CreateProfileRequest {
+    Profile payload = 1;
+}
+
+message CreateProfileResponse {
+    Profile result = 1;
+}
+
+message ReadProfileRequest {
+    string id = 1;
+}
+
+message ReadProfileResponse {
+    Profile result = 1;
+}
+
+message UpdateProfileRequest {
+    Profile payload = 1;
+}
+
+message UpdateProfileResponse {
+    Profile result = 1;
+}
+
+message DeleteProfileRequest {
+    string id = 1;
+}
+
+message ListProfilesResponse {
+    repeated Profile results = 1;
+}
+
+service Profiles {
+    option (gorm.server).autogen = true;
+    rpc Create (CreateProfileRequest) returns (CreateProfileResponse) {
+        option (google.api.http) = {
+            post: "/profiles"
+            body: "payload"
+        };
+    }
+
+    rpc Read (ReadProfileRequest) returns (ReadProfileResponse) {
+        option (google.api.http) = {
+            get: "/profiles/{id}"
+        };
+    }
+
+    rpc Update (UpdateProfileRequest) returns (UpdateProfileResponse) {
+        option (google.api.http) = {
+            put: "/profiles/{payload.id}"
+            body: "payload"
+        };
+    }
+
+    rpc Delete (DeleteProfileRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            delete: "/profiles/{id}"
+        };
+        option (gorm.method).object_type = "Profile";
+    }
+
+    rpc List (google.protobuf.Empty) returns (ListProfilesResponse) {
+        option (google.api.http) = {
+            get: "/profiles"
+        };
+    }
+
+}
+
+message Group {
+    option (gorm.opts) = {
+      ormable: true,
+      // multi_account: true
+    };
+    string id = 1;
+    string notes = 2;
+    Profile profile = 3 [(gorm.field).belongs_to = {}];
+    string profile_id = 4;
+    repeated Contact contacts = 5 [(gorm.field).many_to_many = {}];
+}
+
+message CreateGroupRequest {
+    Group payload = 1;
+}
+
+message CreateGroupResponse {
+    Group result = 1;
+}
+
+message ReadGroupRequest {
+    string id = 1;
+}
+
+message ReadGroupResponse {
+    Group result = 1;
+}
+
+message UpdateGroupRequest {
+    Group payload = 1;
+}
+
+message UpdateGroupResponse {
+    Group result = 1;
+}
+
+message DeleteGroupRequest {
+    string id = 1;
+}
+
+message ListGroupsResponse {
+    repeated Group results = 1;
+}
+
+service Groups {
+    option (gorm.server).autogen = true;
+    rpc Create (CreateGroupRequest) returns (CreateGroupResponse) {
+        option (google.api.http) = {
+            post: "/groups"
+            body: "payload"
+        };
+    }
+
+    rpc Read (ReadGroupRequest) returns (ReadGroupResponse) {
+        option (google.api.http) = {
+            get: "/groups/{id}"
+        };
+    }
+
+    rpc Update (UpdateGroupRequest) returns (UpdateGroupResponse) {
+        option (google.api.http) = {
+            put: "/groups/{payload.id}"
+            body: "payload"
+        };
+    }
+
+    rpc Delete (DeleteGroupRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            delete: "/groups/{id}"
+        };
+        option (gorm.method).object_type = "Group";
+    }
+
+    rpc List (google.protobuf.Empty) returns (ListGroupsResponse) {
+        option (google.api.http) = {
+            get: "/groups"
+        };
+    }
+
+}
+
 message Contact {
     option (gorm.opts) = {
       ormable: true,
-      multi_account: true
+      // multi_account: true
     };
     uint64 id = 1;
     string first_name = 2;
     string middle_name = 3;
     string last_name = 4;
     string primary_email = 6 [(gorm.field).drop = true, (validate.rules).string.email = true];
-    repeated Email emails = 7;
+    string notes = 7;
+    repeated Email emails = 8;
+    Address home_address = 9;
+    Address work_address = 10;
+    Profile profile = 11 [(gorm.field).belongs_to = {}];
+    string profile_id = 12;
+    repeated Group groups = 13 [(gorm.field).many_to_many = {jointable: "group_contacts"}];
 }
 
 message Email {
     option (gorm.opts) = {
       ormable: true,
+      // multi_account: true,
       include: [
-      {type: "bool", name: "is_primary"}, {type: "uint64", name: "Contact_id"}]
+      {type: "bool", name: "is_primary"}]
     };
-    uint64 id = 1;
-    string address = 2 [(gorm.field).tags = "gorm:\"UNIQUE\"", (validate.rules).string.email = true];
+    string address = 1 [(gorm.field).tag = {primary_key: true}, (validate.rules).string.email = true];
+}
+
+message Address {
+    option (gorm.opts) = {
+      ormable: true,
+      // multi_account: true
+    };
+    string address = 1;
+    string city = 2;
+    string state = 3;
+    string zip = 4;
+    string country = 5;
 }
 
 message CreateContactRequest {

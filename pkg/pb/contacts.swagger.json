@@ -173,6 +173,242 @@
           "Contacts"
         ]
       }
+    },
+    "/groups": {
+      "get": {
+        "operationId": "List",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/contactsListGroupsResponse"
+            }
+          }
+        },
+        "tags": [
+          "Groups"
+        ]
+      },
+      "post": {
+        "operationId": "Create",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/contactsCreateGroupResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/contactsGroup"
+            }
+          }
+        ],
+        "tags": [
+          "Groups"
+        ]
+      }
+    },
+    "/groups/{id}": {
+      "get": {
+        "operationId": "Read",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/contactsReadGroupResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Groups"
+        ]
+      },
+      "delete": {
+        "operationId": "Delete",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/protobufEmpty"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Groups"
+        ]
+      }
+    },
+    "/groups/{payload.id}": {
+      "put": {
+        "operationId": "Update",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/contactsUpdateGroupResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "payload.id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/contactsGroup"
+            }
+          }
+        ],
+        "tags": [
+          "Groups"
+        ]
+      }
+    },
+    "/profiles": {
+      "get": {
+        "operationId": "List",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/contactsListProfilesResponse"
+            }
+          }
+        },
+        "tags": [
+          "Profiles"
+        ]
+      },
+      "post": {
+        "operationId": "Create",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/contactsCreateProfileResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/contactsProfile"
+            }
+          }
+        ],
+        "tags": [
+          "Profiles"
+        ]
+      }
+    },
+    "/profiles/{id}": {
+      "get": {
+        "operationId": "Read",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/contactsReadProfileResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Profiles"
+        ]
+      },
+      "delete": {
+        "operationId": "Delete",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/protobufEmpty"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Profiles"
+        ]
+      }
+    },
+    "/profiles/{payload.id}": {
+      "put": {
+        "operationId": "Update",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/contactsUpdateProfileResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "payload.id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/contactsProfile"
+            }
+          }
+        ],
+        "tags": [
+          "Profiles"
+        ]
+      }
     }
   },
   "definitions": {
@@ -195,11 +431,52 @@
         "primary_email": {
           "type": "string"
         },
+        "notes": {
+          "type": "string"
+        },
         "emails": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/contactsEmail"
           }
+        },
+        "home_address": {
+          "$ref": "#/definitions/contactsAddress"
+        },
+        "work_address": {
+          "$ref": "#/definitions/contactsAddress"
+        },
+        "profile": {
+          "$ref": "#/definitions/contactsProfile"
+        },
+        "profile_id": {
+          "type": "string"
+        },
+        "groups": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/contactsGroup"
+          }
+        }
+      }
+    },
+    "contactsAddress": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "zip": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
         }
       }
     },
@@ -211,15 +488,50 @@
         }
       }
     },
+    "contactsCreateGroupResponse": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/definitions/contactsGroup"
+        }
+      }
+    },
+    "contactsCreateProfileResponse": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/definitions/contactsProfile"
+        }
+      }
+    },
     "contactsEmail": {
       "type": "object",
       "properties": {
-        "id": {
-          "type": "string",
-          "format": "uint64"
-        },
         "address": {
           "type": "string"
+        }
+      }
+    },
+    "contactsGroup": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "profile": {
+          "$ref": "#/definitions/contactsProfile"
+        },
+        "profile_id": {
+          "type": "string"
+        },
+        "contacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apicontactsContact"
+          }
         }
       }
     },
@@ -234,11 +546,72 @@
         }
       }
     },
+    "contactsListGroupsResponse": {
+      "type": "object",
+      "properties": {
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/contactsGroup"
+          }
+        }
+      }
+    },
+    "contactsListProfilesResponse": {
+      "type": "object",
+      "properties": {
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/contactsProfile"
+          }
+        }
+      }
+    },
+    "contactsProfile": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "contacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apicontactsContact"
+          }
+        },
+        "groups": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/contactsGroup"
+          }
+        }
+      }
+    },
     "contactsReadContactResponse": {
       "type": "object",
       "properties": {
         "result": {
           "$ref": "#/definitions/apicontactsContact"
+        }
+      }
+    },
+    "contactsReadGroupResponse": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/definitions/contactsGroup"
+        }
+      }
+    },
+    "contactsReadProfileResponse": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/definitions/contactsProfile"
         }
       }
     },
@@ -259,6 +632,22 @@
       "properties": {
         "result": {
           "$ref": "#/definitions/apicontactsContact"
+        }
+      }
+    },
+    "contactsUpdateGroupResponse": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/definitions/contactsGroup"
+        }
+      }
+    },
+    "contactsUpdateProfileResponse": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/definitions/contactsProfile"
         }
       }
     },

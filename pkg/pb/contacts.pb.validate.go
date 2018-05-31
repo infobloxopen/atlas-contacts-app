@@ -34,6 +34,995 @@ var (
 	_ = ptypes.DynamicAny{}
 )
 
+// Validate checks the field values on Profile with the rules defined in the
+// proto definition for this message. If any rules are violated, an error is returned.
+func (m *Profile) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	// no validation rules for Id
+
+	// no validation rules for Notes
+
+	for idx, item := range m.GetContacts() {
+		_, _ = idx, item
+
+		if v, ok := interface{}(item).(interface {
+			Validate() error
+		}); ok {
+			if err := v.Validate(); err != nil {
+				return ProfileValidationError{
+					Field:  fmt.Sprintf("Contacts[%v]", idx),
+					Reason: "embedded message failed validation",
+					Cause:  err,
+				}
+			}
+		}
+
+	}
+
+	for idx, item := range m.GetGroups() {
+		_, _ = idx, item
+
+		if v, ok := interface{}(item).(interface {
+			Validate() error
+		}); ok {
+			if err := v.Validate(); err != nil {
+				return ProfileValidationError{
+					Field:  fmt.Sprintf("Groups[%v]", idx),
+					Reason: "embedded message failed validation",
+					Cause:  err,
+				}
+			}
+		}
+
+	}
+
+	return nil
+}
+
+// ProfileValidationError is the validation error returned by Profile.Validate
+// if the designated constraints aren't met.
+type ProfileValidationError struct {
+	Field  string
+	Reason string
+	Cause  error
+	Key    bool
+}
+
+// Error satisfies the builtin error interface
+func (e ProfileValidationError) Error() string {
+	cause := ""
+	if e.Cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
+	}
+
+	key := ""
+	if e.Key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sProfile.%s: %s%s",
+		key,
+		e.Field,
+		e.Reason,
+		cause)
+}
+
+var _ error = ProfileValidationError{}
+
+// Validate checks the field values on CreateProfileRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *CreateProfileRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if v, ok := interface{}(m.GetPayload()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return CreateProfileRequestValidationError{
+				Field:  "Payload",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
+
+	return nil
+}
+
+// CreateProfileRequestValidationError is the validation error returned by
+// CreateProfileRequest.Validate if the designated constraints aren't met.
+type CreateProfileRequestValidationError struct {
+	Field  string
+	Reason string
+	Cause  error
+	Key    bool
+}
+
+// Error satisfies the builtin error interface
+func (e CreateProfileRequestValidationError) Error() string {
+	cause := ""
+	if e.Cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
+	}
+
+	key := ""
+	if e.Key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCreateProfileRequest.%s: %s%s",
+		key,
+		e.Field,
+		e.Reason,
+		cause)
+}
+
+var _ error = CreateProfileRequestValidationError{}
+
+// Validate checks the field values on CreateProfileResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *CreateProfileResponse) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if v, ok := interface{}(m.GetResult()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return CreateProfileResponseValidationError{
+				Field:  "Result",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
+
+	return nil
+}
+
+// CreateProfileResponseValidationError is the validation error returned by
+// CreateProfileResponse.Validate if the designated constraints aren't met.
+type CreateProfileResponseValidationError struct {
+	Field  string
+	Reason string
+	Cause  error
+	Key    bool
+}
+
+// Error satisfies the builtin error interface
+func (e CreateProfileResponseValidationError) Error() string {
+	cause := ""
+	if e.Cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
+	}
+
+	key := ""
+	if e.Key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCreateProfileResponse.%s: %s%s",
+		key,
+		e.Field,
+		e.Reason,
+		cause)
+}
+
+var _ error = CreateProfileResponseValidationError{}
+
+// Validate checks the field values on ReadProfileRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *ReadProfileRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	// no validation rules for Id
+
+	return nil
+}
+
+// ReadProfileRequestValidationError is the validation error returned by
+// ReadProfileRequest.Validate if the designated constraints aren't met.
+type ReadProfileRequestValidationError struct {
+	Field  string
+	Reason string
+	Cause  error
+	Key    bool
+}
+
+// Error satisfies the builtin error interface
+func (e ReadProfileRequestValidationError) Error() string {
+	cause := ""
+	if e.Cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
+	}
+
+	key := ""
+	if e.Key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sReadProfileRequest.%s: %s%s",
+		key,
+		e.Field,
+		e.Reason,
+		cause)
+}
+
+var _ error = ReadProfileRequestValidationError{}
+
+// Validate checks the field values on ReadProfileResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *ReadProfileResponse) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if v, ok := interface{}(m.GetResult()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return ReadProfileResponseValidationError{
+				Field:  "Result",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
+
+	return nil
+}
+
+// ReadProfileResponseValidationError is the validation error returned by
+// ReadProfileResponse.Validate if the designated constraints aren't met.
+type ReadProfileResponseValidationError struct {
+	Field  string
+	Reason string
+	Cause  error
+	Key    bool
+}
+
+// Error satisfies the builtin error interface
+func (e ReadProfileResponseValidationError) Error() string {
+	cause := ""
+	if e.Cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
+	}
+
+	key := ""
+	if e.Key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sReadProfileResponse.%s: %s%s",
+		key,
+		e.Field,
+		e.Reason,
+		cause)
+}
+
+var _ error = ReadProfileResponseValidationError{}
+
+// Validate checks the field values on UpdateProfileRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *UpdateProfileRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if v, ok := interface{}(m.GetPayload()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return UpdateProfileRequestValidationError{
+				Field:  "Payload",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
+
+	return nil
+}
+
+// UpdateProfileRequestValidationError is the validation error returned by
+// UpdateProfileRequest.Validate if the designated constraints aren't met.
+type UpdateProfileRequestValidationError struct {
+	Field  string
+	Reason string
+	Cause  error
+	Key    bool
+}
+
+// Error satisfies the builtin error interface
+func (e UpdateProfileRequestValidationError) Error() string {
+	cause := ""
+	if e.Cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
+	}
+
+	key := ""
+	if e.Key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdateProfileRequest.%s: %s%s",
+		key,
+		e.Field,
+		e.Reason,
+		cause)
+}
+
+var _ error = UpdateProfileRequestValidationError{}
+
+// Validate checks the field values on UpdateProfileResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *UpdateProfileResponse) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if v, ok := interface{}(m.GetResult()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return UpdateProfileResponseValidationError{
+				Field:  "Result",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
+
+	return nil
+}
+
+// UpdateProfileResponseValidationError is the validation error returned by
+// UpdateProfileResponse.Validate if the designated constraints aren't met.
+type UpdateProfileResponseValidationError struct {
+	Field  string
+	Reason string
+	Cause  error
+	Key    bool
+}
+
+// Error satisfies the builtin error interface
+func (e UpdateProfileResponseValidationError) Error() string {
+	cause := ""
+	if e.Cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
+	}
+
+	key := ""
+	if e.Key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdateProfileResponse.%s: %s%s",
+		key,
+		e.Field,
+		e.Reason,
+		cause)
+}
+
+var _ error = UpdateProfileResponseValidationError{}
+
+// Validate checks the field values on DeleteProfileRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *DeleteProfileRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	// no validation rules for Id
+
+	return nil
+}
+
+// DeleteProfileRequestValidationError is the validation error returned by
+// DeleteProfileRequest.Validate if the designated constraints aren't met.
+type DeleteProfileRequestValidationError struct {
+	Field  string
+	Reason string
+	Cause  error
+	Key    bool
+}
+
+// Error satisfies the builtin error interface
+func (e DeleteProfileRequestValidationError) Error() string {
+	cause := ""
+	if e.Cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
+	}
+
+	key := ""
+	if e.Key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDeleteProfileRequest.%s: %s%s",
+		key,
+		e.Field,
+		e.Reason,
+		cause)
+}
+
+var _ error = DeleteProfileRequestValidationError{}
+
+// Validate checks the field values on ListProfilesResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *ListProfilesResponse) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	for idx, item := range m.GetResults() {
+		_, _ = idx, item
+
+		if v, ok := interface{}(item).(interface {
+			Validate() error
+		}); ok {
+			if err := v.Validate(); err != nil {
+				return ListProfilesResponseValidationError{
+					Field:  fmt.Sprintf("Results[%v]", idx),
+					Reason: "embedded message failed validation",
+					Cause:  err,
+				}
+			}
+		}
+
+	}
+
+	return nil
+}
+
+// ListProfilesResponseValidationError is the validation error returned by
+// ListProfilesResponse.Validate if the designated constraints aren't met.
+type ListProfilesResponseValidationError struct {
+	Field  string
+	Reason string
+	Cause  error
+	Key    bool
+}
+
+// Error satisfies the builtin error interface
+func (e ListProfilesResponseValidationError) Error() string {
+	cause := ""
+	if e.Cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
+	}
+
+	key := ""
+	if e.Key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListProfilesResponse.%s: %s%s",
+		key,
+		e.Field,
+		e.Reason,
+		cause)
+}
+
+var _ error = ListProfilesResponseValidationError{}
+
+// Validate checks the field values on Group with the rules defined in the
+// proto definition for this message. If any rules are violated, an error is returned.
+func (m *Group) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	// no validation rules for Id
+
+	// no validation rules for Notes
+
+	if v, ok := interface{}(m.GetProfile()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return GroupValidationError{
+				Field:  "Profile",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
+
+	// no validation rules for ProfileId
+
+	for idx, item := range m.GetContacts() {
+		_, _ = idx, item
+
+		if v, ok := interface{}(item).(interface {
+			Validate() error
+		}); ok {
+			if err := v.Validate(); err != nil {
+				return GroupValidationError{
+					Field:  fmt.Sprintf("Contacts[%v]", idx),
+					Reason: "embedded message failed validation",
+					Cause:  err,
+				}
+			}
+		}
+
+	}
+
+	return nil
+}
+
+// GroupValidationError is the validation error returned by Group.Validate if
+// the designated constraints aren't met.
+type GroupValidationError struct {
+	Field  string
+	Reason string
+	Cause  error
+	Key    bool
+}
+
+// Error satisfies the builtin error interface
+func (e GroupValidationError) Error() string {
+	cause := ""
+	if e.Cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
+	}
+
+	key := ""
+	if e.Key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGroup.%s: %s%s",
+		key,
+		e.Field,
+		e.Reason,
+		cause)
+}
+
+var _ error = GroupValidationError{}
+
+// Validate checks the field values on CreateGroupRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *CreateGroupRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if v, ok := interface{}(m.GetPayload()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return CreateGroupRequestValidationError{
+				Field:  "Payload",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
+
+	return nil
+}
+
+// CreateGroupRequestValidationError is the validation error returned by
+// CreateGroupRequest.Validate if the designated constraints aren't met.
+type CreateGroupRequestValidationError struct {
+	Field  string
+	Reason string
+	Cause  error
+	Key    bool
+}
+
+// Error satisfies the builtin error interface
+func (e CreateGroupRequestValidationError) Error() string {
+	cause := ""
+	if e.Cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
+	}
+
+	key := ""
+	if e.Key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCreateGroupRequest.%s: %s%s",
+		key,
+		e.Field,
+		e.Reason,
+		cause)
+}
+
+var _ error = CreateGroupRequestValidationError{}
+
+// Validate checks the field values on CreateGroupResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *CreateGroupResponse) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if v, ok := interface{}(m.GetResult()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return CreateGroupResponseValidationError{
+				Field:  "Result",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
+
+	return nil
+}
+
+// CreateGroupResponseValidationError is the validation error returned by
+// CreateGroupResponse.Validate if the designated constraints aren't met.
+type CreateGroupResponseValidationError struct {
+	Field  string
+	Reason string
+	Cause  error
+	Key    bool
+}
+
+// Error satisfies the builtin error interface
+func (e CreateGroupResponseValidationError) Error() string {
+	cause := ""
+	if e.Cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
+	}
+
+	key := ""
+	if e.Key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCreateGroupResponse.%s: %s%s",
+		key,
+		e.Field,
+		e.Reason,
+		cause)
+}
+
+var _ error = CreateGroupResponseValidationError{}
+
+// Validate checks the field values on ReadGroupRequest with the rules defined
+// in the proto definition for this message. If any rules are violated, an
+// error is returned.
+func (m *ReadGroupRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	// no validation rules for Id
+
+	return nil
+}
+
+// ReadGroupRequestValidationError is the validation error returned by
+// ReadGroupRequest.Validate if the designated constraints aren't met.
+type ReadGroupRequestValidationError struct {
+	Field  string
+	Reason string
+	Cause  error
+	Key    bool
+}
+
+// Error satisfies the builtin error interface
+func (e ReadGroupRequestValidationError) Error() string {
+	cause := ""
+	if e.Cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
+	}
+
+	key := ""
+	if e.Key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sReadGroupRequest.%s: %s%s",
+		key,
+		e.Field,
+		e.Reason,
+		cause)
+}
+
+var _ error = ReadGroupRequestValidationError{}
+
+// Validate checks the field values on ReadGroupResponse with the rules defined
+// in the proto definition for this message. If any rules are violated, an
+// error is returned.
+func (m *ReadGroupResponse) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if v, ok := interface{}(m.GetResult()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return ReadGroupResponseValidationError{
+				Field:  "Result",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
+
+	return nil
+}
+
+// ReadGroupResponseValidationError is the validation error returned by
+// ReadGroupResponse.Validate if the designated constraints aren't met.
+type ReadGroupResponseValidationError struct {
+	Field  string
+	Reason string
+	Cause  error
+	Key    bool
+}
+
+// Error satisfies the builtin error interface
+func (e ReadGroupResponseValidationError) Error() string {
+	cause := ""
+	if e.Cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
+	}
+
+	key := ""
+	if e.Key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sReadGroupResponse.%s: %s%s",
+		key,
+		e.Field,
+		e.Reason,
+		cause)
+}
+
+var _ error = ReadGroupResponseValidationError{}
+
+// Validate checks the field values on UpdateGroupRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *UpdateGroupRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if v, ok := interface{}(m.GetPayload()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return UpdateGroupRequestValidationError{
+				Field:  "Payload",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
+
+	return nil
+}
+
+// UpdateGroupRequestValidationError is the validation error returned by
+// UpdateGroupRequest.Validate if the designated constraints aren't met.
+type UpdateGroupRequestValidationError struct {
+	Field  string
+	Reason string
+	Cause  error
+	Key    bool
+}
+
+// Error satisfies the builtin error interface
+func (e UpdateGroupRequestValidationError) Error() string {
+	cause := ""
+	if e.Cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
+	}
+
+	key := ""
+	if e.Key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdateGroupRequest.%s: %s%s",
+		key,
+		e.Field,
+		e.Reason,
+		cause)
+}
+
+var _ error = UpdateGroupRequestValidationError{}
+
+// Validate checks the field values on UpdateGroupResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *UpdateGroupResponse) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if v, ok := interface{}(m.GetResult()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return UpdateGroupResponseValidationError{
+				Field:  "Result",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
+
+	return nil
+}
+
+// UpdateGroupResponseValidationError is the validation error returned by
+// UpdateGroupResponse.Validate if the designated constraints aren't met.
+type UpdateGroupResponseValidationError struct {
+	Field  string
+	Reason string
+	Cause  error
+	Key    bool
+}
+
+// Error satisfies the builtin error interface
+func (e UpdateGroupResponseValidationError) Error() string {
+	cause := ""
+	if e.Cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
+	}
+
+	key := ""
+	if e.Key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdateGroupResponse.%s: %s%s",
+		key,
+		e.Field,
+		e.Reason,
+		cause)
+}
+
+var _ error = UpdateGroupResponseValidationError{}
+
+// Validate checks the field values on DeleteGroupRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *DeleteGroupRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	// no validation rules for Id
+
+	return nil
+}
+
+// DeleteGroupRequestValidationError is the validation error returned by
+// DeleteGroupRequest.Validate if the designated constraints aren't met.
+type DeleteGroupRequestValidationError struct {
+	Field  string
+	Reason string
+	Cause  error
+	Key    bool
+}
+
+// Error satisfies the builtin error interface
+func (e DeleteGroupRequestValidationError) Error() string {
+	cause := ""
+	if e.Cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
+	}
+
+	key := ""
+	if e.Key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDeleteGroupRequest.%s: %s%s",
+		key,
+		e.Field,
+		e.Reason,
+		cause)
+}
+
+var _ error = DeleteGroupRequestValidationError{}
+
+// Validate checks the field values on ListGroupsResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *ListGroupsResponse) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	for idx, item := range m.GetResults() {
+		_, _ = idx, item
+
+		if v, ok := interface{}(item).(interface {
+			Validate() error
+		}); ok {
+			if err := v.Validate(); err != nil {
+				return ListGroupsResponseValidationError{
+					Field:  fmt.Sprintf("Results[%v]", idx),
+					Reason: "embedded message failed validation",
+					Cause:  err,
+				}
+			}
+		}
+
+	}
+
+	return nil
+}
+
+// ListGroupsResponseValidationError is the validation error returned by
+// ListGroupsResponse.Validate if the designated constraints aren't met.
+type ListGroupsResponseValidationError struct {
+	Field  string
+	Reason string
+	Cause  error
+	Key    bool
+}
+
+// Error satisfies the builtin error interface
+func (e ListGroupsResponseValidationError) Error() string {
+	cause := ""
+	if e.Cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
+	}
+
+	key := ""
+	if e.Key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListGroupsResponse.%s: %s%s",
+		key,
+		e.Field,
+		e.Reason,
+		cause)
+}
+
+var _ error = ListGroupsResponseValidationError{}
+
 // Validate checks the field values on Contact with the rules defined in the
 // proto definition for this message. If any rules are violated, an error is returned.
 func (m *Contact) Validate() error {
@@ -57,6 +1046,8 @@ func (m *Contact) Validate() error {
 		}
 	}
 
+	// no validation rules for Notes
+
 	for idx, item := range m.GetEmails() {
 		_, _ = idx, item
 
@@ -66,6 +1057,61 @@ func (m *Contact) Validate() error {
 			if err := v.Validate(); err != nil {
 				return ContactValidationError{
 					Field:  fmt.Sprintf("Emails[%v]", idx),
+					Reason: "embedded message failed validation",
+					Cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if v, ok := interface{}(m.GetHomeAddress()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return ContactValidationError{
+				Field:  "HomeAddress",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetWorkAddress()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return ContactValidationError{
+				Field:  "WorkAddress",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetProfile()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return ContactValidationError{
+				Field:  "Profile",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
+
+	// no validation rules for ProfileId
+
+	for idx, item := range m.GetGroups() {
+		_, _ = idx, item
+
+		if v, ok := interface{}(item).(interface {
+			Validate() error
+		}); ok {
+			if err := v.Validate(); err != nil {
+				return ContactValidationError{
+					Field:  fmt.Sprintf("Groups[%v]", idx),
 					Reason: "embedded message failed validation",
 					Cause:  err,
 				}
@@ -165,8 +1211,6 @@ func (m *Email) Validate() error {
 		return nil
 	}
 
-	// no validation rules for Id
-
 	if err := m._validateEmail(m.GetAddress()); err != nil {
 		return EmailValidationError{
 			Field:  "Address",
@@ -258,6 +1302,57 @@ func (e EmailValidationError) Error() string {
 }
 
 var _ error = EmailValidationError{}
+
+// Validate checks the field values on Address with the rules defined in the
+// proto definition for this message. If any rules are violated, an error is returned.
+func (m *Address) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	// no validation rules for Address
+
+	// no validation rules for City
+
+	// no validation rules for State
+
+	// no validation rules for Zip
+
+	// no validation rules for Country
+
+	return nil
+}
+
+// AddressValidationError is the validation error returned by Address.Validate
+// if the designated constraints aren't met.
+type AddressValidationError struct {
+	Field  string
+	Reason string
+	Cause  error
+	Key    bool
+}
+
+// Error satisfies the builtin error interface
+func (e AddressValidationError) Error() string {
+	cause := ""
+	if e.Cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
+	}
+
+	key := ""
+	if e.Key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAddress.%s: %s%s",
+		key,
+		e.Field,
+		e.Reason,
+		cause)
+}
+
+var _ error = AddressValidationError{}
 
 // Validate checks the field values on CreateContactRequest with the rules
 // defined in the proto definition for this message. If any rules are
