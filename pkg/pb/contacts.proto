@@ -13,12 +13,13 @@ option go_package = "github.com/infobloxopen/atlas-contacts-app/pkg/pb;pb";
 message Profile {
     option (gorm.opts) = {
       ormable: true,
-      // multi_account: true
+      multi_account: true
     };
-    string id = 1;
-    string notes = 2;
-    repeated Contact contacts = 3;
-    repeated Group groups = 4;
+    uint64 id = 1;
+    string name = 2;
+    string notes = 3;
+    repeated Contact contacts = 4;
+    repeated Group groups = 5;
 }
 
 message CreateProfileRequest {
@@ -30,7 +31,7 @@ message CreateProfileResponse {
 }
 
 message ReadProfileRequest {
-    string id = 1;
+    uint64 id = 1;
 }
 
 message ReadProfileResponse {
@@ -46,7 +47,7 @@ message UpdateProfileResponse {
 }
 
 message DeleteProfileRequest {
-    string id = 1;
+    uint64 id = 1;
 }
 
 message ListProfilesResponse {
@@ -93,13 +94,14 @@ service Profiles {
 message Group {
     option (gorm.opts) = {
       ormable: true,
-      // multi_account: true
+      multi_account: true
     };
-    string id = 1;
-    string notes = 2;
-    Profile profile = 3 [(gorm.field).belongs_to = {}];
-    string profile_id = 4;
-    repeated Contact contacts = 5 [(gorm.field).many_to_many = {}];
+    uint64 id = 1;
+    string name = 2;
+    string notes = 3;
+    Profile profile = 4 [(gorm.field).belongs_to = {}];
+    uint64 profile_id = 5;
+    repeated Contact contacts = 6 [(gorm.field).many_to_many = {}];
 }
 
 message CreateGroupRequest {
@@ -111,7 +113,7 @@ message CreateGroupResponse {
 }
 
 message ReadGroupRequest {
-    string id = 1;
+    uint64 id = 1;
 }
 
 message ReadGroupResponse {
@@ -127,7 +129,7 @@ message UpdateGroupResponse {
 }
 
 message DeleteGroupRequest {
-    string id = 1;
+    uint64 id = 1;
 }
 
 message ListGroupsResponse {
@@ -174,7 +176,7 @@ service Groups {
 message Contact {
     option (gorm.opts) = {
       ormable: true,
-      // multi_account: true
+      multi_account: true
     };
     uint64 id = 1;
     string first_name = 2;
@@ -185,25 +187,26 @@ message Contact {
     repeated Email emails = 8;
     Address home_address = 9;
     Address work_address = 10;
-    Profile profile = 11 [(gorm.field).belongs_to = {}];
-    string profile_id = 12;
+    uint64 profile_id = 11;
+    Profile profile = 12 [(gorm.field).belongs_to = {}];
     repeated Group groups = 13 [(gorm.field).many_to_many = {jointable: "group_contacts"}];
 }
 
 message Email {
     option (gorm.opts) = {
       ormable: true,
-      // multi_account: true,
+      multi_account: true,
       include: [
       {type: "bool", name: "is_primary"}]
     };
-    string address = 1 [(gorm.field).tag = {primary_key: true}, (validate.rules).string.email = true];
+    uint64 id = 1;
+    string address = 2 [(validate.rules).string.email = true];
 }
 
 message Address {
     option (gorm.opts) = {
       ormable: true,
-      // multi_account: true
+      multi_account: true
     };
     string address = 1;
     string city = 2;

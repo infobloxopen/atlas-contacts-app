@@ -43,6 +43,8 @@ func (m *Profile) Validate() error {
 
 	// no validation rules for Id
 
+	// no validation rules for Name
+
 	// no validation rules for Notes
 
 	for idx, item := range m.GetContacts() {
@@ -538,6 +540,8 @@ func (m *Group) Validate() error {
 	}
 
 	// no validation rules for Id
+
+	// no validation rules for Name
 
 	// no validation rules for Notes
 
@@ -1089,6 +1093,8 @@ func (m *Contact) Validate() error {
 		}
 	}
 
+	// no validation rules for ProfileId
+
 	if v, ok := interface{}(m.GetProfile()).(interface {
 		Validate() error
 	}); ok {
@@ -1100,8 +1106,6 @@ func (m *Contact) Validate() error {
 			}
 		}
 	}
-
-	// no validation rules for ProfileId
 
 	for idx, item := range m.GetGroups() {
 		_, _ = idx, item
@@ -1210,6 +1214,8 @@ func (m *Email) Validate() error {
 	if m == nil {
 		return nil
 	}
+
+	// no validation rules for Id
 
 	if err := m._validateEmail(m.GetAddress()); err != nil {
 		return EmailValidationError{
