@@ -72,7 +72,6 @@
   revision = "8e809c8a86450a29b90dcc9efbf062d0fe6d9746"
 
 [[projects]]
-  branch = "master"
   name = "github.com/infobloxopen/atlas-app-toolkit"
   packages = [
     "auth",
@@ -80,6 +79,7 @@
     "gorm",
     "health",
     "query",
+    "requestid",
     "rpc/errdetails"
   ]
   revision = "d7f98d00ccffd9b9cbb81bbb68f116f73b449895"
