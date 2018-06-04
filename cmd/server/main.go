@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"flag"
 	"net"
 	"net/http"
@@ -11,6 +12,7 @@ import (
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
 	"github.com/grpc-ecosystem/go-grpc-middleware/validator"
 	toolkit_auth "github.com/infobloxopen/atlas-app-toolkit/auth"
+	migrate "github.com/infobloxopen/atlas-contacts-app/db"
 	"github.com/jinzhu/gorm"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -108,17 +110,16 @@ func main() {
 		logger.Fatalln(err)
 	}
 	logger.Info("Connected to database successfully.")
-	db, err := gorm.Open("postgres", DBConnectionString)
+	dbSQL, err := sql.Open("postgres", DBConnectionString)
 	if err != nil {
-		logger.Fatalln(err)
+		logger.Fatal(err)
 	}
 
-	// NOTE: Using db.AutoMigrate is a temporary measure to structure the contacts
-	// database schema. The atlas-app-toolkit team will come up with a better
-	// solution that uses database migration files.
-	if err := db.AutoMigrate(&pb.ProfileORM{}, &pb.GroupORM{}, &pb.ContactORM{}, &pb.AddressORM{}, &pb.EmailORM{}).Error; err != nil {
-		logger.Fatalln(err)
+	defer dbSQL.Close()
+	if err := migrate.MigrateDB(*dbSQL); err != nil {
+		logger.Fatal(err)
 	}
+	db, err := gorm.Open("postgres", dbSQL)
 	ps, err := svc.NewProfilesServer(db)
 	if err != nil {
 		logger.Fatalln(err)
