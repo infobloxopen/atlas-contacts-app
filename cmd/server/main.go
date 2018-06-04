@@ -69,8 +69,8 @@ func main() {
 	go http.ListenAndServe(HealthAddress, healthChecker.Handler())
 
 	// waiting for database is available.
+	logger.Info("Connecting to database...")
 	dbCheckContext, cancel := context.WithTimeout(context.Background(), time.Minute*5)
-
 	for {
 		select {
 		case <-time.After(time.Second * 3):
@@ -86,6 +86,7 @@ func main() {
 	if err != nil {
 		logger.Fatalln(err)
 	}
+	logger.Info("Connected to database successfully.")
 	db, err := gorm.Open("postgres", DBConnectionString)
 	if err != nil {
 		logger.Fatalln(err)
