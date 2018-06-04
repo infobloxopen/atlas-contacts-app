@@ -1124,6 +1124,18 @@ func (m *Contact) Validate() error {
 
 	}
 
+	if v, ok := interface{}(m.GetNicknames()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return ContactValidationError{
+				Field:  "Nicknames",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
+
 	return nil
 }
 
