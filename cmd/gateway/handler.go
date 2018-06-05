@@ -11,7 +11,7 @@ import (
 
 // NewAtlasContactsAppHandler returns an HTTP handler that serves the gRPC gateway
 func NewAtlasContactsAppHandler(ctx context.Context, grpcAddr string, opts ...runtime.ServeMuxOption) (http.Handler, error) {
-	mux := runtime.NewServeMux(opts...)
+	mux := runtime.NewServeMux(append(opts, runtime.WithMarshalerOption(runtime.MIMEWildcard, &runtime.JSONPb{OrigName: true, EmitDefaults: true}))...)
 	dialOpts := []grpc.DialOption{grpc.WithInsecure()}
 	err := pb.RegisterProfilesHandlerFromEndpoint(ctx, mux, grpcAddr, dialOpts)
 	if err != nil {

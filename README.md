@@ -16,26 +16,22 @@ Install go dep
 go get -u github.com/golang/dep/cmd/dep
 ```
 
-Need `postgresql` installed locally or running inside docker container within `contacts` database created.
-You can change the name of database in `db` parameter in `server` app.
-Table creation in this example is omitted as it will be done autmotically by `gorm`.
+### Local development setup
 
-### Installing
+Please note that you should have the following ports opened on you local workstation: `:8080 :9090 :8088 :8089 :5432`.
+If they are busy - please change them via corresponding parameters of `gateway` and `server` binaries or postgres container run.
 
-#### Build the project
+Run PostgresDB:
 
 ``` sh
-make vendor
-make
+docker run --name contacts-db -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=contacts -p 5432:5432 -d postgres:9.4
 ```
+Table creation in this example is omitted as it will be done automatically by `gorm`.
 
-If this process finished with errors it's likely that docker doesn't allow to mount host directory in its container.
-Therefore you are proposed to run `su -c "setenforce 0"` command to fix this issue.
-
-#### Local setup
-
-Please note that you should have the following ports opened on you local workstation: `:8080 :9090 :8088 :8089`.
-If they are busy - please change them via corresponding parameters of `gateway` and `server` binaries.
+Create vendor directory with required golang packages
+``` sh
+make vendor
+```
 
 Run GRPC server:
 
@@ -58,14 +54,45 @@ For Multi-Account environment, Authorization token is required. You can generate
 }
 ```
 
+Example:
+```
+{
+  "AccountID": 1
+}
+```
+Token
 ``` sh
-curl -H "Grpc-Metadata-Authorization: Token $JWT" \
-http://localhost:8080/atlas-contacts-app/v1/contacts -d '{"first_name": "Mike", "email_address": "mike@gmail.com"}'
+export JWT="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBY2NvdW50SUQiOjF9.GsXyFDDARjXe1t9DPo2LIBKHEal3O7t3vLI3edA7dGU"
 ```
 
-Note, that JWT should contain AccountID field.
+Request examples:
+``` sh
+curl -H "Grpc-Metadata-Authorization: Token $JWT" \
+http://localhost:8080/atlas-contacts-app/v1/contacts -d '{"first_name": "Mike", "primary_email": "mike@gmail.com"}'
+```
 
-#### Local Kubernetes setup
+``` sh
+curl -H "Grpc-Metadata-Authorization: Token $JWT" \
+http://localhost:8080/atlas-contacts-app/v1/contacts -d '{"first_name": "Bob", "primary_email": "john@gmail.com"}'
+```
+
+``` sh
+curl -H "Grpc-Metadata-Authorization: Token $JWT" \
+http://localhost:8080/atlas-contacts-app/v1/contacts?_filter='first_name=="Mike"'
+```
+Note, that `JWT` should contain AccountID field.
+
+#### Build docker images
+
+``` sh
+make
+```
+Will be created docker images 'infoblox/contacts-gateway' and 'infoblox/contacts-server'.
+
+If this process finished with errors it's likely that docker doesn't allow to mount host directory in its container.
+Therefore you are proposed to run `su -c "setenforce 0"` command to fix this issue.
+
+### Local Kubernetes setup
 
 ##### Prerequisites
 
@@ -76,22 +103,17 @@ make nginx-up
 ```
 
 ##### Deployment
-Upload atlas-contacts-app images into minikube
-```
-make push-minikube
-```
-
 To deploy atlas-contacts-app use
 
 ``` sh
 make up
 ```
+Will be used latest Docker Hub images: 'infoblox/contacts-gateway:latest', 'infoblox/contacts-server:latest'.
 
-To deploy authN stub, clone atlas-stubs repo and then execute deployment script inside authn-stub package:
+To deploy authN stub, clone atlas-stubs repo (https://github.com/infobloxopen/atlas-stubs.git) and then execute deployment script inside authn-stub package or:
 
 ``` sh
-	cd $GOPATH/src/github.com/infobloxopen && git clone https://github.com/infobloxopen/atlas-stubs.git
-	cd atlas-stubs/authn-stub && make && make up
+curl https://raw.githubusercontent.com/infobloxopen/atlas-stubs/master/authn-stub/deploy/authn-stub.yaml | kubectl apply -f -
 ```
 
 This will start AuthN stub that maps `User-And-Pass` header on JWT tokens, with following meaning:
