@@ -68,12 +68,13 @@ export JWT="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBY2NvdW50SUQiOjF9.GsXyFDDARj
 Request examples:
 ``` sh
 curl -H "Grpc-Metadata-Authorization: Token $JWT" \
-http://localhost:8080/atlas-contacts-app/v1/contacts -d '{"first_name": "Mike", "primary_email": "mike@gmail.com"}'
+http://localhost:8080/atlas-contacts-app/v1/contacts -d '{"first_name": "Mike", "primary_email": "mike@example.com"}'
 ```
 
 ``` sh
 curl -H "Grpc-Metadata-Authorization: Token $JWT" \
-http://localhost:8080/atlas-contacts-app/v1/contacts -d '{"first_name": "Bob", "primary_email": "john@gmail.com"}'
+http://localhost:8080/atlas-contacts-app/v1/contacts -d \
+'{"first_name": "Robert", "primary_email": "robert@example.com", "nicknames": ["bob", "robbie"]}'
 ```
 
 ``` sh

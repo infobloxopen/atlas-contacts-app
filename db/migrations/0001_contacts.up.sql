@@ -1,13 +1,14 @@
 
 CREATE TABLE contacts (
   id serial primary key,
-  account_id integer,
+  account_id varchar(255),
   created_at timestamptz DEFAULT current_timestamp,
   updated_at timestamptz DEFAULT NULL,
   first_name varchar(255) DEFAULT NULL,
   middle_name varchar(255) DEFAULT NULL,
   last_name varchar(255) DEFAULT NULL,
-  email_address varchar(255) DEFAULT NULL
+  email_address varchar(255) DEFAULT NULL,
+  nicknames jsonb
 );
 
 CREATE FUNCTION set_updated_at()

@@ -46,6 +46,8 @@ import errors "errors"
 
 import auth "github.com/infobloxopen/atlas-app-toolkit/auth"
 import gorm "github.com/jinzhu/gorm"
+import gormpq "github.com/jinzhu/gorm/dialects/postgres"
+import gtypes "github.com/infobloxopen/protoc-gen-gorm/types"
 import ops "github.com/infobloxopen/atlas-app-toolkit/gorm"
 
 import fmt "fmt"
@@ -108,11 +110,6 @@ func (m *Profile) ToORM(ctx context.Context) (ProfileORM, error) {
 			to.Groups = append(to.Groups, nil)
 		}
 	}
-	accountID, err := auth.GetAccountID(ctx, nil)
-	if err != nil {
-		return to, err
-	}
-	to.AccountID = accountID
 	if posthook, ok := interface{}(m).(ProfileWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -230,11 +227,6 @@ func (m *Group) ToORM(ctx context.Context) (GroupORM, error) {
 			to.Contacts = append(to.Contacts, nil)
 		}
 	}
-	accountID, err := auth.GetAccountID(ctx, nil)
-	if err != nil {
-		return to, err
-	}
-	to.AccountID = accountID
 	if posthook, ok := interface{}(m).(GroupWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -306,11 +298,12 @@ type ContactORM struct {
 	AccountID   string
 	Emails      []*EmailORM `gorm:"foreignkey:ContactId;association_foreignkey:Id"`
 	FirstName   string
-	Groups      []*GroupORM `gorm:"many2many:group_contacts;foreignkey:Id;association_foreignkey:Id;jointable_foreignkey:contact_id;association_jointable_foreignkey:group_id"`
+	Groups      []*GroupORM `gorm:"many2many:GroupContacts;foreignkey:Id;association_foreignkey:Id;jointable_foreignkey:contact_id;association_jointable_foreignkey:group_id"`
 	HomeAddress *AddressORM `gorm:"foreignkey:HomeAddressContactId;association_foreignkey:Id"`
 	Id          uint64
 	LastName    string
 	MiddleName  string
+	Nicknames   *gormpq.Jsonb
 	Notes       string
 	Profile     *ProfileORM `gorm:"foreignkey:ProfileId;association_foreignkey:Id"`
 	ProfileId   uint64
@@ -381,11 +374,9 @@ func (m *Contact) ToORM(ctx context.Context) (ContactORM, error) {
 			to.Groups = append(to.Groups, nil)
 		}
 	}
-	accountID, err := auth.GetAccountID(ctx, nil)
-	if err != nil {
-		return to, err
+	if m.Nicknames != nil {
+		to.Nicknames = &gormpq.Jsonb{[]byte(m.Nicknames.Value)}
 	}
-	to.AccountID = accountID
 	if posthook, ok := interface{}(m).(ContactWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -451,6 +442,9 @@ func (m *ContactORM) ToPB(ctx context.Context) (Contact, error) {
 			to.Groups = append(to.Groups, nil)
 		}
 	}
+	if m.Nicknames != nil {
+		to.Nicknames = &gtypes.JSONValue{Value: string(m.Nicknames.RawMessage)}
+	}
 	if posthook, ok := interface{}(m).(ContactWithAfterToPB); ok {
 		err = posthook.AfterToPB(ctx, &to)
 	}
@@ -482,7 +476,7 @@ type ContactWithAfterToPB interface {
 
 type EmailORM struct {
 	AccountID string
-	Address   string
+	Address   string `gorm:"unique"`
 	ContactId uint64
 	Id        uint64
 	IsPrimary bool
@@ -505,11 +499,6 @@ func (m *Email) ToORM(ctx context.Context) (EmailORM, error) {
 	}
 	to.Id = m.Id
 	to.Address = m.Address
-	accountID, err := auth.GetAccountID(ctx, nil)
-	if err != nil {
-		return to, err
-	}
-	to.AccountID = accountID
 	if posthook, ok := interface{}(m).(EmailWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -588,11 +577,6 @@ func (m *Address) ToORM(ctx context.Context) (AddressORM, error) {
 	to.State = m.State
 	to.Zip = m.Zip
 	to.Country = m.Country
-	accountID, err := auth.GetAccountID(ctx, nil)
-	if err != nil {
-		return to, err
-	}
-	to.AccountID = accountID
 	if posthook, ok := interface{}(m).(AddressWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -652,6 +636,11 @@ func DefaultCreateProfile(ctx context.Context, in *Profile, db *gorm.DB) (*Profi
 	if err != nil {
 		return nil, err
 	}
+	accountID, err := auth.GetAccountID(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	ormObj.AccountID = accountID
 	if err = db.Create(&ormObj).Error; err != nil {
 		return nil, err
 	}
@@ -668,9 +657,13 @@ func DefaultReadProfile(ctx context.Context, in *Profile, db *gorm.DB) (*Profile
 	if err != nil {
 		return nil, err
 	}
-	db = db.Preload("Contacts").Preload("Groups")
+	accountID, err := auth.GetAccountID(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	ormParams.AccountID = accountID
 	ormResponse := ProfileORM{}
-	if err = db.Where(&ormParams).First(&ormResponse).Error; err != nil {
+	if err = db.Set("gorm:auto_preload", true).Where(&ormParams).First(&ormResponse).Error; err != nil {
 		return nil, err
 	}
 	pbResponse, err := ormResponse.ToPB(ctx)
@@ -712,6 +705,11 @@ func DefaultDeleteProfile(ctx context.Context, in *Profile, db *gorm.DB) error {
 	if err != nil {
 		return err
 	}
+	accountID, err := auth.GetAccountID(ctx, nil)
+	if err != nil {
+		return err
+	}
+	ormObj.AccountID = accountID
 	if ormObj.Id == 0 {
 		return errors.New("A non-zero ID value is required for a delete call")
 	}
@@ -728,12 +726,16 @@ func DefaultStrictUpdateProfile(ctx context.Context, in *Profile, db *gorm.DB) (
 	if err != nil {
 		return nil, err
 	}
+	accountID, err := auth.GetAccountID(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
 	filterContacts := ContactORM{}
 	if ormObj.Id == 0 {
 		return nil, errors.New("Can't do overwriting update with no Id value for ProfileORM")
 	}
 	filterContacts.ProfileId = ormObj.Id
-	filterContacts.AccountID = ormObj.AccountID
+	filterContacts.AccountID = accountID
 	if err = db.Where(filterContacts).Delete(ContactORM{}).Error; err != nil {
 		return nil, err
 	}
@@ -742,11 +744,12 @@ func DefaultStrictUpdateProfile(ctx context.Context, in *Profile, db *gorm.DB) (
 		return nil, errors.New("Can't do overwriting update with no Id value for ProfileORM")
 	}
 	filterGroups.ProfileId = ormObj.Id
-	filterGroups.AccountID = ormObj.AccountID
+	filterGroups.AccountID = accountID
 	if err = db.Where(filterGroups).Delete(GroupORM{}).Error; err != nil {
 		return nil, err
 	}
-	db = db.Where(&ProfileORM{AccountID: ormObj.AccountID})
+	ormObj.AccountID = accountID
+	db = db.Where(&ProfileORM{AccountID: accountID})
 	if err = db.Save(&ormObj).Error; err != nil {
 		return nil, err
 	}
@@ -764,14 +767,12 @@ func DefaultListProfile(ctx context.Context, db *gorm.DB) ([]*Profile, error) {
 	if err != nil {
 		return nil, err
 	}
-	in := Profile{}
-	ormParams, err := in.ToORM(ctx)
+	accountID, err := auth.GetAccountID(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
-	db = db.Where(&ormParams)
-	db = db.Preload("Contacts").Preload("Groups")
-	if err := db.Find(&ormResponse).Error; err != nil {
+	db = db.Where(&ProfileORM{AccountID: accountID})
+	if err := db.Set("gorm:auto_preload", true).Find(&ormResponse).Error; err != nil {
 		return nil, err
 	}
 	pbResponse := []*Profile{}
@@ -794,6 +795,11 @@ func DefaultCreateGroup(ctx context.Context, in *Group, db *gorm.DB) (*Group, er
 	if err != nil {
 		return nil, err
 	}
+	accountID, err := auth.GetAccountID(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	ormObj.AccountID = accountID
 	if err = db.Create(&ormObj).Error; err != nil {
 		return nil, err
 	}
@@ -810,9 +816,13 @@ func DefaultReadGroup(ctx context.Context, in *Group, db *gorm.DB) (*Group, erro
 	if err != nil {
 		return nil, err
 	}
-	db = db.Preload("Contacts").Preload("Profile")
+	accountID, err := auth.GetAccountID(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	ormParams.AccountID = accountID
 	ormResponse := GroupORM{}
-	if err = db.Where(&ormParams).First(&ormResponse).Error; err != nil {
+	if err = db.Set("gorm:auto_preload", true).Where(&ormParams).First(&ormResponse).Error; err != nil {
 		return nil, err
 	}
 	pbResponse, err := ormResponse.ToPB(ctx)
@@ -854,6 +864,11 @@ func DefaultDeleteGroup(ctx context.Context, in *Group, db *gorm.DB) error {
 	if err != nil {
 		return err
 	}
+	accountID, err := auth.GetAccountID(ctx, nil)
+	if err != nil {
+		return err
+	}
+	ormObj.AccountID = accountID
 	if ormObj.Id == 0 {
 		return errors.New("A non-zero ID value is required for a delete call")
 	}
@@ -870,7 +885,12 @@ func DefaultStrictUpdateGroup(ctx context.Context, in *Group, db *gorm.DB) (*Gro
 	if err != nil {
 		return nil, err
 	}
-	db = db.Where(&GroupORM{AccountID: ormObj.AccountID})
+	accountID, err := auth.GetAccountID(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	ormObj.AccountID = accountID
+	db = db.Where(&GroupORM{AccountID: accountID})
 	if err = db.Save(&ormObj).Error; err != nil {
 		return nil, err
 	}
@@ -888,14 +908,12 @@ func DefaultListGroup(ctx context.Context, db *gorm.DB) ([]*Group, error) {
 	if err != nil {
 		return nil, err
 	}
-	in := Group{}
-	ormParams, err := in.ToORM(ctx)
+	accountID, err := auth.GetAccountID(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
-	db = db.Where(&ormParams)
-	db = db.Preload("Contacts").Preload("Profile")
-	if err := db.Find(&ormResponse).Error; err != nil {
+	db = db.Where(&GroupORM{AccountID: accountID})
+	if err := db.Set("gorm:auto_preload", true).Find(&ormResponse).Error; err != nil {
 		return nil, err
 	}
 	pbResponse := []*Group{}
@@ -918,6 +936,11 @@ func DefaultCreateContact(ctx context.Context, in *Contact, db *gorm.DB) (*Conta
 	if err != nil {
 		return nil, err
 	}
+	accountID, err := auth.GetAccountID(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	ormObj.AccountID = accountID
 	if err = db.Create(&ormObj).Error; err != nil {
 		return nil, err
 	}
@@ -934,9 +957,13 @@ func DefaultReadContact(ctx context.Context, in *Contact, db *gorm.DB) (*Contact
 	if err != nil {
 		return nil, err
 	}
-	db = db.Preload("Emails").Preload("Groups").Preload("HomeAddress").Preload("Profile").Preload("WorkAddress")
+	accountID, err := auth.GetAccountID(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	ormParams.AccountID = accountID
 	ormResponse := ContactORM{}
-	if err = db.Where(&ormParams).First(&ormResponse).Error; err != nil {
+	if err = db.Set("gorm:auto_preload", true).Where(&ormParams).First(&ormResponse).Error; err != nil {
 		return nil, err
 	}
 	pbResponse, err := ormResponse.ToPB(ctx)
@@ -978,6 +1005,11 @@ func DefaultDeleteContact(ctx context.Context, in *Contact, db *gorm.DB) error {
 	if err != nil {
 		return err
 	}
+	accountID, err := auth.GetAccountID(ctx, nil)
+	if err != nil {
+		return err
+	}
+	ormObj.AccountID = accountID
 	if ormObj.Id == 0 {
 		return errors.New("A non-zero ID value is required for a delete call")
 	}
@@ -994,12 +1026,16 @@ func DefaultStrictUpdateContact(ctx context.Context, in *Contact, db *gorm.DB) (
 	if err != nil {
 		return nil, err
 	}
+	accountID, err := auth.GetAccountID(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
 	filterEmails := EmailORM{}
 	if ormObj.Id == 0 {
 		return nil, errors.New("Can't do overwriting update with no Id value for ContactORM")
 	}
 	filterEmails.ContactId = ormObj.Id
-	filterEmails.AccountID = ormObj.AccountID
+	filterEmails.AccountID = accountID
 	if err = db.Where(filterEmails).Delete(EmailORM{}).Error; err != nil {
 		return nil, err
 	}
@@ -1008,7 +1044,7 @@ func DefaultStrictUpdateContact(ctx context.Context, in *Contact, db *gorm.DB) (
 		return nil, errors.New("Can't do overwriting update with no Id value for ContactORM")
 	}
 	filterHomeAddress.HomeAddressContactId = ormObj.Id
-	filterHomeAddress.AccountID = ormObj.AccountID
+	filterHomeAddress.AccountID = accountID
 	if err = db.Where(filterHomeAddress).Delete(AddressORM{}).Error; err != nil {
 		return nil, err
 	}
@@ -1017,11 +1053,12 @@ func DefaultStrictUpdateContact(ctx context.Context, in *Contact, db *gorm.DB) (
 		return nil, errors.New("Can't do overwriting update with no Id value for ContactORM")
 	}
 	filterWorkAddress.WorkAddressContactId = ormObj.Id
-	filterWorkAddress.AccountID = ormObj.AccountID
+	filterWorkAddress.AccountID = accountID
 	if err = db.Where(filterWorkAddress).Delete(AddressORM{}).Error; err != nil {
 		return nil, err
 	}
-	db = db.Where(&ContactORM{AccountID: ormObj.AccountID})
+	ormObj.AccountID = accountID
+	db = db.Where(&ContactORM{AccountID: accountID})
 	if err = db.Save(&ormObj).Error; err != nil {
 		return nil, err
 	}
@@ -1039,14 +1076,12 @@ func DefaultListContact(ctx context.Context, db *gorm.DB) ([]*Contact, error) {
 	if err != nil {
 		return nil, err
 	}
-	in := Contact{}
-	ormParams, err := in.ToORM(ctx)
+	accountID, err := auth.GetAccountID(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
-	db = db.Where(&ormParams)
-	db = db.Preload("Emails").Preload("Groups").Preload("HomeAddress").Preload("Profile").Preload("WorkAddress")
-	if err := db.Find(&ormResponse).Error; err != nil {
+	db = db.Where(&ContactORM{AccountID: accountID})
+	if err := db.Set("gorm:auto_preload", true).Find(&ormResponse).Error; err != nil {
 		return nil, err
 	}
 	pbResponse := []*Contact{}
@@ -1069,6 +1104,11 @@ func DefaultCreateEmail(ctx context.Context, in *Email, db *gorm.DB) (*Email, er
 	if err != nil {
 		return nil, err
 	}
+	accountID, err := auth.GetAccountID(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	ormObj.AccountID = accountID
 	if err = db.Create(&ormObj).Error; err != nil {
 		return nil, err
 	}
@@ -1085,8 +1125,13 @@ func DefaultReadEmail(ctx context.Context, in *Email, db *gorm.DB) (*Email, erro
 	if err != nil {
 		return nil, err
 	}
+	accountID, err := auth.GetAccountID(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	ormParams.AccountID = accountID
 	ormResponse := EmailORM{}
-	if err = db.Where(&ormParams).First(&ormResponse).Error; err != nil {
+	if err = db.Set("gorm:auto_preload", true).Where(&ormParams).First(&ormResponse).Error; err != nil {
 		return nil, err
 	}
 	pbResponse, err := ormResponse.ToPB(ctx)
@@ -1128,6 +1173,11 @@ func DefaultDeleteEmail(ctx context.Context, in *Email, db *gorm.DB) error {
 	if err != nil {
 		return err
 	}
+	accountID, err := auth.GetAccountID(ctx, nil)
+	if err != nil {
+		return err
+	}
+	ormObj.AccountID = accountID
 	if ormObj.Id == 0 {
 		return errors.New("A non-zero ID value is required for a delete call")
 	}
@@ -1144,7 +1194,12 @@ func DefaultStrictUpdateEmail(ctx context.Context, in *Email, db *gorm.DB) (*Ema
 	if err != nil {
 		return nil, err
 	}
-	db = db.Where(&EmailORM{AccountID: ormObj.AccountID})
+	accountID, err := auth.GetAccountID(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	ormObj.AccountID = accountID
+	db = db.Where(&EmailORM{AccountID: accountID})
 	if err = db.Save(&ormObj).Error; err != nil {
 		return nil, err
 	}
@@ -1162,13 +1217,12 @@ func DefaultListEmail(ctx context.Context, db *gorm.DB) ([]*Email, error) {
 	if err != nil {
 		return nil, err
 	}
-	in := Email{}
-	ormParams, err := in.ToORM(ctx)
+	accountID, err := auth.GetAccountID(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
-	db = db.Where(&ormParams)
-	if err := db.Find(&ormResponse).Error; err != nil {
+	db = db.Where(&EmailORM{AccountID: accountID})
+	if err := db.Set("gorm:auto_preload", true).Find(&ormResponse).Error; err != nil {
 		return nil, err
 	}
 	pbResponse := []*Email{}
@@ -1191,6 +1245,11 @@ func DefaultCreateAddress(ctx context.Context, in *Address, db *gorm.DB) (*Addre
 	if err != nil {
 		return nil, err
 	}
+	accountID, err := auth.GetAccountID(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	ormObj.AccountID = accountID
 	if err = db.Create(&ormObj).Error; err != nil {
 		return nil, err
 	}
@@ -1205,13 +1264,12 @@ func DefaultListAddress(ctx context.Context, db *gorm.DB) ([]*Address, error) {
 	if err != nil {
 		return nil, err
 	}
-	in := Address{}
-	ormParams, err := in.ToORM(ctx)
+	accountID, err := auth.GetAccountID(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
-	db = db.Where(&ormParams)
-	if err := db.Find(&ormResponse).Error; err != nil {
+	db = db.Where(&AddressORM{AccountID: accountID})
+	if err := db.Set("gorm:auto_preload", true).Find(&ormResponse).Error; err != nil {
 		return nil, err
 	}
 	pbResponse := []*Address{}

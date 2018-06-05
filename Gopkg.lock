@@ -110,10 +110,13 @@
   revision = "fb9cddb08aeb183077bdb083c0a35f8f2bbf80b1"
 
 [[projects]]
+  branch = "master"
   name = "github.com/infobloxopen/protoc-gen-gorm"
-  packages = ["options"]
-  revision = "f2d071ea410807579e11a46632f26c4de9f2b5e4"
-  version = "0.4.0"
+  packages = [
+    "options",
+    "types"
+  ]
+  revision = "e695595c5f0bc2fd2c89201f8471b4aac4aea2bd"
 
 [[projects]]
   branch = "master"
@@ -266,6 +269,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "fb09a35815784d17a821f3621aee77d3882f495dcf64ec3991b95c19238f3115"
+  inputs-digest = "e2b45300179507d0b82d8a088514e01ea92a80b609e07fbe331150625c2b6652"
   solver-name = "gps-cdcl"
   solver-version = 1
