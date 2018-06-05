@@ -7,6 +7,7 @@ import "google/api/annotations.proto";
 import "github.com/lyft/protoc-gen-validate/validate/validate.proto";
 import "protoc-gen-swagger/options/annotations.proto";
 import "github.com/infobloxopen/protoc-gen-gorm/options/gorm.proto";
+import "github.com/infobloxopen/protoc-gen-gorm/types/types.proto";
 
 option go_package = "github.com/infobloxopen/atlas-contacts-app/pkg/pb;pb";
 
@@ -190,6 +191,8 @@ message Contact {
     uint64 profile_id = 11;
     Profile profile = 12 [(gorm.field).belongs_to = {}];
     repeated Group groups = 13 [(gorm.field).many_to_many = {jointable: "group_contacts"}];
+    // nicknames is arbitrary json, but should be used for a list of strings
+    gorm.types.JSONValue nicknames = 14;
 }
 
 message Email {
@@ -200,7 +203,7 @@ message Email {
       {type: "bool", name: "is_primary"}]
     };
     uint64 id = 1;
-    string address = 2 [(validate.rules).string.email = true];
+    string address = 2 [(gorm.field).tag.unique = true, (validate.rules).string.email = true];
 }
 
 message Address {

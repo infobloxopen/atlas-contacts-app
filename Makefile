@@ -17,10 +17,10 @@ SERVER_DOCKERFILE	:= $(DOCKERFILE_PATH)/Dockerfile
 # configuration for the protobuf gentool
 SRCROOT_ON_HOST				:= $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))
 SRCROOT_IN_CONTAINER	:= /go/src/$(PROJECT_ROOT)
-DOCKER_RUNNER					:= docker run -u `id -u`:`id -g` --rm
-DOCKER_RUNNER					+= -v $(SRCROOT_ON_HOST):$(SRCROOT_IN_CONTAINER)
-DOCKER_GENERATOR			:= infoblox/atlas-gentool:v3
-GENERATOR							:= $(DOCKER_RUNNER) $(DOCKER_GENERATOR)
+DOCKER_RUNNER        	:= docker run --rm
+DOCKER_RUNNER        	+= -v $(SRCROOT_ON_HOST):$(SRCROOT_IN_CONTAINER)
+DOCKER_GENERATOR	:= infoblox/atlas-gentool:latest
+GENERATOR		:= $(DOCKER_RUNNER) $(DOCKER_GENERATOR)
 
 # configuration for the database
 DATABASE_ADDRESS	?= localhost:5432
@@ -56,7 +56,7 @@ protobuf:
 	@$(GENERATOR) \
 	--go_out=plugins=grpc:. \
 	--grpc-gateway_out=logtostderr=true:. \
-	--gorm_out=. \
+	--gorm_out="engine=postgres:." \
 	--validate_out="lang=go:." \
 	--swagger_out=:. $(PROJECT_ROOT)/pkg/pb/service.proto
 

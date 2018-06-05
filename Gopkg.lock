@@ -80,10 +80,11 @@
     "gorm",
     "health",
     "query",
+    "requestid",
     "rpc/errdetails",
     "server"
   ]
-  revision = "d7f98d00ccffd9b9cbb81bbb68f116f73b449895"
+  revision = "df1ac3d923d1a5fe489ffcba584bc477437140a4"
 
 [[projects]]
   branch = "master"
@@ -111,10 +112,13 @@
   revision = "fb9cddb08aeb183077bdb083c0a35f8f2bbf80b1"
 
 [[projects]]
+  branch = "master"
   name = "github.com/infobloxopen/protoc-gen-gorm"
-  packages = ["options"]
-  revision = "f2d071ea410807579e11a46632f26c4de9f2b5e4"
-  version = "0.4.0"
+  packages = [
+    "options",
+    "types"
+  ]
+  revision = "e695595c5f0bc2fd2c89201f8471b4aac4aea2bd"
 
 [[projects]]
   branch = "master"
@@ -267,6 +271,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "bae6de99851297d4d7b7c4bce177a7d8ed42ea3c206144ea8819ef02d4f6295c"
+  inputs-digest = "137c07631ebc4700a66e9f785b891e40b129d74d568471d047864d2b023016b4"
   solver-name = "gps-cdcl"
   solver-version = 1

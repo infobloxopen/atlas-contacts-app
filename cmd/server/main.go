@@ -3,17 +3,20 @@ package main
 import (
 	"flag"
 	"net"
+
 	"github.com/jinzhu/gorm"
 	"github.com/sirupsen/logrus"
-	"github.com/infobloxopen/atlas-contacts-app/cmd"
-	"github.com/infobloxopen/atlas-contacts-app/pkg/pb"
-	"github.com/infobloxopen/atlas-app-toolkit/health"
-	"github.com/infobloxopen/atlas-app-toolkit/server"
-	"github.com/infobloxopen/atlas-app-toolkit/gateway"
+
 	"context"
 	"fmt"
-	"time"
 	"net/http"
+	"time"
+
+	"github.com/infobloxopen/atlas-app-toolkit/gateway"
+	"github.com/infobloxopen/atlas-app-toolkit/health"
+	"github.com/infobloxopen/atlas-app-toolkit/server"
+	"github.com/infobloxopen/atlas-contacts-app/cmd"
+	"github.com/infobloxopen/atlas-contacts-app/pkg/pb"
 )
 
 var (
