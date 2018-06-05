@@ -16,6 +16,7 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/infobloxopen/atlas-app-toolkit/health"
+	"github.com/infobloxopen/atlas-app-toolkit/requestid"
 	"github.com/infobloxopen/atlas-contacts-app/cmd"
 	"github.com/infobloxopen/atlas-contacts-app/pkg/pb"
 	"github.com/infobloxopen/atlas-contacts-app/pkg/svc"
@@ -46,8 +47,10 @@ func main() {
 	interceptors := []grpc.UnaryServerInterceptor{
 		// validation interceptor
 		grpc_validator.UnaryServerInterceptor(),
-		// validation interceptor
+		// logger interceptor
 		grpc_logrus.UnaryServerInterceptor(logrus.NewEntry(logger)),
+		// Request-Id interceptor
+		requestid.UnaryServerInterceptor(),
 	}
 	// add authorization interceptor if authz service address is provided
 	if AuthzAddr != "" {
