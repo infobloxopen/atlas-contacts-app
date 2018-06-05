@@ -74,7 +74,7 @@ http://localhost:8080/atlas-contacts-app/v1/contacts -d '{"first_name": "Mike", 
 ``` sh
 curl -H "Grpc-Metadata-Authorization: Token $JWT" \
 http://localhost:8080/atlas-contacts-app/v1/contacts -d \
-'{"first_name": "Robert", "primary_email": "amazing_rob@example.com", "nicknames": ["bob"]}'
+'{"first_name": "Robert", "primary_email": "robert@example.com", "nicknames": ["bob", "robbie"]}'
 ```
 
 ``` sh
