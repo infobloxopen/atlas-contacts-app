@@ -27,6 +27,7 @@ var (
 	HealthAddress      string
 	DBConnectionString string
 	AuthzAddr          string
+	LogLevel           string
 )
 
 const (
@@ -37,7 +38,24 @@ const (
 )
 
 func main() {
-	logger := logrus.New()
+	logger := logrus.StandardLogger()
+
+	// Set the log level on the default logger based on command line flag
+	logLevels := map[string]logrus.Level{
+		"debug":   logrus.DebugLevel,
+		"info":    logrus.InfoLevel,
+		"warning": logrus.WarnLevel,
+		"error":   logrus.ErrorLevel,
+		"fatal":   logrus.FatalLevel,
+		"panic":   logrus.PanicLevel,
+	}
+	if level, ok := logLevels[LogLevel]; !ok {
+		logger.Errorf("Invalid value %q provided for log level", LogLevel)
+		logger.SetLevel(logrus.InfoLevel)
+	} else {
+		logger.SetLevel(level)
+	}
+
 	// create new tcp listenerf
 	ln, err := net.Listen("tcp", ServerAddress)
 	if err != nil {
@@ -130,6 +148,7 @@ func init() {
 	flag.StringVar(&DBConnectionString, "db", "", "the database address")
 	flag.StringVar(&HealthAddress, "health", "0.0.0.0:8089", "Address for health checking")
 	flag.StringVar(&AuthzAddr, "authz", "", "address of the authorization service")
+	flag.StringVar(&LogLevel, "log", "info", "log level")
 	flag.Parse()
 }
 
