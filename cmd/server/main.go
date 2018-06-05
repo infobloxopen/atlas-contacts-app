@@ -94,14 +94,27 @@ func main() {
 	// NOTE: Using db.AutoMigrate is a temporary measure to structure the contacts
 	// database schema. The atlas-app-toolkit team will come up with a better
 	// solution that uses database migration files.
-	if err := db.AutoMigrate(&pb.ContactORM{}, &pb.EmailORM{}).Error; err != nil {
+	if err := db.AutoMigrate(&pb.ProfileORM{}, &pb.GroupORM{}, &pb.ContactORM{}, &pb.AddressORM{}, &pb.EmailORM{}).Error; err != nil {
 		logger.Fatalln(err)
 	}
-	s, err := svc.NewBasicServer(db)
+	ps, err := svc.NewProfilesServer(db)
 	if err != nil {
 		logger.Fatalln(err)
 	}
-	pb.RegisterContactsServer(server, s)
+	pb.RegisterProfilesServer(server, ps)
+
+	gs, err := svc.NewGroupsServer(db)
+	if err != nil {
+		logger.Fatalln(err)
+	}
+	pb.RegisterGroupsServer(server, gs)
+
+	cs, err := svc.NewContactsServer(db)
+	if err != nil {
+		logger.Fatalln(err)
+	}
+	pb.RegisterContactsServer(server, cs)
+
 	if err := server.Serve(ln); err != nil {
 		logger.Fatalln(err)
 	}

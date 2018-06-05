@@ -21,12 +21,30 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// NewBasicServer returns an instance of the default server interface
-func NewBasicServer(database *gorm.DB) (pb.ContactsServer, error) {
-	return &server{&pb.ContactsDefaultServer{DB: database}}, nil
+// NewProfilesServer returns an instance of the default profiles server interface
+func NewProfilesServer(database *gorm.DB) (pb.ProfilesServer, error) {
+	return &profilesServer{&pb.ProfilesDefaultServer{DB: database}}, nil
 }
 
-type server struct {
+type profilesServer struct {
+	*pb.ProfilesDefaultServer
+}
+
+// NewGroupsServer returns an instance of the default groups server interface
+func NewGroupsServer(database *gorm.DB) (pb.GroupsServer, error) {
+	return &groupsServer{&pb.GroupsDefaultServer{DB: database}}, nil
+}
+
+type groupsServer struct {
+	*pb.GroupsDefaultServer
+}
+
+// NewContactsServer returns an instance of the default contacts server interface
+func NewContactsServer(database *gorm.DB) (pb.ContactsServer, error) {
+	return &contactsServer{&pb.ContactsDefaultServer{DB: database}}, nil
+}
+
+type contactsServer struct {
 	*pb.ContactsDefaultServer
 }
 
@@ -40,7 +58,7 @@ type server struct {
 // - if an user requests page token and provides offset then only first time
 //	 the provided offset is applied
 //		page_token = null & offset = 2 & limit = 2 -> page_token=base64(offset=2+2:limit=2)
-func (s *server) List(ctx context.Context, in *empty.Empty) (*pb.ListContactsResponse, error) {
+func (s *contactsServer) List(ctx context.Context, in *empty.Empty) (*pb.ListContactsResponse, error) {
 	page, err := gateway.Pagination(ctx)
 	if err != nil {
 		return nil, err

@@ -13,7 +13,15 @@ import (
 func NewAtlasContactsAppHandler(ctx context.Context, grpcAddr string, opts ...runtime.ServeMuxOption) (http.Handler, error) {
 	mux := runtime.NewServeMux(append(opts, runtime.WithMarshalerOption(runtime.MIMEWildcard, &runtime.JSONPb{OrigName: true, EmitDefaults: true}))...)
 	dialOpts := []grpc.DialOption{grpc.WithInsecure()}
-	err := pb.RegisterContactsHandlerFromEndpoint(ctx, mux, grpcAddr, dialOpts)
+	err := pb.RegisterProfilesHandlerFromEndpoint(ctx, mux, grpcAddr, dialOpts)
+	if err != nil {
+		return nil, err
+	}
+	err = pb.RegisterGroupsHandlerFromEndpoint(ctx, mux, grpcAddr, dialOpts)
+	if err != nil {
+		return nil, err
+	}
+	err = pb.RegisterContactsHandlerFromEndpoint(ctx, mux, grpcAddr, dialOpts)
 	if err != nil {
 		return nil, err
 	}

@@ -80,6 +80,8 @@ http://localhost:8080/atlas-contacts-app/v1/contacts -d '{"first_name": "Bob", "
 curl -H "Grpc-Metadata-Authorization: Token $JWT" \
 http://localhost:8080/atlas-contacts-app/v1/contacts?_filter='first_name=="Mike"'
 ```
+Note, that `JWT` should contain AccountID field.
+
 #### Build docker images
 
 ``` sh
@@ -89,7 +91,6 @@ Will be created docker images 'infoblox/contacts-gateway' and 'infoblox/contacts
 
 If this process finished with errors it's likely that docker doesn't allow to mount host directory in its container.
 Therefore you are proposed to run `su -c "setenforce 0"` command to fix this issue.
-
 
 ### Local Kubernetes setup
 
@@ -127,18 +128,39 @@ admin2:admin -> AccountID=2
 Try it out by executing following curl commangs:
 
 ``` sh
+# Create some profiles
 curl -k -H "User-And-Pass: admin1:admin" \
-https://minikube/atlas-contacts-app/v1/contacts -d '{"first_name": "Mike", "primary_email": "mike@gmail.com"}'
-```
+https://minikube/atlas-contacts-app/v1/profiles -d '{"name": "personal", "notes": "Used for personal aims"}' | jq
 
-``` sh
 curl -k -H "User-And-Pass: admin1:admin" \
-https://minikube/atlas-contacts-app/v1/contacts -d '{"first_name": "Bob", "primary_email": "john@gmail.com"}'
-```
+https://minikube/atlas-contacts-app/v1/profiles -d '{"name": "work", "notes": "Used for work aims"}' | jq
 
-``` sh
+# Create some groups assigned to profiles
 curl -k -H "User-And-Pass: admin1:admin" \
-https://minikube/atlas-contacts-app/v1/contacts?_filter='first_name=="Mike"'
+https://minikube/atlas-contacts-app/v1/groups -d '{"name": "schoolmates", "profile_id": 1}' | jq
+
+curl -k -H "User-And-Pass: admin1:admin" \
+https://minikube/atlas-contacts-app/v1/groups -d '{"name": "family", "profile_id": 1}' | jq
+
+curl -k -H "User-And-Pass: admin1:admin" \
+https://minikube/atlas-contacts-app/v1/groups -d '{"name": "accountants", "profile_id": 2}' | jq
+
+# Add some contacts assigned to profiles and groups
+curl -k -H "User-And-Pass: admin1:admin" \
+https://minikube/atlas-contacts-app/v1/contacts -d '{"first_name": "Mike", "primary_email": "mike@gmail.com", "profile_id": 1, "groups": [{"id": 1, "name": "schoolmates", "profile_id": 1}, {"id": 2, "name": "family", "profile_id": 1}], "home_address": {"city": "Minneapolis", "state": "Minnesota", "country": "US"}}' | jq
+
+curl -k -H "User-And-Pass: admin1:admin" \
+https://minikube/atlas-contacts-app/v1/contacts -d '{"first_name": "John", "primary_email": "john@gmail.com", "profile_id": 2, "work_address": {"city": "St.Paul", "state": "Minnesota", "country": "US"}}' | jq
+
+# Read created resources
+curl -k -H "User-And-Pass: admin1:admin" \
+https://minikube/atlas-contacts-app/v1/profiles  | jq
+
+curl -k -H "User-And-Pass: admin1:admin" \
+https://minikube/atlas-contacts-app/v1/groups | jq
+
+curl -k -H "User-And-Pass: admin1:admin" \
+https://minikube/atlas-contacts-app/v1/contacts | jq
 ```
 
 ##### Pagination (page token)
@@ -153,7 +175,7 @@ Actually the service supports "composite" pagination in a specific way:
 
 - if an user requests page token and provides limit then limit value will be used as a step for all further requests
 		`page_token = null & limit = 2 -> page_token=base64(offset=2:limit=2)`
-		
+
 - if an user requests page token and provides offset then only first time the provided offset is applied
 		`page_token = null & offset = 2 & limit = 2 -> page_token=base64(offset=4:limit=2)`
 
