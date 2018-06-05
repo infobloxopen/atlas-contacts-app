@@ -1,29 +1,25 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"net"
-	"net/http"
-	"time"
-
-	"github.com/grpc-ecosystem/go-grpc-middleware"
-	"github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
-	"github.com/grpc-ecosystem/go-grpc-middleware/validator"
-	toolkit_auth "github.com/infobloxopen/atlas-app-toolkit/auth"
 	"github.com/jinzhu/gorm"
 	"github.com/sirupsen/logrus"
-	"google.golang.org/grpc"
-
-	"github.com/infobloxopen/atlas-app-toolkit/health"
 	"github.com/infobloxopen/atlas-contacts-app/cmd"
 	"github.com/infobloxopen/atlas-contacts-app/pkg/pb"
-	"github.com/infobloxopen/atlas-contacts-app/pkg/svc"
+	"github.com/infobloxopen/atlas-app-toolkit/health"
+	"github.com/infobloxopen/atlas-app-toolkit/server"
+	"github.com/infobloxopen/atlas-app-toolkit/gateway"
+	"context"
+	"fmt"
+	"time"
+	"net/http"
 )
 
 var (
 	ServerAddress      string
-	HealthAddress      string
+	GatewayAddress     string
+	SwaggerDir         string
 	DBConnectionString string
 	AuthzAddr          string
 )
@@ -37,86 +33,67 @@ const (
 
 func main() {
 	logger := logrus.New()
-	// create new tcp listenerf
-	ln, err := net.Listen("tcp", ServerAddress)
-	if err != nil {
-		logger.Fatalln(err)
-	}
 
-	interceptors := []grpc.UnaryServerInterceptor{
-		// validation interceptor
-		grpc_validator.UnaryServerInterceptor(),
-		// validation interceptor
-		grpc_logrus.UnaryServerInterceptor(logrus.NewEntry(logger)),
-	}
-	// add authorization interceptor if authz service address is provided
-	if AuthzAddr != "" {
-		interceptors = append(interceptors,
-			// authorization interceptor
-			toolkit_auth.UnaryServerInterceptor(AuthzAddr, applicationID),
-		)
-	}
-	middleware := grpc_middleware.ChainUnaryServer(interceptors...)
-	// create new gRPC server with middleware chain
-	server := grpc.NewServer(
-		grpc.UnaryInterceptor(
-			middleware,
-		),
-	)
-
-	healthChecker := health.NewChecksHandler("/healthz", "/ready")
-	healthChecker.AddReadiness("DB ready check", dbReady)
-	go http.ListenAndServe(HealthAddress, healthChecker.Handler())
-
-	// waiting for database is available.
-	logger.Info("Connecting to database...")
-	dbCheckContext, cancel := context.WithTimeout(context.Background(), time.Minute*5)
-	for {
-		select {
-		case <-time.After(time.Second * 3):
-			if err = dbReady(); err != nil {
-				continue
-			}
-			cancel()
-		case <-dbCheckContext.Done():
-			cancel()
-		}
-		break
-	}
-	if err != nil {
-		logger.Fatalln(err)
-	}
-	logger.Info("Connected to database successfully.")
+	// create new postgres database
 	db, err := gorm.Open("postgres", DBConnectionString)
 	if err != nil {
 		logger.Fatalln(err)
 	}
 
-	// NOTE: Using db.AutoMigrate is a temporary measure to structure the contacts
-	// database schema. The atlas-app-toolkit team will come up with a better
-	// solution that uses database migration files.
-	if err := db.AutoMigrate(&pb.ProfileORM{}, &pb.GroupORM{}, &pb.ContactORM{}, &pb.AddressORM{}, &pb.EmailORM{}).Error; err != nil {
-		logger.Fatalln(err)
-	}
-	ps, err := svc.NewProfilesServer(db)
+	grpcServer, err := NewGRPCServer(logger, db)
 	if err != nil {
 		logger.Fatalln(err)
 	}
-	pb.RegisterProfilesServer(server, ps)
 
-	gs, err := svc.NewGroupsServer(db)
+	healthChecker := health.NewChecksHandler("/healthz/", "/ready/")
+	healthChecker.AddReadiness("DB ready check", dbReady)
+	healthChecker.AddLiveness("ping", health.HTTPGetCheck(fmt.Sprint("http://", cmd.GatewayAddress, "/ping/"), time.Minute))
+
+	s, err := server.NewServer(
+		// upon startup, migrate the database
+		server.WithInitializer(func(context.Context) error {
+			// NOTE: Using db.AutoMigrate is a temporary measure to structure the contacts
+			// database schema. The atlas-app-toolkit team will come up with a better
+			// solution that uses database migration files.
+			logger.Print("migrating database...")
+			defer logger.Print("finished migrating database")
+			return db.AutoMigrate(&pb.ProfileORM{}, &pb.GroupORM{}, &pb.ContactORM{}, &pb.AddressORM{}, &pb.EmailORM{}).Error
+		}),
+		// register our grpc server
+		server.WithGrpcServer(grpcServer),
+		// register the gateway to proxy to the given server address with the service registration endpoints
+		server.WithGateway(
+			gateway.WithServerAddress(cmd.ServerAddress),
+			gateway.WithEndpointRegistration(cmd.GatewayURL, pb.RegisterProfilesHandlerFromEndpoint, pb.RegisterGroupsHandlerFromEndpoint, pb.RegisterContactsHandlerFromEndpoint),
+		),
+		// register our health checks
+		server.WithHealthChecks(healthChecker),
+		// serve swagger at the root
+		server.WithHandler("/swagger/", NewSwaggerHandler(cmd.SwaggerFile)),
+		// this endpoint will be used for our health checks
+		server.WithHandler("/ping/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(200)
+			w.Write([]byte("pong"))
+		})),
+	)
 	if err != nil {
 		logger.Fatalln(err)
 	}
-	pb.RegisterGroupsServer(server, gs)
 
-	cs, err := svc.NewContactsServer(db)
+	// open some listeners for our server and gateway
+	grpcL, err := net.Listen("tcp", ServerAddress)
 	if err != nil {
 		logger.Fatalln(err)
 	}
-	pb.RegisterContactsServer(server, cs)
+	httpL, err := net.Listen("tcp", GatewayAddress)
+	if err != nil {
+		logger.Fatalln(err)
+	}
 
-	if err := server.Serve(ln); err != nil {
+	logger.Printf("serving gRPC at %q", ServerAddress)
+	logger.Printf("serving http at %q", GatewayAddress)
+
+	if err := s.Serve(grpcL, httpL); err != nil {
 		logger.Fatalln(err)
 	}
 }
@@ -124,8 +101,9 @@ func main() {
 func init() {
 	// default server address; optionally set via command-line flags
 	flag.StringVar(&ServerAddress, "address", cmd.ServerAddress, "the gRPC server address")
-	flag.StringVar(&DBConnectionString, "db", "", "the database address")
-	flag.StringVar(&HealthAddress, "health", "0.0.0.0:8089", "Address for health checking")
+	flag.StringVar(&GatewayAddress, "gateway", cmd.GatewayAddress, "address of the gateway server")
+	flag.StringVar(&SwaggerDir, "swagger-dir", cmd.SwaggerFile, "directory of the swagger.json file")
+	flag.StringVar(&DBConnectionString, "db", cmd.DBConnectionString, "the database address")
 	flag.StringVar(&AuthzAddr, "authz", "", "address of the authorization service")
 	flag.Parse()
 }

@@ -80,7 +80,8 @@
     "gorm",
     "health",
     "query",
-    "rpc/errdetails"
+    "rpc/errdetails",
+    "server"
   ]
   revision = "d7f98d00ccffd9b9cbb81bbb68f116f73b449895"
 
@@ -266,6 +267,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "fb09a35815784d17a821f3621aee77d3882f495dcf64ec3991b95c19238f3115"
+  inputs-digest = "bae6de99851297d4d7b7c4bce177a7d8ed42ea3c206144ea8819ef02d4f6295c"
   solver-name = "gps-cdcl"
   solver-version = 1
