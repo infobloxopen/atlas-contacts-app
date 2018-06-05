@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -52,8 +53,12 @@ func TestMain(m *testing.M) {
 // RunBinary runs a target binary with a set of arguments provided by the user
 func RunBinary(binPath string, args ...string) func() {
 	log.Printf("running the %s binary", binPath)
+	abs, err := filepath.Abs(binPath)
+	if err != nil {
+		log.Fatalf("unable to get absolute path of the %s binary: %v", binPath, err)
+	}
 	ctx, cancel := context.WithCancel(context.Background())
-	if err := exec.CommandContext(ctx, binPath, args...).Start(); err != nil {
+	if err := exec.CommandContext(ctx, abs, args...).Start(); err != nil {
 		log.Fatalf("unable to start the %s binary: %v", binPath, err)
 	}
 	return func() {
