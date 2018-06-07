@@ -48,9 +48,9 @@ func main() {
 		logger.Fatalln(err)
 	}
 
-	healthChecker := health.NewChecksHandler("/healthz/", "/ready/")
+	healthChecker := health.NewChecksHandler("/healthz", "/ready")
 	healthChecker.AddReadiness("DB ready check", dbReady)
-	healthChecker.AddLiveness("ping", health.HTTPGetCheck(fmt.Sprint("http://", cmd.GatewayAddress, "/ping/"), time.Minute))
+	healthChecker.AddLiveness("ping", health.HTTPGetCheck(fmt.Sprint("http://", GatewayAddress, "/ping"), time.Minute))
 
 	s, err := server.NewServer(
 		// upon startup, migrate the database
@@ -66,15 +66,17 @@ func main() {
 		server.WithGrpcServer(grpcServer),
 		// register the gateway to proxy to the given server address with the service registration endpoints
 		server.WithGateway(
-			gateway.WithServerAddress(cmd.ServerAddress),
-			gateway.WithEndpointRegistration(cmd.GatewayURL, pb.RegisterProfilesHandlerFromEndpoint, pb.RegisterGroupsHandlerFromEndpoint, pb.RegisterContactsHandlerFromEndpoint),
+			gateway.WithServerAddress(ServerAddress),
+			gateway.WithEndpointRegistration("/v1/", pb.RegisterProfilesHandlerFromEndpoint, pb.RegisterGroupsHandlerFromEndpoint, pb.RegisterContactsHandlerFromEndpoint),
 		),
 		// register our health checks
 		server.WithHealthChecks(healthChecker),
 		// serve swagger at the root
-		server.WithHandler("/swagger/", NewSwaggerHandler(cmd.SwaggerFile)),
+		server.WithHandler("/swagger", http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+			http.ServeFile(writer, request, SwaggerDir)
+		})),
 		// this endpoint will be used for our health checks
-		server.WithHandler("/ping/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server.WithHandler("/ping", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(200)
 			w.Write([]byte("pong"))
 		})),
@@ -116,6 +118,6 @@ func dbReady() error {
 	if err != nil {
 		return err
 	}
-	db.Close()
-	return nil
+	defer db.Close()
+	return db.DB().Ping()
 }

@@ -22,7 +22,8 @@ metadata:
   name: contacts-app-ingress
   annotations:
     ingress.kubernetes.io/auth-url: http://authn-stub.atlas-stubs.svc.cluster.local/auth
-    ingress.kubernetes.io/auth-response-headers: Authorization
+    ingress.kubernetes.io/auth-response-headers: Grpc-Metadata-Authorization
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
   - http:
@@ -128,7 +129,7 @@ spec:
         - name: POSTGRES_PASSWORD
           value: postgres
         - name: POSTGRES_DB
-          value: atlas_contacts_app
+          value: contacts
         - name: PGDATA
           value: /var/lib/postgresql/data/pgdata
         ports:
