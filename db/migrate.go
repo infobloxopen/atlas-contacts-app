@@ -8,8 +8,6 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
-// &pb.ProfileORM{}, &pb.GroupORM{}, &pb.ContactORM{}, &pb.AddressORM{}, &pb.EmailORM{}
-
 // MigrateDB builds the contacts application database tables
 func MigrateDB(dbSQL sql.DB) error {
 	db, err := gorm.Open("postgres", &dbSQL)
