@@ -120,6 +120,9 @@ func main() {
 		logger.Fatal(err)
 	}
 	db, err := gorm.Open("postgres", dbSQL)
+	if err != nil {
+		logger.Fatalln(err)
+	}
 	ps, err := svc.NewProfilesServer(db)
 	if err != nil {
 		logger.Fatalln(err)
