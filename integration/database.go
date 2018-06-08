@@ -3,8 +3,6 @@ package integration
 import (
 	"database/sql"
 	"fmt"
-	"log"
-	"os/exec"
 	"testing"
 )
 
@@ -12,10 +10,29 @@ import (
 type PostgresDBConfig struct {
 	Host            string
 	Port            int
-	DBUser          string
 	DBName          string
+	DBUser          string
 	DBPassword      string
-	migrateFunction func(sql.DB) error
+	DBVersion       string
+	MigrateFunction func(sql.DB) error
+}
+
+// NewTestPostgresDB creates a PostgresDBConfig with a sensible set of
+// database defaults
+func NewTestPostgresDB(dbName string, migrateFunction func(sql.DB) error) (*PostgresDBConfig, error) {
+	port, err := GetOpenPortInRange(35000, portRangeMax)
+	if err != nil {
+		return nil, err
+	}
+	return &PostgresDBConfig{
+		Host:            "localhost",
+		Port:            port,
+		DBName:          dbName,
+		DBUser:          "postgres",
+		DBPassword:      "postgres",
+		DBVersion:       "latest",
+		MigrateFunction: migrateFunction,
+	}, nil
 }
 
 // Reset drops all the tables in a test database and regenerates them by
@@ -36,35 +53,36 @@ func (cfg PostgresDBConfig) Reset(t *testing.T) {
 		t.Fatalf("unable to drop tables in %s database: %v", cfg.DBName, err)
 	}
 	// run migrations if a migration function has exists
-	if cfg.migrateFunction != nil {
-		if err := cfg.migrateFunction(*db); err != nil {
+	if cfg.MigrateFunction != nil {
+		if err := cfg.MigrateFunction(*db); err != nil {
 			t.Fatalf("unable to migrate %s database: %v", cfg.DBName, err)
 		}
 	}
 }
 
-// RunAsContainer uses the Postgres configuration to run a Postgres Docker
-// container locally
-func (cfg PostgresDBConfig) RunAsContainer(containerName string) func() {
-	log.Printf("starting the %s postgres container", containerName)
-	args := []string{
-		"run", "--rm", "-d",
-		"--name", containerName,
-		"-p", fmt.Sprintf("%d:5432", cfg.Port),
-		"-e", fmt.Sprintf("POSTGRES_DB=%s", cfg.DBName),
-		"postgres:latest",
+// RunAsDockerContainer uses the Postgres configuration to run a Postgres Docker
+// container on the host machine
+func (cfg PostgresDBConfig) RunAsDockerContainer(containerName string) (func() error, error) {
+	close, err := RunContainer(
+		// define the postgres image version
+		fmt.Sprintf("postgres:%s", cfg.DBVersion),
+		// define the arguments to docker
+		[]string{
+			fmt.Sprintf("--name=%s", containerName),
+			fmt.Sprintf("--publish=%d:5432", cfg.Port),
+			fmt.Sprintf("--env=POSTGRES_DB=%s", cfg.DBName),
+			fmt.Sprintf("--env=POSTGRES_PASSWORD=%s", cfg.DBPassword),
+			fmt.Sprintf("--env=POSTGRES_USER=%s", cfg.DBUser),
+			"--detach",
+			"--rm",
+		},
+		// define the runtime arguments to postgres
+		[]string{},
+	)
+	if err != nil {
+		return nil, err
 	}
-	cmdRunContainer := exec.Command("docker", args...)
-	if err := cmdRunContainer.Run(); err != nil {
-		log.Fatalf("unable to start test database: %v", err)
-	}
-	return func() {
-		cmdStopContainer := exec.Command("docker", "kill", containerName)
-		log.Printf("stopping the %s postgres container", containerName)
-		if err := cmdStopContainer.Run(); err != nil {
-			log.Fatalf("unable to stop test database: %v", err)
-		}
-	}
+	return close, err
 }
 
 // GetDSN returns the database connection string for the test Postgres database

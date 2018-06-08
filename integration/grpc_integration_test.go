@@ -23,6 +23,11 @@ func newContactsClient(t *testing.T) (pb.ContactsClient, func()) {
 	}
 }
 
+// TestCreateContact verifies that creating a contact results in being
+// able to read the contact by ID, and that all fields are persisted.
+// 1. Create a contact
+// 2. Read contact with the returned ID from the response to ensure it exists
+// 3. Verify that the values from the read match what was created
 func TestCreateContact(t *testing.T) {
 	dbTest.Reset(t)
 	client, close := newContactsClient(t)
@@ -72,6 +77,11 @@ func TestCreateContact(t *testing.T) {
 	}
 }
 
+// TestDeleteContactEntry verifies that a contact can get removed from the
+// contacts application
+// 1. Create a contact
+// 2. Read contact with the returned ID from the response to ensure it exists
+// 3. Ensure the contact was correctly deleted
 func TestDeleteContactEntry(t *testing.T) {
 	dbTest.Reset(t)
 	client, close := newContactsClient(t)
