@@ -1,5 +1,5 @@
 apiVersion: infoblox.com/v1
-kind: SubjectGroup
+kind: Group
 metadata:
   name: all-users
   namespace: authz
@@ -9,7 +9,7 @@ criteria:
   type: User
 ---
 apiVersion: infoblox.com/v1
-kind: SubjectGroup
+kind: Group
 metadata:
   name: engineers
   namespace: authz
@@ -20,7 +20,7 @@ criteria:
   department: Engineering
 ---
 apiVersion: infoblox.com/v1
-kind: Assoc
+kind: RoleAssignment
 metadata:
   name: contacts-all-users
   namespace: contacts
@@ -30,7 +30,7 @@ group: all-users
 role: contacts-read-only
 ---
 apiVersion: infoblox.com/v1
-kind: Assoc
+kind: RoleAssignment
 metadata:
   name: contacts-admin
   namespace: contacts
