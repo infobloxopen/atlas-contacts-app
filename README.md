@@ -18,7 +18,7 @@ go get -u github.com/golang/dep/cmd/dep
 
 ### Local development setup
 
-Please note that you should have the following ports opened on you local workstation: `:8080 :9090 :8088 :8089 :5432`.
+Please note that you should have the following ports opened on you local workstation: `:8080 :8081 :9090 :5432`.
 If they are busy - please change them via corresponding parameters of `gateway` and `server` binaries or postgres container run.
 
 Run PostgresDB:

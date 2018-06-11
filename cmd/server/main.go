@@ -22,6 +22,7 @@ import (
 var (
 	ServerAddress      string
 	GatewayAddress     string
+	InternalAddress    string
 	SwaggerDir         string
 	DBConnectionString string
 	AuthzAddr          string
@@ -36,6 +37,30 @@ const (
 )
 
 func main() {
+	doneC := make(chan error)
+	logger := NewLogger()
+
+	go func() { doneC <- ServeInternal(logger) }()
+	go func() { doneC <- ServeExternal(logger) }()
+
+	if err := <-doneC; err != nil {
+		logger.Fatal(err)
+	}
+}
+
+func init() {
+	// default server address; optionally set via command-line flags
+	flag.StringVar(&ServerAddress, "address", cmd.ServerAddress, "the gRPC server address")
+	flag.StringVar(&GatewayAddress, "gateway", cmd.GatewayAddress, "address of the gateway server")
+	flag.StringVar(&InternalAddress, "internal-addr", cmd.InternalAddress, "address of an internal http server, for endpoints that shouldn't be exposed to the public")
+	flag.StringVar(&SwaggerDir, "swagger-dir", cmd.SwaggerFile, "directory of the swagger.json file")
+	flag.StringVar(&DBConnectionString, "db", cmd.DBConnectionString, "the database address")
+	flag.StringVar(&AuthzAddr, "authz", "", "address of the authorization service")
+	flag.StringVar(&LogLevel, "log", "info", "log level")
+	flag.Parse()
+}
+
+func NewLogger() *logrus.Logger {
 	logger := logrus.StandardLogger()
 
 	// Set the log level on the default logger based on command line flag
@@ -54,20 +79,50 @@ func main() {
 		logger.SetLevel(level)
 	}
 
+	return logger
+}
+
+// ServeInternal builds and runs the server that listens on InternalAddress
+func ServeInternal(logger *logrus.Logger) error {
+	healthChecker := health.NewChecksHandler("/healthz", "/ready")
+	healthChecker.AddReadiness("DB ready check", dbReady)
+	healthChecker.AddLiveness("ping", health.HTTPGetCheck(fmt.Sprint("http://", InternalAddress, "/ping"), time.Minute))
+
+	s, err := server.NewServer(
+		// register our health checks
+		server.WithHealthChecks(healthChecker),
+		// this endpoint will be used for our health checks
+		server.WithHandler("/ping", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(200)
+			w.Write([]byte("pong"))
+		})),
+	)
+	if err != nil {
+		return err
+	}
+	l, err := net.Listen("tcp", InternalAddress)
+	if err != nil {
+		return err
+	}
+
+	logger.Debugf("serving internal http at %q", InternalAddress)
+
+	return s.Serve(nil, l)
+}
+
+// ServeExternal builds and runs the server that listens on ServerAddress and GatewayAddress
+func ServeExternal(logger *logrus.Logger) error {
 	// create new postgres database
 	db, err := gorm.Open("postgres", DBConnectionString)
 	if err != nil {
-		logger.Fatalln(err)
+		return err
 	}
+	defer db.Close()
 
 	grpcServer, err := NewGRPCServer(logger, db)
 	if err != nil {
-		logger.Fatalln(err)
+		return err
 	}
-
-	healthChecker := health.NewChecksHandler("/healthz", "/ready")
-	healthChecker.AddReadiness("DB ready check", dbReady)
-	healthChecker.AddLiveness("ping", health.HTTPGetCheck(fmt.Sprint("http://", GatewayAddress, "/ping"), time.Minute))
 
 	s, err := server.NewServer(
 		// upon startup, migrate the database
@@ -75,8 +130,8 @@ func main() {
 			// NOTE: Using db.AutoMigrate is a temporary measure to structure the contacts
 			// database schema. The atlas-app-toolkit team will come up with a better
 			// solution that uses database migration files.
-			logger.Print("migrating database...")
-			defer logger.Print("finished migrating database")
+			logger.Debug("migrating database...")
+			defer logger.Debug("finished migrating database")
 			return db.AutoMigrate(&pb.ProfileORM{}, &pb.GroupORM{}, &pb.ContactORM{}, &pb.AddressORM{}, &pb.EmailORM{}).Error
 		}),
 		// register our grpc server
@@ -86,49 +141,29 @@ func main() {
 			gateway.WithServerAddress(ServerAddress),
 			gateway.WithEndpointRegistration("/v1/", pb.RegisterProfilesHandlerFromEndpoint, pb.RegisterGroupsHandlerFromEndpoint, pb.RegisterContactsHandlerFromEndpoint),
 		),
-		// register our health checks
-		server.WithHealthChecks(healthChecker),
 		// serve swagger at the root
 		server.WithHandler("/swagger", http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 			http.ServeFile(writer, request, SwaggerDir)
 		})),
-		// this endpoint will be used for our health checks
-		server.WithHandler("/ping", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.WriteHeader(200)
-			w.Write([]byte("pong"))
-		})),
 	)
 	if err != nil {
-		logger.Fatalln(err)
+		return err
 	}
 
 	// open some listeners for our server and gateway
 	grpcL, err := net.Listen("tcp", ServerAddress)
 	if err != nil {
-		logger.Fatalln(err)
+		return err
 	}
-	httpL, err := net.Listen("tcp", GatewayAddress)
+	gatewayL, err := net.Listen("tcp", GatewayAddress)
 	if err != nil {
-		logger.Fatalln(err)
+		return err
 	}
 
-	logger.Printf("serving gRPC at %q", ServerAddress)
-	logger.Printf("serving http at %q", GatewayAddress)
+	logger.Debugf("serving gRPC at %q", ServerAddress)
+	logger.Debugf("serving http at %q", GatewayAddress)
 
-	if err := s.Serve(grpcL, httpL); err != nil {
-		logger.Fatalln(err)
-	}
-}
-
-func init() {
-	// default server address; optionally set via command-line flags
-	flag.StringVar(&ServerAddress, "address", cmd.ServerAddress, "the gRPC server address")
-	flag.StringVar(&GatewayAddress, "gateway", cmd.GatewayAddress, "address of the gateway server")
-	flag.StringVar(&SwaggerDir, "swagger-dir", cmd.SwaggerFile, "directory of the swagger.json file")
-	flag.StringVar(&DBConnectionString, "db", cmd.DBConnectionString, "the database address")
-	flag.StringVar(&AuthzAddr, "authz", "", "address of the authorization service")
-	flag.StringVar(&LogLevel, "log", "info", "log level")
-	flag.Parse()
+	return s.Serve(grpcL, gatewayL)
 }
 
 func dbReady() error {

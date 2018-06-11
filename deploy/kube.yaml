@@ -66,12 +66,14 @@ spec:
         ports:
         - containerPort: 8080
           protocol: TCP
+        - containerPort: 8081
+          protocol: TCP
         - containerPort: 9090
           protocol: TCP
         livenessProbe:
           httpGet:
             path: /healthz
-            port: 8080
+            port: 8081
             scheme: HTTP
           initialDelaySeconds: 5
           periodSeconds: 5
@@ -80,7 +82,7 @@ spec:
         readinessProbe:
           httpGet:
             path: /ready
-            port: 8080
+            port: 8081
             scheme: HTTP
           initialDelaySeconds: 5
           periodSeconds: 5
