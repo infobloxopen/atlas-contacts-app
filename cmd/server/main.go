@@ -25,6 +25,7 @@ var (
 	SwaggerDir         string
 	DBConnectionString string
 	AuthzAddr          string
+	LogLevel           string
 )
 
 const (
@@ -35,7 +36,23 @@ const (
 )
 
 func main() {
-	logger := logrus.New()
+	logger := logrus.StandardLogger()
+
+	// Set the log level on the default logger based on command line flag
+	logLevels := map[string]logrus.Level{
+		"debug":   logrus.DebugLevel,
+		"info":    logrus.InfoLevel,
+		"warning": logrus.WarnLevel,
+		"error":   logrus.ErrorLevel,
+		"fatal":   logrus.FatalLevel,
+		"panic":   logrus.PanicLevel,
+	}
+	if level, ok := logLevels[LogLevel]; !ok {
+		logger.Errorf("Invalid value %q provided for log level", LogLevel)
+		logger.SetLevel(logrus.InfoLevel)
+	} else {
+		logger.SetLevel(level)
+	}
 
 	// create new postgres database
 	db, err := gorm.Open("postgres", DBConnectionString)
@@ -110,6 +127,7 @@ func init() {
 	flag.StringVar(&SwaggerDir, "swagger-dir", cmd.SwaggerFile, "directory of the swagger.json file")
 	flag.StringVar(&DBConnectionString, "db", cmd.DBConnectionString, "the database address")
 	flag.StringVar(&AuthzAddr, "authz", "", "address of the authorization service")
+	flag.StringVar(&LogLevel, "log", "info", "log level")
 	flag.Parse()
 }
 
