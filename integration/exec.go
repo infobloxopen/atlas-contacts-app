@@ -17,7 +17,10 @@ func RunBinary(binPath string, args ...string) (func(), error) {
 		return nil, err
 	}
 	ctx, cancel := context.WithCancel(context.Background())
-	if err := exec.CommandContext(ctx, abs, args...).Start(); err != nil {
+	cmd := exec.CommandContext(ctx, abs, args...)
+	cmd.Stderr = os.Stderr
+	cmd.Stdout = os.Stdout
+	if err := cmd.Start(); err != nil {
 		return nil, err
 	}
 	return cancel, nil

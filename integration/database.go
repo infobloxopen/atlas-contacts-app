@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"testing"
+	"time"
 )
 
 // PostgresDBConfig models a test Postgres database
@@ -63,7 +64,7 @@ func (cfg PostgresDBConfig) Reset(t *testing.T) {
 // RunAsDockerContainer uses the Postgres configuration to run a Postgres Docker
 // container on the host machine
 func (cfg PostgresDBConfig) RunAsDockerContainer(containerName string) (func() error, error) {
-	close, err := RunContainer(
+	cleanup, err := RunContainer(
 		// define the postgres image version
 		fmt.Sprintf("postgres:%s", cfg.DBVersion),
 		// define the arguments to docker
@@ -82,7 +83,28 @@ func (cfg PostgresDBConfig) RunAsDockerContainer(containerName string) (func() e
 	if err != nil {
 		return nil, err
 	}
-	return close, err
+
+	doneC := make(chan bool)
+	// wait until the database container is running and available
+	go func() {
+		for range time.NewTicker(500 * time.Millisecond).C {
+			db, _ := sql.Open("postgres", cfg.GetDSN())
+			if err := db.Ping(); err == nil {
+				doneC <- true
+				return
+			}
+		}
+	}()
+	timeout := 10 * time.Second
+	select {
+	case <-time.After(timeout):
+		cleanup()
+		return nil, fmt.Errorf("failed to start database after %f seconds", timeout.Seconds())
+	case <-doneC:
+		break
+	}
+
+	return cleanup, nil
 }
 
 // GetDSN returns the database connection string for the test Postgres database

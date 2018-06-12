@@ -12,10 +12,12 @@ import (
 	"net/http"
 	"time"
 
+	"database/sql"
 	"github.com/infobloxopen/atlas-app-toolkit/gateway"
 	"github.com/infobloxopen/atlas-app-toolkit/health"
 	"github.com/infobloxopen/atlas-app-toolkit/server"
 	"github.com/infobloxopen/atlas-contacts-app/cmd"
+	migrate "github.com/infobloxopen/atlas-contacts-app/db"
 	"github.com/infobloxopen/atlas-contacts-app/pkg/pb"
 )
 
@@ -112,8 +114,15 @@ func ServeInternal(logger *logrus.Logger) error {
 
 // ServeExternal builds and runs the server that listens on ServerAddress and GatewayAddress
 func ServeExternal(logger *logrus.Logger) error {
-	// create new postgres database
-	db, err := gorm.Open("postgres", DBConnectionString)
+	dbSQL, err := sql.Open("postgres", DBConnectionString)
+	if err != nil {
+		logger.Fatal(err)
+	}
+	defer dbSQL.Close()
+	if err := migrate.MigrateDB(*dbSQL); err != nil {
+		logger.Fatal(err)
+	}
+	db, err := gorm.Open("postgres", dbSQL)
 	if err != nil {
 		return err
 	}
