@@ -18,7 +18,7 @@ go get -u github.com/golang/dep/cmd/dep
 
 ### Local development setup
 
-Please note that you should have the following ports opened on you local workstation: `:8080 :9090 :8088 :8089 :5432`.
+Please note that you should have the following ports opened on you local workstation: `:8080 :8081 :9090 :5432`.
 If they are busy - please change them via corresponding parameters of `gateway` and `server` binaries or postgres container run.
 
 Run PostgresDB:
@@ -67,19 +67,19 @@ export JWT="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBY2NvdW50SUQiOjF9.GsXyFDDARj
 
 Request examples:
 ``` sh
-curl -H "Grpc-Metadata-Authorization: Token $JWT" \
-http://localhost:8080/atlas-contacts-app/v1/contacts -d '{"first_name": "Mike", "primary_email": "mike@example.com"}'
+curl -H "Authorization: Token $JWT" \
+http://localhost:8080/v1/contacts -d '{"first_name": "Mike", "primary_email": "mike@example.com"}'
 ```
 
 ``` sh
-curl -H "Grpc-Metadata-Authorization: Token $JWT" \
-http://localhost:8080/atlas-contacts-app/v1/contacts -d \
+curl -H "Authorization: Token $JWT" \
+http://localhost:8080/v1/contacts -d \
 '{"first_name": "Robert", "primary_email": "robert@example.com", "nicknames": ["bob", "robbie"]}'
 ```
 
 ``` sh
-curl -H "Grpc-Metadata-Authorization: Token $JWT" \
-http://localhost:8080/atlas-contacts-app/v1/contacts?_filter='first_name=="Mike"'
+curl -H "Authorization: Token $JWT" \
+http://localhost:8080/v1/contacts?_filter='first_name=="Mike"'
 ```
 Note, that `JWT` should contain AccountID field.
 
@@ -126,42 +126,42 @@ admin2:admin -> AccountID=2
 
 ##### Usage
 
-Try it out by executing following curl commangs:
+Try it out by executing following curl commands:
 
 ``` sh
 # Create some profiles
 curl -k -H "User-And-Pass: admin1:admin" \
-https://minikube/atlas-contacts-app/v1/profiles -d '{"name": "personal", "notes": "Used for personal aims"}' | jq
+https://$(minikube ip)/atlas-contacts-app/v1/profiles -d '{"name": "personal", "notes": "Used for personal aims"}' | jq
 
 curl -k -H "User-And-Pass: admin1:admin" \
-https://minikube/atlas-contacts-app/v1/profiles -d '{"name": "work", "notes": "Used for work aims"}' | jq
+https://$(minikube ip)/atlas-contacts-app/v1/profiles -d '{"name": "work", "notes": "Used for work aims"}' | jq
 
 # Create some groups assigned to profiles
 curl -k -H "User-And-Pass: admin1:admin" \
-https://minikube/atlas-contacts-app/v1/groups -d '{"name": "schoolmates", "profile_id": 1}' | jq
+https://$(minikube ip)/atlas-contacts-app/v1/groups -d '{"name": "schoolmates", "profile_id": 1}' | jq
 
 curl -k -H "User-And-Pass: admin1:admin" \
-https://minikube/atlas-contacts-app/v1/groups -d '{"name": "family", "profile_id": 1}' | jq
+https://$(minikube ip)/atlas-contacts-app/v1/groups -d '{"name": "family", "profile_id": 1}' | jq
 
 curl -k -H "User-And-Pass: admin1:admin" \
-https://minikube/atlas-contacts-app/v1/groups -d '{"name": "accountants", "profile_id": 2}' | jq
+https://$(minikube ip)/atlas-contacts-app/v1/groups -d '{"name": "accountants", "profile_id": 2}' | jq
 
 # Add some contacts assigned to profiles and groups
 curl -k -H "User-And-Pass: admin1:admin" \
-https://minikube/atlas-contacts-app/v1/contacts -d '{"first_name": "Mike", "primary_email": "mike@gmail.com", "profile_id": 1, "groups": [{"id": 1, "name": "schoolmates", "profile_id": 1}, {"id": 2, "name": "family", "profile_id": 1}], "home_address": {"city": "Minneapolis", "state": "Minnesota", "country": "US"}}' | jq
+https://$(minikube ip)/atlas-contacts-app/v1/contacts -d '{"first_name": "Mike", "primary_email": "mike@gmail.com", "profile_id": 1, "groups": [{"id": 1, "name": "schoolmates", "profile_id": 1}, {"id": 2, "name": "family", "profile_id": 1}], "home_address": {"city": "Minneapolis", "state": "Minnesota", "country": "US"}}' | jq
 
 curl -k -H "User-And-Pass: admin1:admin" \
-https://minikube/atlas-contacts-app/v1/contacts -d '{"first_name": "John", "primary_email": "john@gmail.com", "profile_id": 2, "work_address": {"city": "St.Paul", "state": "Minnesota", "country": "US"}}' | jq
+https://$(minikube ip)/atlas-contacts-app/v1/contacts -d '{"first_name": "John", "primary_email": "john@gmail.com", "profile_id": 2, "work_address": {"city": "St.Paul", "state": "Minnesota", "country": "US"}}' | jq
 
 # Read created resources
 curl -k -H "User-And-Pass: admin1:admin" \
-https://minikube/atlas-contacts-app/v1/profiles  | jq
+https://$(minikube ip)/atlas-contacts-app/v1/profiles  | jq
 
 curl -k -H "User-And-Pass: admin1:admin" \
-https://minikube/atlas-contacts-app/v1/groups | jq
+https://$(minikube ip)/atlas-contacts-app/v1/groups | jq
 
 curl -k -H "User-And-Pass: admin1:admin" \
-https://minikube/atlas-contacts-app/v1/contacts | jq
+https://$(minikube ip)/atlas-contacts-app/v1/contacts | jq
 ```
 
 ##### Pagination (page token)
@@ -180,7 +180,7 @@ Actually the service supports "composite" pagination in a specific way:
 - if an user requests page token and provides offset then only first time the provided offset is applied
 		`page_token = null & offset = 2 & limit = 2 -> page_token=base64(offset=4:limit=2)`
 
-Get all contacts: `GET http://localhost:8080/atlas-contacts-app/v1/contacts`
+Get all contacts: `GET http://localhost:8080/v1/contacts`
 ```json
 {
   "results": [
@@ -225,7 +225,7 @@ Get all contacts: `GET http://localhost:8080/atlas-contacts-app/v1/contacts`
 }
 ```
 
-Default pagination (supported by atlas-app-toolkit): `GET http://localhost:8080/atlas-contacts-app/v1/contacts?_limit=1&_offset=1`
+Default pagination (supported by atlas-app-toolkit): `GET http://localhost:8080/v1/contacts?_limit=1&_offset=1`
 ```json
 {
   "results": [
@@ -248,7 +248,7 @@ Default pagination (supported by atlas-app-toolkit): `GET http://localhost:8080/
 }
 ```
 
-Request **specific** page token: `GET http://localhost:8080/atlas-contacts-app/v1/contacts?_page_token=null&_limit=2`
+Request **specific** page token: `GET http://localhost:8080/v1/contacts?_page_token=null&_limit=2`
 ```json
 {
   "results": [
@@ -283,7 +283,7 @@ Request **specific** page token: `GET http://localhost:8080/atlas-contacts-app/v
 }
 ```
 
-Get next page via page token: `GET http://localhost:8080/atlas-contacts-app/v1/contacts?_page_token=NDo0`
+Get next page via page token: `GET http://localhost:8080/v1/contacts?_page_token=NDo0`
 ```json
 {
   "results": [
@@ -307,7 +307,7 @@ Get next page via page token: `GET http://localhost:8080/atlas-contacts-app/v1/c
 }
 ```
 
-Get next page: `GET http://localhost:8080/atlas-contacts-app/v1/contacts?_page_token=NTo0`
+Get next page: `GET http://localhost:8080/v1/contacts?_page_token=NTo0`
 The `"_page_token": "null"` means there are no more pages
 ```json
 {

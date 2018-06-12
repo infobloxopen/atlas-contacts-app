@@ -81,7 +81,8 @@
     "health",
     "query",
     "requestid",
-    "rpc/errdetails"
+    "rpc/errdetails",
+    "server"
   ]
   revision = "df1ac3d923d1a5fe489ffcba584bc477437140a4"
 
@@ -270,6 +271,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "87eb7fb35c13e0a0d963633d32cbae3e9005267fc3c15d33f05b5bac197330ad"
+  inputs-digest = "0556bdf9e02ebc45c480b2659b14010a8cb11655e55458dd11d43ef232446f05"
   solver-name = "gps-cdcl"
   solver-version = 1
