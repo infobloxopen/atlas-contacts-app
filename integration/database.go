@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"testing"
@@ -84,24 +85,29 @@ func (cfg PostgresDBConfig) RunAsDockerContainer(containerName string) (func() e
 		return nil, err
 	}
 
-	doneC := make(chan bool)
+	doneC := make(chan error)
+	timeout := 10 * time.Second
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 	// wait until the database container is running and available
 	go func() {
-		for range time.NewTicker(500 * time.Millisecond).C {
-			db, _ := sql.Open("postgres", cfg.GetDSN())
-			if err := db.Ping(); err == nil {
-				doneC <- true
-				return
+		for {
+			select {
+			case <-time.After(500 * time.Millisecond):
+				db, _ := sql.Open("postgres", cfg.GetDSN())
+				if err := db.Ping(); err == nil {
+					doneC <- nil
+					return
+				}
+			case <-ctx.Done():
+				doneC <- fmt.Errorf("failed to start database after %f seconds", timeout.Seconds())
 			}
 		}
 	}()
-	timeout := 10 * time.Second
-	select {
-	case <-time.After(timeout):
+
+	if err := <-doneC; err != nil {
 		cleanup()
-		return nil, fmt.Errorf("failed to start database after %f seconds", timeout.Seconds())
-	case <-doneC:
-		break
+		return nil, err
 	}
 
 	return cleanup, nil

@@ -19,7 +19,6 @@ func NewGRPCServer(logger *logrus.Logger, db *gorm.DB) (*grpc.Server, error) {
 	interceptors := []grpc.UnaryServerInterceptor{
 		// validation interceptor
 		grpc_validator.UnaryServerInterceptor(),
-		// validation interceptor
 		grpc_logrus.UnaryServerInterceptor(logrus.NewEntry(logger)),
 		gateway.UnaryServerInterceptor(),
 		requestid.UnaryServerInterceptor(),

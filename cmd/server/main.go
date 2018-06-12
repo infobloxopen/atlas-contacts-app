@@ -116,11 +116,11 @@ func ServeInternal(logger *logrus.Logger) error {
 func ServeExternal(logger *logrus.Logger) error {
 	dbSQL, err := sql.Open("postgres", DBConnectionString)
 	if err != nil {
-		logger.Fatal(err)
+		return err
 	}
 	defer dbSQL.Close()
 	if err := migrate.MigrateDB(*dbSQL); err != nil {
-		logger.Fatal(err)
+		return err
 	}
 	db, err := gorm.Open("postgres", dbSQL)
 	if err != nil {
