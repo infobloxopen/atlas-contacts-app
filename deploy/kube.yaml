@@ -62,7 +62,7 @@ spec:
         # requests to the contacts-app
         # - "-authz=pdpserver.authz:5555"
         image: infoblox/contacts-server:latest
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
           protocol: TCP
