@@ -97,7 +97,6 @@ metadata:
   labels:
     app: postgres
 spec:
-  clusterIP: None
   ports:
     - port: 5432
   selector:
