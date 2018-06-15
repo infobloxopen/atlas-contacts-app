@@ -2,6 +2,12 @@
 
 
 [[projects]]
+  name = "github.com/bitly/go-simplejson"
+  packages = ["."]
+  revision = "aabad6e819789e569bd6aabf444c935aa9ba1e44"
+  version = "v0.5.0"
+
+[[projects]]
   name = "github.com/dgrijalva/jwt-go"
   packages = ["."]
   revision = "06ea1031745cb8b3dab3f6a236daf2b0aa468b7e"
@@ -276,6 +282,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "26784b2fdffa99197ffad8ace3f07dd17c042c0e4b7cde5b83fe3d5882a4b7d1"
+  inputs-digest = "46a217f282f015344eb423e40301f3654f1be314fc5ac7d177924db75255dde6"
   solver-name = "gps-cdcl"
   solver-version = 1
