@@ -26,7 +26,7 @@ func TestCreateContact_REST(t *testing.T) {
 	}
 	res, err := MakeRequestWithDefaults(
 		http.MethodPost,
-		"http://localhost:8080/atlas-contacts-app/v1/contacts",
+		"http://localhost:8080/v1/contacts",
 		contact,
 	)
 	if err != nil {
@@ -101,14 +101,14 @@ func TestReadContact_REST(t *testing.T) {
 		Notes:        "build the containers at dusk",
 	}
 	_, err := MakeRequestWithDefaults(
-		http.MethodPost, "http://localhost:8080/atlas-contacts-app/v1/contacts",
+		http.MethodPost, "http://localhost:8080/v1/contacts",
 		contact,
 	)
 	if err != nil {
 		t.Fatalf("unable to create contact: %v", err)
 	}
 	res, err := MakeRequestWithDefaults(
-		http.MethodGet, "http://localhost:8080/atlas-contacts-app/v1/contacts/1",
+		http.MethodGet, "http://localhost:8080/v1/contacts/1",
 		nil,
 	)
 	if err != nil {
@@ -175,7 +175,7 @@ func TestInvalidEmail_REST(t *testing.T) {
 		PrimaryEmail: "invalid-email-address",
 	}
 	res, err := MakeRequestWithDefaults(
-		http.MethodPost, "http://localhost:8080/atlas-contacts-app/v1/contacts",
+		http.MethodPost, "http://localhost:8080/v1/contacts",
 		contact,
 	)
 	if err != nil {
@@ -221,7 +221,7 @@ func TestDeleteContact_REST(t *testing.T) {
 	}
 	_, err := MakeRequestWithDefaults(
 		http.MethodPost,
-		"http://localhost:8080/atlas-contacts-app/v1/contacts",
+		"http://localhost:8080/v1/contacts",
 		contact,
 	)
 	if err != nil {
@@ -229,7 +229,7 @@ func TestDeleteContact_REST(t *testing.T) {
 	}
 	res, err := MakeRequestWithDefaults(
 		http.MethodDelete,
-		"http://localhost:8080/atlas-contacts-app/v1/contacts/1",
+		"http://localhost:8080/v1/contacts/1",
 		nil,
 	)
 	if err != nil {
