@@ -63,9 +63,7 @@ func (m *ContactORM) BeforeUpdate(scope *gorm.Scope) (err error) {
 		// Contact exists proceed to default update method
 		return nil
 	} else {
-		// Contact doesn't exist send error
-		st := status.Newf(codes.Internal, "The contact with that ID doesn't exist.")
-		return st.Err()
+		return fmt.Errorf("NOT_EXISTS")
 	}
 }
 

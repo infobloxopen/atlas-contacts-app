@@ -15,10 +15,11 @@ import (
 	"fmt"
 
 	"github.com/infobloxopen/atlas-app-toolkit/gateway"
+	"github.com/infobloxopen/atlas-app-toolkit/errors"
 	"github.com/infobloxopen/atlas-app-toolkit/query"
 	"github.com/infobloxopen/atlas-contacts-app/pkg/pb"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
+	_ "google.golang.org/grpc/status"
 )
 
 // NewProfilesServer returns an instance of the default profiles server interface
@@ -104,27 +105,36 @@ func (s *contactsServer) List(ctx context.Context, in *empty.Empty) (*pb.ListCon
 // Return error if provided token is malformed or contains ivalid values,
 // otherwise return offset, limit.
 func DecodePageToken(ptoken string) (offset, limit int32, err error) {
+	errC := errors.InitContainer()
 	data, err := base64.StdEncoding.DecodeString(ptoken)
 	if err != nil {
-		return 0, 0, status.Errorf(codes.InvalidArgument, "invalid page token - %s", err)
+		return 0, 0, errC.New(codes.InvalidArgument, "invalid page token - %s", err)
 	}
 	vals := strings.SplitN(string(data), ":", 2)
 	if len(vals) != 2 {
-		return 0, 0, status.Error(codes.InvalidArgument, "malformed page token")
+		return 0, 0, errC.New(codes.InvalidArgument, "malformed page token")
 	}
+
 	o, err := strconv.Atoi(vals[0])
 	if err != nil {
-		return 0, 0, status.Errorf(codes.InvalidArgument, "page token - invalid offset value %s", err)
+		errC.Set("page_token", codes.InvalidArgument, "invalid offset value %s", err)
+		errC.WithField("offset", "incorrect offset value")
 	}
-	offset = int32(o)
 
 	l, err := strconv.Atoi(vals[1])
 	if err != nil {
-		return 0, 0, status.Errorf(codes.InvalidArgument, "page token - invalid limit value %s", err)
+		errC.Set("page_token", codes.InvalidArgument, "invalid limit value %s", err)
+		errC.WithField("limit", "incorrect limit value")
 	}
-	limit = int32(l)
 
-	return
+	limit = int32(l)
+	offset = int32(o)
+
+	if err := errC.IfSet(codes.InvalidArgument, "invalid page token"); err != nil {
+		return 0, 0, errC
+	}
+
+	return limit, offset, nil
 }
 
 // EncodePageToken encodes offset and limit to a string in application specific
