@@ -8,6 +8,7 @@ import "github.com/lyft/protoc-gen-validate/validate/validate.proto";
 import "protoc-gen-swagger/options/annotations.proto";
 import "github.com/infobloxopen/protoc-gen-gorm/options/gorm.proto";
 import "github.com/infobloxopen/protoc-gen-gorm/types/types.proto";
+import "github.com/infobloxopen/atlas-app-toolkit/rpc/resource/resource.proto";
 
 option go_package = "github.com/infobloxopen/atlas-contacts-app/pkg/pb;pb";
 
@@ -16,7 +17,7 @@ message Profile {
       ormable: true,
       multi_account: true
     };
-    uint64 id = 1;
+    atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "serial"}];
     string name = 2;
     string notes = 3;
     repeated Contact contacts = 4;
@@ -32,7 +33,7 @@ message CreateProfileResponse {
 }
 
 message ReadProfileRequest {
-    uint64 id = 1;
+    atlas.rpc.Identifier id = 1;
 }
 
 message ReadProfileResponse {
@@ -48,7 +49,7 @@ message UpdateProfileResponse {
 }
 
 message DeleteProfileRequest {
-    uint64 id = 1;
+    atlas.rpc.Identifier id = 1;
 }
 
 message ListProfilesResponse {
@@ -66,20 +67,20 @@ service Profiles {
 
     rpc Read (ReadProfileRequest) returns (ReadProfileResponse) {
         option (google.api.http) = {
-            get: "/profiles/{id}"
+            get: "/profiles/{id.resource_id}"
         };
     }
 
     rpc Update (UpdateProfileRequest) returns (UpdateProfileResponse) {
         option (google.api.http) = {
-            put: "/profiles/{payload.id}"
+            put: "/profiles/{payload.id.resource_id}"
             body: "payload"
         };
     }
 
     rpc Delete (DeleteProfileRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
-            delete: "/profiles/{id}"
+            delete: "/profiles/{id.resource_id}"
         };
         option (gorm.method).object_type = "Profile";
     }
@@ -97,11 +98,11 @@ message Group {
       ormable: true,
       multi_account: true
     };
-    uint64 id = 1;
+    atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "serial"}];
     string name = 2;
     string notes = 3;
     Profile profile = 4 [(gorm.field).belongs_to = {}];
-    uint64 profile_id = 5;
+    atlas.rpc.Identifier profile_id = 5;
     repeated Contact contacts = 6 [(gorm.field).many_to_many = {}];
 }
 
@@ -114,7 +115,7 @@ message CreateGroupResponse {
 }
 
 message ReadGroupRequest {
-    uint64 id = 1;
+    atlas.rpc.Identifier id = 1;
 }
 
 message ReadGroupResponse {
@@ -130,7 +131,7 @@ message UpdateGroupResponse {
 }
 
 message DeleteGroupRequest {
-    uint64 id = 1;
+    atlas.rpc.Identifier id = 1;
 }
 
 message ListGroupsResponse {
@@ -148,20 +149,20 @@ service Groups {
 
     rpc Read (ReadGroupRequest) returns (ReadGroupResponse) {
         option (google.api.http) = {
-            get: "/groups/{id}"
+            get: "/groups/{id.resource_id}"
         };
     }
 
     rpc Update (UpdateGroupRequest) returns (UpdateGroupResponse) {
         option (google.api.http) = {
-            put: "/groups/{payload.id}"
+            put: "/groups/{payload.id.resource_id}"
             body: "payload"
         };
     }
 
     rpc Delete (DeleteGroupRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
-            delete: "/groups/{id}"
+            delete: "/groups/{id.resource_id}"
         };
         option (gorm.method).object_type = "Group";
     }
@@ -179,7 +180,7 @@ message Contact {
       ormable: true,
       multi_account: true
     };
-    uint64 id = 1;
+    atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "serial"}];
     string first_name = 2;
     string middle_name = 3;
     string last_name = 4;
@@ -188,7 +189,7 @@ message Contact {
     repeated Email emails = 8;
     Address home_address = 9;
     Address work_address = 10;
-    uint64 profile_id = 11;
+    atlas.rpc.Identifier profile_id = 11;
     Profile profile = 12 [(gorm.field).belongs_to = {}];
     repeated Group groups = 13 [(gorm.field).many_to_many = {jointable: "group_contacts"}];
     // nicknames is arbitrary json, but should be used for a list of strings
@@ -227,7 +228,7 @@ message CreateContactResponse {
 }
 
 message ReadContactRequest {
-    uint64 id = 1;
+    atlas.rpc.Identifier id = 1;
 }
 
 message ReadContactResponse {
@@ -243,7 +244,7 @@ message UpdateContactResponse {
 }
 
 message DeleteContactRequest {
-    uint64 id = 1;
+    atlas.rpc.Identifier id = 1;
 }
 
 message ListContactsResponse {
@@ -266,20 +267,20 @@ service Contacts {
 
     rpc Read (ReadContactRequest) returns (ReadContactResponse) {
         option (google.api.http) = {
-            get: "/contacts/{id}"
+            get: "/contacts/{id.resource_id}"
         };
     }
 
     rpc Update (UpdateContactRequest) returns (UpdateContactResponse) {
         option (google.api.http) = {
-            put: "/contacts/{payload.id}"
+            put: "/contacts/{payload.id.resource_id}"
             body: "payload"
         };
     }
 
     rpc Delete (DeleteContactRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
-            delete: "/contacts/{id}"
+            delete: "/contacts/{id.resource_id}"
         };
         option (gorm.method).object_type = "Contact";
     }
