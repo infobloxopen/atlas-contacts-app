@@ -108,29 +108,29 @@ func DecodePageToken(ptoken string) (offset, limit int32, err error) {
 	errC := errors.InitContainer()
 	data, err := base64.StdEncoding.DecodeString(ptoken)
 	if err != nil {
-		return 0, 0, errC.New(codes.InvalidArgument, "invalid page token - %s", err)
+		return 0, 0, errC.New(codes.InvalidArgument, "Invalid page token %q.", err)
 	}
 	vals := strings.SplitN(string(data), ":", 2)
 	if len(vals) != 2 {
-		return 0, 0, errC.New(codes.InvalidArgument, "malformed page token")
+		return 0, 0, errC.New(codes.InvalidArgument, "Malformed page token.")
 	}
 
 	o, err := strconv.Atoi(vals[0])
 	if err != nil {
-		errC.Set("page_token", codes.InvalidArgument, "invalid offset value %s", err)
-		errC.WithField("offset", "incorrect offset value")
+		errC.Set("page_token", codes.InvalidArgument, "invalid offset value %q.", vals[0])
+		errC.WithField("offset", "Invalid offset value. The valid value is an unsigned integer.")
 	}
 
 	l, err := strconv.Atoi(vals[1])
 	if err != nil {
-		errC.Set("page_token", codes.InvalidArgument, "invalid limit value %s", err)
-		errC.WithField("limit", "incorrect limit value")
+		errC.Set("page_token", codes.InvalidArgument, "invalid limit value %q.", vals[1])
+		errC.WithField("limit", "Invalid limit value. The valid value is an unsigned integer.")
 	}
 
 	limit = int32(l)
 	offset = int32(o)
 
-	if err := errC.IfSet(codes.InvalidArgument, "invalid page token"); err != nil {
+	if err := errC.IfSet(codes.InvalidArgument, "Page token validation failed."); err != nil {
 		return 0, 0, errC
 	}
 
