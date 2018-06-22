@@ -4,6 +4,8 @@ import (
 	"github.com/infobloxopen/atlas-app-toolkit/errors"
 
 	"google.golang.org/grpc/codes"
+
+	"context"
 )
 
 var ErrorMappings = []errors.MapFunc{
@@ -14,4 +16,12 @@ var ErrorMappings = []errors.MapFunc{
 		).WithField(
 			"path/id", "the specified object was not found."),
 	),
+	errors.NewMapping(
+		// Here CondAnd without condition functions serves as 'default'.
+		errors.CondAnd(),
+		errors.MapFunc(func (ctx context.Context, err error) (error, bool) {
+			return errors.NewContainer(codes.Internal, "Error: %s", err), true
+		}),
+	),
+
 }
