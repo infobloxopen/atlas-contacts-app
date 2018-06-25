@@ -6,7 +6,7 @@ metadata:
   labels:
     pargset: authz
 criteria:
-  type: User
+  type: user
 ---
 apiVersion: infoblox.com/v1
 kind: Group
@@ -16,8 +16,18 @@ metadata:
   labels:
     pargset: authz
 criteria:
-  type: User
-  department: Engineering
+  type: user
+  department: admin
+---
+apiVersion: authz.infoblox.com/v1
+kind: Group
+metadata:
+  name: all-resources
+  namespace: $AUTHZ_NAMESPACE
+  labels:
+    authz-namespace: $AUTHZ_NAMESPACE
+criteria:
+  type: none
 ---
 apiVersion: infoblox.com/v1
 kind: RoleAssignment
@@ -26,8 +36,12 @@ metadata:
   namespace: contacts
   labels:
     pargset: authz
-group: all-users
-role: contacts-read-only
+subjectgroups:
+- all-users
+roles:
+- contacts-read-only
+resourcegroups:
+- all-resources
 ---
 apiVersion: infoblox.com/v1
 kind: RoleAssignment
@@ -36,8 +50,12 @@ metadata:
   namespace: contacts
   labels:
     pargset: authz
-group: engineers
-role: contacts-read-write
+subjectgroups:
+- engineers
+roles:
+- contacts-read-write
+resourcegroups:
+- all-resources
 ---
 apiVersion: infoblox.com/v1
 kind: Role
