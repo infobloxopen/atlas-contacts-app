@@ -16,7 +16,6 @@ import (
 
 	"github.com/infobloxopen/atlas-app-toolkit/gateway"
 	"github.com/infobloxopen/atlas-app-toolkit/gorm/resource"
-	"github.com/infobloxopen/atlas-app-toolkit/gorm/resource/integer"
 	"github.com/infobloxopen/atlas-app-toolkit/health"
 	"github.com/infobloxopen/atlas-app-toolkit/server"
 	"github.com/infobloxopen/atlas-contacts-app/cmd"
@@ -63,11 +62,7 @@ func init() {
 	flag.StringVar(&AuthzAddr, "authz", "", "address of the authorization service")
 	flag.StringVar(&LogLevel, "log", "info", "log level")
 	flag.Parse()
-
-	resource.RegisterCodec(integer.NewCodec("contact-app", "contacts"), &pb.Contact{})
-	resource.RegisterCodec(integer.NewCodec("contact-app", "groups"), &pb.Group{})
-	resource.RegisterCodec(integer.NewCodec("contact-app", "emails"), &pb.Email{})
-	resource.RegisterCodec(integer.NewCodec("contact-app", "profiles"), &pb.Profile{})
+	resource.RegisterApplication("atlas-contacts-app")
 }
 
 func NewLogger() *logrus.Logger {
