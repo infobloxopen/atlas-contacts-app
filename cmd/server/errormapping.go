@@ -20,7 +20,7 @@ var ErrorMappings = []errors.MapFunc{
 
 	errors.NewMapping(
 		errors.CondHasPrefix("pq:"),
-		errors.MapFunc(func (ctx context.Context, err error) (error, bool) {
+		errors.MapFunc(func(ctx context.Context, err error) (error, bool) {
 			if res := regexp.MustCompile(`column "(\w+)" does not exist`).FindStringSubmatch(err.Error()); len(res) > 0 {
 				return errors.NewContainer(codes.InvalidArgument, "Invalid collection operator parameter %q.", res[1]), true
 			}
@@ -32,9 +32,8 @@ var ErrorMappings = []errors.MapFunc{
 	errors.NewMapping(
 		// Here CondAnd without condition functions serves as 'default'.
 		errors.CondAnd(),
-		errors.MapFunc(func (ctx context.Context, err error) (error, bool) {
+		errors.MapFunc(func(ctx context.Context, err error) (error, bool) {
 			return errors.NewContainer(codes.Internal, "Error: %s", err), true
 		}),
 	),
-
 }

@@ -7,7 +7,6 @@ import (
 	toolkit_auth "github.com/infobloxopen/atlas-app-toolkit/auth"
 	"github.com/infobloxopen/atlas-app-toolkit/gateway"
 	"github.com/infobloxopen/atlas-app-toolkit/requestid"
-	"github.com/infobloxopen/atlas-app-toolkit/errors"
 	"github.com/infobloxopen/atlas-contacts-app/pkg/pb"
 	"github.com/infobloxopen/atlas-contacts-app/pkg/svc"
 	"github.com/jinzhu/gorm"
@@ -21,7 +20,6 @@ func NewGRPCServer(logger *logrus.Logger, db *gorm.DB) (*grpc.Server, error) {
 		// validation interceptor
 		grpc_validator.UnaryServerInterceptor(),
 		grpc_logrus.UnaryServerInterceptor(logrus.NewEntry(logger)),
-		errors.UnaryServerInterceptor(ErrorMappings...),
 		gateway.UnaryServerInterceptor(),
 		requestid.UnaryServerInterceptor(),
 	}

@@ -14,8 +14,8 @@ import (
 
 	"fmt"
 
-	"github.com/infobloxopen/atlas-app-toolkit/gateway"
 	"github.com/infobloxopen/atlas-app-toolkit/errors"
+	"github.com/infobloxopen/atlas-app-toolkit/gateway"
 	"github.com/infobloxopen/atlas-app-toolkit/query"
 	"github.com/infobloxopen/atlas-contacts-app/pkg/pb"
 	"google.golang.org/grpc/codes"

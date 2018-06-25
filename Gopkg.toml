@@ -26,10 +26,6 @@
   name = "google.golang.org/grpc"
   version = "1.11.2"
 
-[[constraint]]
-  name = "github.com/infobloxopen/atlas-app-toolkit"
-  branch = "master"
-
 [prune]
   go-tests = true
   unused-packages = true
