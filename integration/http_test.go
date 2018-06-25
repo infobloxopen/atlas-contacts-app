@@ -3,10 +3,13 @@
 package integration
 
 import (
+	"fmt"
 	"net/http"
+	"strings"
 	"testing"
 
 	"github.com/bitly/go-simplejson"
+	"github.com/infobloxopen/atlas-contacts-app/cmd"
 	"github.com/infobloxopen/atlas-contacts-app/pkg/pb"
 )
 
@@ -24,7 +27,7 @@ func TestCreateContact_REST(t *testing.T) {
 		PrimaryEmail: "test@test.com",
 		Notes:        "set sail at sunrise",
 	}
-	res, err := MakeRequestWithDefaults(
+	resCreate, err := MakeRequestWithDefaults(
 		http.MethodPost,
 		"http://localhost:8080/v1/contacts",
 		contact,
@@ -32,8 +35,8 @@ func TestCreateContact_REST(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unable to create contact: %v", err)
 	}
-	ValidateResponseCode(t, res, http.StatusOK)
-	responseJSON, err := simplejson.NewFromReader(res.Body)
+	ValidateResponseCode(t, resCreate, http.StatusOK)
+	createJSON, err := simplejson.NewFromReader(resCreate.Body)
 	if err != nil {
 		t.Fatalf("unable to marshal json response: %v", err)
 	}
@@ -44,37 +47,37 @@ func TestCreateContact_REST(t *testing.T) {
 	}{
 		{
 			name:   "contact first name",
-			json:   responseJSON.GetPath("result", "first_name"),
+			json:   createJSON.GetPath("result", "first_name"),
 			expect: `"Steven"`,
 		},
 		{
 			name:   "contact middle name",
-			json:   responseJSON.GetPath("result", "middle_name"),
+			json:   createJSON.GetPath("result", "middle_name"),
 			expect: `"James"`,
 		},
 		{
 			name:   "contact last",
-			json:   responseJSON.GetPath("result", "last_name"),
+			json:   createJSON.GetPath("result", "last_name"),
 			expect: `"McKubernetes"`,
 		},
 		{
 			name:   "contact notes",
-			json:   responseJSON.GetPath("result", "notes"),
+			json:   createJSON.GetPath("result", "notes"),
 			expect: `"set sail at sunrise"`,
 		},
 		{
 			name:   "contact primary email",
-			json:   responseJSON.GetPath("result", "primary_email"),
+			json:   createJSON.GetPath("result", "primary_email"),
 			expect: `"test@test.com"`,
 		},
 		{
 			name:   "contact email list",
-			json:   responseJSON.GetPath("result", "emails"),
+			json:   createJSON.GetPath("result", "emails"),
 			expect: `[{"address":"test@test.com","id":"1"}]`,
 		},
 		{
 			name:   "success response",
-			json:   responseJSON.GetPath("success"),
+			json:   createJSON.GetPath("success"),
 			expect: `{"code":"OK","status":200}`,
 		},
 	}
@@ -100,22 +103,31 @@ func TestReadContact_REST(t *testing.T) {
 		PrimaryEmail: "test@test.com",
 		Notes:        "build the containers at dusk",
 	}
-	_, err := MakeRequestWithDefaults(
+	resCreate, err := MakeRequestWithDefaults(
 		http.MethodPost, "http://localhost:8080/v1/contacts",
 		contact,
 	)
 	if err != nil {
 		t.Fatalf("unable to create contact: %v", err)
 	}
-	res, err := MakeRequestWithDefaults(
-		http.MethodGet, "http://localhost:8080/v1/contacts/1",
+	createJSON, err := simplejson.NewFromReader(resCreate.Body)
+	if err != nil {
+		t.Fatalf("unable to unmarshal create contact response body: %v", err)
+	}
+	id, err := createJSON.GetPath("result", "id").String()
+	if err != nil {
+		t.Fatalf("unable to get contact id from response json: %v", err)
+	}
+	id = strings.TrimPrefix(id, fmt.Sprintf("%s/%s/", cmd.ApplicationID, "contacts"))
+	resRead, err := MakeRequestWithDefaults(
+		http.MethodGet, fmt.Sprintf("http://localhost:8080/v1/contacts/%s", id),
 		nil,
 	)
 	if err != nil {
 		t.Fatalf("unable to get contact: %v", err)
 	}
-	ValidateResponseCode(t, res, http.StatusOK)
-	responseJSON, err := simplejson.NewFromReader(res.Body)
+	ValidateResponseCode(t, resRead, http.StatusOK)
+	readJSON, err := simplejson.NewFromReader(resRead.Body)
 	var tests = []struct {
 		name   string
 		json   *simplejson.Json
@@ -123,37 +135,37 @@ func TestReadContact_REST(t *testing.T) {
 	}{
 		{
 			name:   "contact first name",
-			json:   responseJSON.GetPath("result", "first_name"),
+			json:   readJSON.GetPath("result", "first_name"),
 			expect: `"Wilfred"`,
 		},
 		{
 			name:   "contact middle name",
-			json:   responseJSON.GetPath("result", "middle_name"),
+			json:   readJSON.GetPath("result", "middle_name"),
 			expect: `"Wallace"`,
 		},
 		{
 			name:   "contact last",
-			json:   responseJSON.GetPath("result", "last_name"),
+			json:   readJSON.GetPath("result", "last_name"),
 			expect: `"O'Docker"`,
 		},
 		{
 			name:   "contact notes",
-			json:   responseJSON.GetPath("result", "notes"),
+			json:   readJSON.GetPath("result", "notes"),
 			expect: `"build the containers at dusk"`,
 		},
 		{
 			name:   "contact primary email",
-			json:   responseJSON.GetPath("result", "primary_email"),
+			json:   readJSON.GetPath("result", "primary_email"),
 			expect: `"test@test.com"`,
 		},
 		{
 			name:   "contact email list",
-			json:   responseJSON.GetPath("result", "emails"),
+			json:   readJSON.GetPath("result", "emails"),
 			expect: `[{"address":"test@test.com","id":"1"}]`,
 		},
 		{
 			name:   "success response",
-			json:   responseJSON.GetPath("success"),
+			json:   readJSON.GetPath("success"),
 			expect: `{"code":"OK","status":200}`,
 		},
 	}
@@ -174,15 +186,15 @@ func TestInvalidEmail_REST(t *testing.T) {
 	contact := pb.Contact{
 		PrimaryEmail: "invalid-email-address",
 	}
-	res, err := MakeRequestWithDefaults(
+	resDelete, err := MakeRequestWithDefaults(
 		http.MethodPost, "http://localhost:8080/v1/contacts",
 		contact,
 	)
 	if err != nil {
 		t.Fatalf("unable to create contact %v", err)
 	}
-	ValidateResponseCode(t, res, http.StatusBadRequest)
-	responseJSON, err := simplejson.NewFromReader(res.Body)
+	ValidateResponseCode(t, resDelete, http.StatusBadRequest)
+	deleteJSON, err := simplejson.NewFromReader(resDelete.Body)
 	if err != nil {
 		t.Fatalf("unable to unmarshal response json: %v", err)
 	}
@@ -193,12 +205,12 @@ func TestInvalidEmail_REST(t *testing.T) {
 	}{
 		{
 			name:   "check response code",
-			json:   responseJSON.GetPath("error", "code"),
+			json:   deleteJSON.GetPath("error", "code"),
 			expect: `"INVALID_ARGUMENT"`,
 		},
 		{
 			name:   "check http status",
-			json:   responseJSON.GetPath("error", "status"),
+			json:   deleteJSON.GetPath("error", "status"),
 			expect: `400`,
 		},
 	}
@@ -219,7 +231,7 @@ func TestDeleteContact_REST(t *testing.T) {
 	contact := pb.Contact{
 		PrimaryEmail: "test@test.com",
 	}
-	_, err := MakeRequestWithDefaults(
+	resCreate, err := MakeRequestWithDefaults(
 		http.MethodPost,
 		"http://localhost:8080/v1/contacts",
 		contact,
@@ -227,21 +239,30 @@ func TestDeleteContact_REST(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unable to create contact: %v", err)
 	}
-	res, err := MakeRequestWithDefaults(
+	createJSON, err := simplejson.NewFromReader(resCreate.Body)
+	if err != nil {
+		t.Fatalf("unable to unmarshal create contact response body: %v", err)
+	}
+	id, err := createJSON.GetPath("result", "id").String()
+	if err != nil {
+		t.Fatalf("unable to get contact id from response json: %v", err)
+	}
+	id = strings.TrimPrefix(id, fmt.Sprintf("%s/%s/", cmd.ApplicationID, "contacts"))
+	resDelete, err := MakeRequestWithDefaults(
 		http.MethodDelete,
-		"http://localhost:8080/v1/contacts/1",
+		fmt.Sprintf("http://localhost:8080/v1/contacts/%s", id),
 		nil,
 	)
 	if err != nil {
 		t.Fatalf("unable to delete contact: %v", err)
 	}
-	ValidateResponseCode(t, res, http.StatusOK)
-	jsonResponse, err := simplejson.NewFromReader(res.Body)
+	ValidateResponseCode(t, resDelete, http.StatusOK)
+	deleteJSON, err := simplejson.NewFromReader(resDelete.Body)
 	if err != nil {
 		t.Fatalf("unable to marshal json response: %v", err)
 	}
 	t.Run("success response", func(t *testing.T) {
-		ValidateJSONSchema(t, jsonResponse, `{"success":{"code":"OK","status":200}}`)
+		ValidateJSONSchema(t, deleteJSON, `{"success":{"code":"OK","status":200}}`)
 	})
 }
 
