@@ -1,41 +1,41 @@
-apiVersion: infoblox.com/v1
+apiVersion: authz.infoblox.com/v1
 kind: Group
 metadata:
   name: all-users
-  namespace: authz
+  namespace: contacts
   labels:
-    pargset: authz
+    authz-namespace: authz
 criteria:
   type: user
----
-apiVersion: infoblox.com/v1
-kind: Group
-metadata:
-  name: engineers
-  namespace: authz
-  labels:
-    pargset: authz
-criteria:
-  type: user
-  department: admin
 ---
 apiVersion: authz.infoblox.com/v1
 kind: Group
 metadata:
-  name: all-resources
-  namespace: $AUTHZ_NAMESPACE
+  name: engineers
+  namespace: contacts
   labels:
-    authz-namespace: $AUTHZ_NAMESPACE
+    authz-namespace: authz
+criteria:
+  type: user
+  department: admin
+---
+apiVersion: authz.authz.infoblox.com/v1
+kind: Group
+metadata:
+  name: all-resources
+  namespace: contacts
+  labels:
+    authz-namespace: authz
 criteria:
   type: none
 ---
-apiVersion: infoblox.com/v1
+apiVersion: authz.infoblox.com/v1
 kind: RoleAssignment
 metadata:
   name: contacts-all-users
   namespace: contacts
   labels:
-    pargset: authz
+    authz-namespace: authz
 subjectgroups:
 - all-users
 roles:
@@ -43,13 +43,13 @@ roles:
 resourcegroups:
 - all-resources
 ---
-apiVersion: infoblox.com/v1
+apiVersion: authz.infoblox.com/v1
 kind: RoleAssignment
 metadata:
   name: contacts-admin
   namespace: contacts
   labels:
-    pargset: authz
+    authz-namespace: authz
 subjectgroups:
 - engineers
 roles:
@@ -57,45 +57,45 @@ roles:
 resourcegroups:
 - all-resources
 ---
-apiVersion: infoblox.com/v1
+apiVersion: authz.infoblox.com/v1
 kind: Role
 metadata:
   name: contacts-read-only
   namespace: contacts
   labels:
-    pargset: authz
+    authz-namespace: authz
 permissions:
   - contacts-read
 ---
-apiVersion: infoblox.com/v1
+apiVersion: authz.infoblox.com/v1
 kind: Role
 metadata:
   name: contacts-read-write
   namespace: contacts
   labels:
-    pargset: authz
+    authz-namespace: authz
 permissions:
   - contacts-read
   - contacts-write
 ---
-apiVersion: infoblox.com/v1
+apiVersion: authz.infoblox.com/v1
 kind: Permission
 metadata:
   name: contacts-read
   namespace: contacts
   labels:
-    pargset: authz
+    authz-namespace: authz
 operations:
   - Contacts.List
   - Contacts.Get
 ---
-apiVersion: infoblox.com/v1
+apiVersion: authz.infoblox.com/v1
 kind: Permission
 metadata:
   name: contacts-write
   namespace: contacts
   labels:
-    pargset: authz
+    authz-namespace: authz
 operations:
   - Contacts.Create
   - Contacts.Update
