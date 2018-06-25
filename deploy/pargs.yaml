@@ -19,7 +19,7 @@ criteria:
   type: user
   department: admin
 ---
-apiVersion: authz.authz.infoblox.com/v1
+apiVersion: authz.infoblox.com/v1
 kind: Group
 metadata:
   name: all-resources
@@ -85,7 +85,7 @@ metadata:
   namespace: contacts
   labels:
     authz-namespace: authz
-operations:
+endpoints:
   - Contacts.List
   - Contacts.Get
 ---
@@ -96,7 +96,7 @@ metadata:
   namespace: contacts
   labels:
     authz-namespace: authz
-operations:
+endpoints:
   - Contacts.Create
   - Contacts.Update
   - Contacts.Delete
