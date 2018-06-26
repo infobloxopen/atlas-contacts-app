@@ -11,4 +11,8 @@ const (
 	DBConnectionString = "host=localhost port=5432 user=postgres password=postgres sslmode=disable dbname=atlas_contacts_app"
 	// SwaggerFile is the file location of the swagger file to serve
 	SwaggerFile = "./pkg/pb/contacts.swagger.json"
+	// ApplicationID associates a microservice with an application. The atlas
+	// contacts application consists of only one service, so we identify both the
+	// service and the application as "atlas-contacts-app"
+	ApplicationID = "atlas-contacts-app"
 )

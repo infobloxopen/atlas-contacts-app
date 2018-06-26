@@ -33,13 +33,6 @@ var (
 	LogLevel           string
 )
 
-const (
-	// applicationID associates a microservice with an application. the atlas
-	// contacts application consists of only one service, so we identify both the
-	// service and the application as "contacts"
-	applicationID = "contacts"
-)
-
 func main() {
 	doneC := make(chan error)
 	logger := NewLogger()
@@ -62,7 +55,7 @@ func init() {
 	flag.StringVar(&AuthzAddr, "authz", "", "address of the authorization service")
 	flag.StringVar(&LogLevel, "log", "info", "log level")
 	flag.Parse()
-	resource.RegisterApplication("atlas-contacts-app")
+	resource.RegisterApplication(cmd.ApplicationID)
 }
 
 func NewLogger() *logrus.Logger {
