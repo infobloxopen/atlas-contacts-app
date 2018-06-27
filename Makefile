@@ -61,8 +61,8 @@ protobuf:
 	--go_out=plugins=grpc:. \
 	--grpc-gateway_out=logtostderr=true:. \
 	--gorm_out="engine=postgres:." \
-	--validate_out="lang=go:." \
-	--swagger_out=:. $(PROJECT_ROOT)/pkg/pb/contacts.proto
+	--validate_out="lang=go:." 	$(PROJECT_ROOT)/pkg/pb/contacts.proto
+	# --swagger_out=:. 
 
 .PHONY: vendor
 vendor:

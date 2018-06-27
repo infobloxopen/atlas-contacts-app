@@ -3,7 +3,6 @@ package svc
 import (
 	"context"
 
-	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 
@@ -19,7 +18,7 @@ import (
 	"github.com/infobloxopen/atlas-app-toolkit/query"
 	"github.com/infobloxopen/atlas-contacts-app/pkg/pb"
 	"google.golang.org/grpc/codes"
-	_ "google.golang.org/grpc/status"
+	"google.golang.org/grpc/grpclog"
 )
 
 // NewProfilesServer returns an instance of the default profiles server interface
@@ -59,8 +58,9 @@ type contactsServer struct {
 // - if an user requests page token and provides offset then only first time
 //	 the provided offset is applied
 //		page_token = null & offset = 2 & limit = 2 -> page_token=base64(offset=2+2:limit=2)
-func (s *contactsServer) List(ctx context.Context, in *empty.Empty) (*pb.ListContactsResponse, error) {
-	page, err := gateway.Pagination(ctx)
+func (s *contactsServer) List(ctx context.Context, in *pb.CollectionOps) (*pb.ListContactsResponse, error) {
+	page := &query.Pagination{}
+	err := gateway.GetCollectionOp(in, page)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +78,10 @@ func (s *contactsServer) List(ctx context.Context, in *empty.Empty) (*pb.ListCon
 		if err != nil {
 			return nil, err
 		}
-		ctx = gateway.NewPaginationContext(ctx, page)
+		if err := gateway.SetCollectionOps(in, page); err != nil {
+			grpclog.Errorf("collection operator interceptor: failed to set pagination operator - %s", err)
+			return nil, err
+		}
 	}
 
 	// forward request to default implementation

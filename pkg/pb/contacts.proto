@@ -8,6 +8,7 @@ import "github.com/lyft/protoc-gen-validate/validate/validate.proto";
 import "protoc-gen-swagger/options/annotations.proto";
 import "github.com/infobloxopen/protoc-gen-gorm/options/gorm.proto";
 import "github.com/infobloxopen/protoc-gen-gorm/types/types.proto";
+import "github.com/infobloxopen/atlas-app-toolkit/query/collection_operators.proto";
 import "github.com/infobloxopen/atlas-app-toolkit/rpc/resource/resource.proto";
 
 option go_package = "github.com/infobloxopen/atlas-contacts-app/pkg/pb;pb";
@@ -256,6 +257,14 @@ message SMSRequest {
     string message = 2;
 }
 
+message CollectionOps {
+    infoblox.api.Filtering filter = 1;
+    infoblox.api.Sorting order_by = 2;
+    infoblox.api.FieldSelection fields = 3;
+    infoblox.api.Pagination paging = 4;
+}
+
+
 service Contacts {
     option (gorm.server).autogen = true;
     rpc Create (CreateContactRequest) returns (CreateContactResponse) {
@@ -285,7 +294,7 @@ service Contacts {
         option (gorm.method).object_type = "Contact";
     }
 
-    rpc List (google.protobuf.Empty) returns (ListContactsResponse) {
+    rpc List (CollectionOps) returns (ListContactsResponse) {
         option (google.api.http) = {
             get: "/contacts"
         };
