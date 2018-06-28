@@ -257,7 +257,7 @@ message SMSRequest {
     string message = 2;
 }
 
-message CollectionOps {
+message ListContactRequest {
     infoblox.api.Filtering filter = 1;
     infoblox.api.Sorting order_by = 2;
     infoblox.api.FieldSelection fields = 3;
@@ -294,7 +294,7 @@ service Contacts {
         option (gorm.method).object_type = "Contact";
     }
 
-    rpc List (CollectionOps) returns (ListContactsResponse) {
+    rpc List (ListContactRequest) returns (ListContactsResponse) {
         option (google.api.http) = {
             get: "/contacts"
         };

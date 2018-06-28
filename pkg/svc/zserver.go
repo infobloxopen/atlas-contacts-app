@@ -58,7 +58,7 @@ type contactsServer struct {
 // - if an user requests page token and provides offset then only first time
 //	 the provided offset is applied
 //		page_token = null & offset = 2 & limit = 2 -> page_token=base64(offset=2+2:limit=2)
-func (s *contactsServer) List(ctx context.Context, in *pb.CollectionOps) (*pb.ListContactsResponse, error) {
+func (s *contactsServer) List(ctx context.Context, in *pb.ListContactRequest) (*pb.ListContactsResponse, error) {
 	page := &query.Pagination{}
 	err := gateway.GetCollectionOp(in, page)
 	if err != nil {

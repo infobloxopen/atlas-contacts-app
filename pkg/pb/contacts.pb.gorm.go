@@ -38,7 +38,7 @@ It has these top-level messages:
 	DeleteContactRequest
 	ListContactsResponse
 	SMSRequest
-	CollectionOps
+	ListContactRequest
 */
 package pb
 
@@ -46,9 +46,11 @@ import context "context"
 import errors "errors"
 
 import auth1 "github.com/infobloxopen/atlas-app-toolkit/auth"
+import gateway1 "github.com/infobloxopen/atlas-app-toolkit/gateway"
 import gorm1 "github.com/jinzhu/gorm"
 import gorm2 "github.com/infobloxopen/atlas-app-toolkit/gorm"
 import postgres1 "github.com/jinzhu/gorm/dialects/postgres"
+import query1 "github.com/infobloxopen/atlas-app-toolkit/query"
 import resource1 "github.com/infobloxopen/atlas-app-toolkit/gorm/resource"
 import types1 "github.com/infobloxopen/protoc-gen-gorm/types"
 
@@ -826,10 +828,39 @@ func DefaultStrictUpdateProfile(ctx context.Context, in *Profile, db *gorm1.DB) 
 	return &pbResponse, nil
 }
 
+// getCollectionOperators takes collection operator values from corresponding message fields
+func getCollectionOperators(in interface{}) (*query1.Filtering, *query1.Sorting, *query1.Pagination, *query1.FieldSelection, error) {
+	f := &query1.Filtering{}
+	err := gateway1.GetCollectionOp(in, f)
+	if err != nil {
+		return nil, nil, nil, nil, err
+	}
+	s := &query1.Sorting{}
+	err = gateway1.GetCollectionOp(in, s)
+	if err != nil {
+		return nil, nil, nil, nil, err
+	}
+	p := &query1.Pagination{}
+	err = gateway1.GetCollectionOp(in, p)
+	if err != nil {
+		return nil, nil, nil, nil, err
+	}
+	fs := &query1.FieldSelection{}
+	err = gateway1.GetCollectionOp(in, fs)
+	if err != nil {
+		return nil, nil, nil, nil, err
+	}
+	return f, s, p, fs, nil
+}
+
 // DefaultListProfile executes a gorm list call
-func DefaultListProfile(ctx context.Context, db *gorm1.DB, params interface{}) ([]*Profile, error) {
+func DefaultListProfile(ctx context.Context, db *gorm1.DB, req interface{}) ([]*Profile, error) {
 	ormResponse := []ProfileORM{}
-	db, err := gorm2.ApplyCollectionOperators(db, params)
+	f, s, p, fs, err := getCollectionOperators(req)
+	if err != nil {
+		return nil, err
+	}
+	db, err = gorm2.ApplyCollectionOperators(db, f, s, p, fs)
 	if err != nil {
 		return nil, err
 	}
@@ -952,9 +983,13 @@ func DefaultStrictUpdateGroup(ctx context.Context, in *Group, db *gorm1.DB) (*Gr
 }
 
 // DefaultListGroup executes a gorm list call
-func DefaultListGroup(ctx context.Context, db *gorm1.DB, params interface{}) ([]*Group, error) {
+func DefaultListGroup(ctx context.Context, db *gorm1.DB, req interface{}) ([]*Group, error) {
 	ormResponse := []GroupORM{}
-	db, err := gorm2.ApplyCollectionOperators(db, params)
+	f, s, p, fs, err := getCollectionOperators(req)
+	if err != nil {
+		return nil, err
+	}
+	db, err = gorm2.ApplyCollectionOperators(db, f, s, p, fs)
 	if err != nil {
 		return nil, err
 	}
@@ -1107,9 +1142,13 @@ func DefaultStrictUpdateContact(ctx context.Context, in *Contact, db *gorm1.DB) 
 }
 
 // DefaultListContact executes a gorm list call
-func DefaultListContact(ctx context.Context, db *gorm1.DB, params interface{}) ([]*Contact, error) {
+func DefaultListContact(ctx context.Context, db *gorm1.DB, req interface{}) ([]*Contact, error) {
 	ormResponse := []ContactORM{}
-	db, err := gorm2.ApplyCollectionOperators(db, params)
+	f, s, p, fs, err := getCollectionOperators(req)
+	if err != nil {
+		return nil, err
+	}
+	db, err = gorm2.ApplyCollectionOperators(db, f, s, p, fs)
 	if err != nil {
 		return nil, err
 	}
@@ -1231,9 +1270,13 @@ func DefaultStrictUpdateEmail(ctx context.Context, in *Email, db *gorm1.DB) (*Em
 }
 
 // DefaultListEmail executes a gorm list call
-func DefaultListEmail(ctx context.Context, db *gorm1.DB, params interface{}) ([]*Email, error) {
+func DefaultListEmail(ctx context.Context, db *gorm1.DB, req interface{}) ([]*Email, error) {
 	ormResponse := []EmailORM{}
-	db, err := gorm2.ApplyCollectionOperators(db, params)
+	f, s, p, fs, err := getCollectionOperators(req)
+	if err != nil {
+		return nil, err
+	}
+	db, err = gorm2.ApplyCollectionOperators(db, f, s, p, fs)
 	if err != nil {
 		return nil, err
 	}
@@ -1275,9 +1318,13 @@ func DefaultCreateAddress(ctx context.Context, in *Address, db *gorm1.DB) (*Addr
 }
 
 // DefaultListAddress executes a gorm list call
-func DefaultListAddress(ctx context.Context, db *gorm1.DB, params interface{}) ([]*Address, error) {
+func DefaultListAddress(ctx context.Context, db *gorm1.DB, req interface{}) ([]*Address, error) {
 	ormResponse := []AddressORM{}
-	db, err := gorm2.ApplyCollectionOperators(db, params)
+	f, s, p, fs, err := getCollectionOperators(req)
+	if err != nil {
+		return nil, err
+	}
+	db, err = gorm2.ApplyCollectionOperators(db, f, s, p, fs)
 	if err != nil {
 		return nil, err
 	}
@@ -1537,11 +1584,11 @@ func (m *ContactsDefaultServer) Delete(ctx context.Context, in *DeleteContactReq
 }
 
 type ContactsListCustomHandler interface {
-	CustomList(context.Context, *CollectionOps) (*ListContactsResponse, error)
+	CustomList(context.Context, *ListContactRequest) (*ListContactsResponse, error)
 }
 
 // List ...
-func (m *ContactsDefaultServer) List(ctx context.Context, in *CollectionOps) (*ListContactsResponse, error) {
+func (m *ContactsDefaultServer) List(ctx context.Context, in *ListContactRequest) (*ListContactsResponse, error) {
 	if custom, ok := interface{}(m).(ContactsListCustomHandler); ok {
 		return custom.CustomList(ctx, in)
 	}

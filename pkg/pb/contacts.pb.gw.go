@@ -394,7 +394,7 @@ var (
 )
 
 func request_Contacts_List_0(ctx context.Context, marshaler runtime.Marshaler, client ContactsClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq CollectionOps
+	var protoReq ListContactRequest
 	var metadata runtime.ServerMetadata
 
 	if err := runtime.PopulateQueryParameters(&protoReq, req.URL.Query(), filter_Contacts_List_0); err != nil {

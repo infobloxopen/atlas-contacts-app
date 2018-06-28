@@ -1944,10 +1944,10 @@ func (e SMSRequestValidationError) Error() string {
 
 var _ error = SMSRequestValidationError{}
 
-// Validate checks the field values on CollectionOps with the rules defined in
-// the proto definition for this message. If any rules are violated, an error
-// is returned.
-func (m *CollectionOps) Validate() error {
+// Validate checks the field values on ListContactRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *ListContactRequest) Validate() error {
 	if m == nil {
 		return nil
 	}
@@ -1956,7 +1956,7 @@ func (m *CollectionOps) Validate() error {
 		Validate() error
 	}); ok {
 		if err := v.Validate(); err != nil {
-			return CollectionOpsValidationError{
+			return ListContactRequestValidationError{
 				Field:  "Filter",
 				Reason: "embedded message failed validation",
 				Cause:  err,
@@ -1968,7 +1968,7 @@ func (m *CollectionOps) Validate() error {
 		Validate() error
 	}); ok {
 		if err := v.Validate(); err != nil {
-			return CollectionOpsValidationError{
+			return ListContactRequestValidationError{
 				Field:  "OrderBy",
 				Reason: "embedded message failed validation",
 				Cause:  err,
@@ -1980,7 +1980,7 @@ func (m *CollectionOps) Validate() error {
 		Validate() error
 	}); ok {
 		if err := v.Validate(); err != nil {
-			return CollectionOpsValidationError{
+			return ListContactRequestValidationError{
 				Field:  "Fields",
 				Reason: "embedded message failed validation",
 				Cause:  err,
@@ -1992,7 +1992,7 @@ func (m *CollectionOps) Validate() error {
 		Validate() error
 	}); ok {
 		if err := v.Validate(); err != nil {
-			return CollectionOpsValidationError{
+			return ListContactRequestValidationError{
 				Field:  "Paging",
 				Reason: "embedded message failed validation",
 				Cause:  err,
@@ -2003,9 +2003,9 @@ func (m *CollectionOps) Validate() error {
 	return nil
 }
 
-// CollectionOpsValidationError is the validation error returned by
-// CollectionOps.Validate if the designated constraints aren't met.
-type CollectionOpsValidationError struct {
+// ListContactRequestValidationError is the validation error returned by
+// ListContactRequest.Validate if the designated constraints aren't met.
+type ListContactRequestValidationError struct {
 	Field  string
 	Reason string
 	Cause  error
@@ -2013,7 +2013,7 @@ type CollectionOpsValidationError struct {
 }
 
 // Error satisfies the builtin error interface
-func (e CollectionOpsValidationError) Error() string {
+func (e ListContactRequestValidationError) Error() string {
 	cause := ""
 	if e.Cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
@@ -2025,11 +2025,11 @@ func (e CollectionOpsValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sCollectionOps.%s: %s%s",
+		"invalid %sListContactRequest.%s: %s%s",
 		key,
 		e.Field,
 		e.Reason,
 		cause)
 }
 
-var _ error = CollectionOpsValidationError{}
+var _ error = ListContactRequestValidationError{}
