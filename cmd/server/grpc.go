@@ -5,6 +5,7 @@ import (
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
 	"github.com/grpc-ecosystem/go-grpc-middleware/validator"
 	toolkit_auth "github.com/infobloxopen/atlas-app-toolkit/auth"
+	"github.com/infobloxopen/atlas-app-toolkit/errors"
 	"github.com/infobloxopen/atlas-app-toolkit/gateway"
 	"github.com/infobloxopen/atlas-app-toolkit/requestid"
 	"github.com/infobloxopen/atlas-contacts-app/cmd"
@@ -21,6 +22,7 @@ func NewGRPCServer(logger *logrus.Logger, db *gorm.DB) (*grpc.Server, error) {
 		// validation interceptor
 		grpc_validator.UnaryServerInterceptor(),
 		grpc_logrus.UnaryServerInterceptor(logrus.NewEntry(logger)),
+		errors.UnaryServerInterceptor(ErrorMappings...),
 		gateway.UnaryServerInterceptor(),
 		requestid.UnaryServerInterceptor(),
 	}
