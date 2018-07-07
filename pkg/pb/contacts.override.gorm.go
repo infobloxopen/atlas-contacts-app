@@ -4,22 +4,34 @@ import (
 	"fmt"
 
 	"github.com/infobloxopen/atlas-app-toolkit/rpc/errdetails"
+	"github.com/infobloxopen/atlas-app-toolkit/auth"
 	"github.com/jinzhu/gorm"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	//log "github.com/sirupsen/logrus"
 )
 
 // BeforeToORM will add the primary e-mail to the list of e-mails if it isn't
 // present already
 func (m *Contact) BeforeToORM(ctx context.Context, c *ContactORM) error {
+	emails := []*Email{}
 	if m.PrimaryEmail != "" {
 		for _, mail := range m.Emails {
-			if mail.Address == m.PrimaryEmail {
-				return nil
+			if mail.Address != m.PrimaryEmail {
+				emails = append(emails, mail)
 			}
 		}
-		c.Emails = append(c.Emails, &EmailORM{Address: m.PrimaryEmail, IsPrimary: true})
+
+		m.Emails = emails
+
+		accountID, err := auth.GetAccountID(ctx, nil)
+		if err != nil {
+			return err
+		}
+
+		c.Emails = []*EmailORM{&EmailORM{Address: m.PrimaryEmail, AccountID: accountID, IsPrimary: true}}
 	}
 	return nil
 }

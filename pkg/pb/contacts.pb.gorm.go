@@ -35,6 +35,8 @@ It has these top-level messages:
 	ReadContactResponse
 	UpdateContactRequest
 	UpdateContactResponse
+	PatchContactRequest
+	PatchContactResponse
 	DeleteContactRequest
 	ListContactsResponse
 	SMSRequest
@@ -45,13 +47,17 @@ import context "context"
 import errors "errors"
 
 import auth1 "github.com/infobloxopen/atlas-app-toolkit/auth"
+import field_mask1 "google.golang.org/genproto/protobuf/field_mask"
 import gorm1 "github.com/jinzhu/gorm"
 import gorm2 "github.com/infobloxopen/atlas-app-toolkit/gorm"
+import postgres1 "github.com/jinzhu/gorm/dialects/postgres"
 import resource1 "github.com/infobloxopen/atlas-app-toolkit/gorm/resource"
+import types1 "github.com/infobloxopen/protoc-gen-gorm/types"
 
 import fmt "fmt"
 import math "math"
 import google_protobuf "github.com/golang/protobuf/ptypes/empty"
+import _ "google.golang.org/genproto/protobuf/field_mask"
 import _ "google.golang.org/genproto/googleapis/api/annotations"
 import _ "github.com/lyft/protoc-gen-validate/validate"
 import _ "github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger/options"
@@ -345,6 +351,7 @@ type ContactORM struct {
 	Id          int64       `gorm:"type:serial"`
 	LastName    string
 	MiddleName  string
+	Nicknames   *postgres1.Jsonb `gorm:"type:jsonb"`
 	Notes       string
 	Profile     *ProfileORM `gorm:"foreignkey:ProfileId;association_foreignkey:Id"`
 	ProfileId   *int64
@@ -427,6 +434,9 @@ func (m *Contact) ToORM(ctx context.Context) (ContactORM, error) {
 			to.Groups = append(to.Groups, nil)
 		}
 	}
+	if m.Nicknames != nil {
+		to.Nicknames = &postgres1.Jsonb{[]byte(m.Nicknames.Value)}
+	}
 	accountID, err := auth1.GetAccountID(ctx, nil)
 	if err != nil {
 		return to, err
@@ -506,6 +516,9 @@ func (m *ContactORM) ToPB(ctx context.Context) (Contact, error) {
 		} else {
 			to.Groups = append(to.Groups, nil)
 		}
+	}
+	if m.Nicknames != nil {
+		to.Nicknames = &types1.JSONValue{Value: string(m.Nicknames.RawMessage)}
 	}
 	if posthook, ok := interface{}(m).(ContactWithAfterToPB); ok {
 		err = posthook.AfterToPB(ctx, &to)
@@ -815,6 +828,81 @@ func DefaultStrictUpdateProfile(ctx context.Context, in *Profile, db *gorm1.DB) 
 	return &pbResponse, nil
 }
 
+// DefaultPatchProfile executes a basic gorm update call with patch behavior
+func DefaultPatchProfile(ctx context.Context, in *Profile, updateMask *field_mask1.FieldMask, db *gorm1.DB) (*Profile, error) {
+	if in == nil {
+		return nil, errors.New("Nil argument to DefaultPatchProfile")
+	}
+	accountID, err := auth1.GetAccountID(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	ormParams, err := (&Profile{Id: in.GetId()}).ToORM(ctx)
+	if err != nil {
+		return nil, err
+	}
+	db = db.Where(&ProfileORM{AccountID: accountID})
+	db = db.Preload("Contacts").Preload("Groups")
+	ormObj := ProfileORM{}
+	if err := db.Where(&ormParams).First(&ormObj).Error; err != nil {
+		return nil, err
+	}
+	pbObj, err := ormObj.ToPB(ctx)
+	if err != nil {
+		return nil, err
+	}
+	for _, f := range updateMask.GetPaths() {
+		if f == "Id" {
+			pbObj.Id = in.Id
+		}
+		if f == "Name" {
+			pbObj.Name = in.Name
+		}
+		if f == "Notes" {
+			pbObj.Notes = in.Notes
+		}
+		if f == "Contacts" {
+			pbObj.Contacts = in.Contacts
+			filterContacts := ContactORM{}
+			if ormObj.Id == 0 {
+				return nil, errors.New("Can't do overwriting update with no Id value for ProfileORM")
+			}
+			filterContacts.ProfileId = new(int64)
+			*filterContacts.ProfileId = ormObj.Id
+			filterContacts.AccountID = ormObj.AccountID
+			if err = db.Where(filterContacts).Delete(ContactORM{}).Error; err != nil {
+				return nil, err
+			}
+		}
+		if f == "Groups" {
+			pbObj.Groups = in.Groups
+			filterGroups := GroupORM{}
+			if ormObj.Id == 0 {
+				return nil, errors.New("Can't do overwriting update with no Id value for ProfileORM")
+			}
+			filterGroups.ProfileId = new(int64)
+			*filterGroups.ProfileId = ormObj.Id
+			filterGroups.AccountID = ormObj.AccountID
+			if err = db.Where(filterGroups).Delete(GroupORM{}).Error; err != nil {
+				return nil, err
+			}
+		}
+	}
+	ormObj, err = pbObj.ToORM(ctx)
+	if err != nil {
+		return nil, err
+	}
+	db = db.Where(&ProfileORM{AccountID: accountID})
+	if err = db.Save(&ormObj).Error; err != nil {
+		return nil, err
+	}
+	pbObj, err = ormObj.ToPB(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &pbObj, err
+}
+
 // DefaultListProfile executes a gorm list call
 func DefaultListProfile(ctx context.Context, db *gorm1.DB) ([]*Profile, error) {
 	ormResponse := []ProfileORM{}
@@ -938,6 +1026,64 @@ func DefaultStrictUpdateGroup(ctx context.Context, in *Group, db *gorm1.DB) (*Gr
 		return nil, err
 	}
 	return &pbResponse, nil
+}
+
+// DefaultPatchGroup executes a basic gorm update call with patch behavior
+func DefaultPatchGroup(ctx context.Context, in *Group, updateMask *field_mask1.FieldMask, db *gorm1.DB) (*Group, error) {
+	if in == nil {
+		return nil, errors.New("Nil argument to DefaultPatchGroup")
+	}
+	accountID, err := auth1.GetAccountID(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	ormParams, err := (&Group{Id: in.GetId()}).ToORM(ctx)
+	if err != nil {
+		return nil, err
+	}
+	db = db.Where(&GroupORM{AccountID: accountID})
+	db = db.Preload("Contacts").Preload("Profile")
+	ormObj := GroupORM{}
+	if err := db.Where(&ormParams).First(&ormObj).Error; err != nil {
+		return nil, err
+	}
+	pbObj, err := ormObj.ToPB(ctx)
+	if err != nil {
+		return nil, err
+	}
+	for _, f := range updateMask.GetPaths() {
+		if f == "Id" {
+			pbObj.Id = in.Id
+		}
+		if f == "Name" {
+			pbObj.Name = in.Name
+		}
+		if f == "Notes" {
+			pbObj.Notes = in.Notes
+		}
+		if f == "Profile" {
+			pbObj.Profile = in.Profile
+		}
+		if f == "ProfileId" {
+			pbObj.ProfileId = in.ProfileId
+		}
+		if f == "Contacts" {
+			pbObj.Contacts = in.Contacts
+		}
+	}
+	ormObj, err = pbObj.ToORM(ctx)
+	if err != nil {
+		return nil, err
+	}
+	db = db.Where(&GroupORM{AccountID: accountID})
+	if err = db.Save(&ormObj).Error; err != nil {
+		return nil, err
+	}
+	pbObj, err = ormObj.ToPB(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &pbObj, err
 }
 
 // DefaultListGroup executes a gorm list call
@@ -1095,6 +1241,115 @@ func DefaultStrictUpdateContact(ctx context.Context, in *Contact, db *gorm1.DB) 
 	return &pbResponse, nil
 }
 
+// DefaultPatchContact executes a basic gorm update call with patch behavior
+func DefaultPatchContact(ctx context.Context, in *Contact, updateMask *field_mask1.FieldMask, db *gorm1.DB) (*Contact, error) {
+	if in == nil {
+		return nil, errors.New("Nil argument to DefaultPatchContact")
+	}
+	accountID, err := auth1.GetAccountID(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	ormParams, err := (&Contact{Id: in.GetId()}).ToORM(ctx)
+	if err != nil {
+		return nil, err
+	}
+	db = db.Where(&ContactORM{AccountID: accountID})
+	db = db.Preload("Emails").Preload("Groups").Preload("HomeAddress").Preload("Profile").Preload("WorkAddress")
+	ormObj := ContactORM{}
+	if err := db.Where(&ormParams).First(&ormObj).Error; err != nil {
+		return nil, err
+	}
+	pbObj, err := ormObj.ToPB(ctx)
+	if err != nil {
+		return nil, err
+	}
+	for _, f := range updateMask.GetPaths() {
+		if f == "Id" {
+			pbObj.Id = in.Id
+		}
+		if f == "FirstName" {
+			pbObj.FirstName = in.FirstName
+		}
+		if f == "MiddleName" {
+			pbObj.MiddleName = in.MiddleName
+		}
+		if f == "LastName" {
+			pbObj.LastName = in.LastName
+		}
+		if f == "PrimaryEmail" {
+			pbObj.PrimaryEmail = in.PrimaryEmail
+		}
+		if f == "Notes" {
+			pbObj.Notes = in.Notes
+		}
+		if f == "Emails" {
+			pbObj.Emails = in.Emails
+			filterEmails := EmailORM{}
+			if ormObj.Id == 0 {
+				return nil, errors.New("Can't do overwriting update with no Id value for ContactORM")
+			}
+			filterEmails.ContactId = new(int64)
+			*filterEmails.ContactId = ormObj.Id
+			filterEmails.AccountID = ormObj.AccountID
+			if err = db.Where(filterEmails).Delete(EmailORM{}).Error; err != nil {
+				return nil, err
+			}
+		}
+		if f == "HomeAddress" {
+			pbObj.HomeAddress = in.HomeAddress
+			filterHomeAddress := AddressORM{}
+			if ormObj.Id == 0 {
+				return nil, errors.New("Can't do overwriting update with no Id value for ContactORM")
+			}
+			filterHomeAddress.HomeAddressContactId = new(int64)
+			*filterHomeAddress.HomeAddressContactId = ormObj.Id
+			filterHomeAddress.AccountID = ormObj.AccountID
+			if err = db.Where(filterHomeAddress).Delete(AddressORM{}).Error; err != nil {
+				return nil, err
+			}
+		}
+		if f == "WorkAddress" {
+			pbObj.WorkAddress = in.WorkAddress
+			filterWorkAddress := AddressORM{}
+			if ormObj.Id == 0 {
+				return nil, errors.New("Can't do overwriting update with no Id value for ContactORM")
+			}
+			filterWorkAddress.WorkAddressContactId = new(int64)
+			*filterWorkAddress.WorkAddressContactId = ormObj.Id
+			filterWorkAddress.AccountID = ormObj.AccountID
+			if err = db.Where(filterWorkAddress).Delete(AddressORM{}).Error; err != nil {
+				return nil, err
+			}
+		}
+		if f == "ProfileId" {
+			pbObj.ProfileId = in.ProfileId
+		}
+		if f == "Profile" {
+			pbObj.Profile = in.Profile
+		}
+		if f == "Groups" {
+			pbObj.Groups = in.Groups
+		}
+		if f == "Nicknames" {
+			pbObj.Nicknames = in.Nicknames
+		}
+	}
+	ormObj, err = pbObj.ToORM(ctx)
+	if err != nil {
+		return nil, err
+	}
+	db = db.Where(&ContactORM{AccountID: accountID})
+	if err = db.Save(&ormObj).Error; err != nil {
+		return nil, err
+	}
+	pbObj, err = ormObj.ToPB(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &pbObj, err
+}
+
 // DefaultListContact executes a gorm list call
 func DefaultListContact(ctx context.Context, db *gorm1.DB) ([]*Contact, error) {
 	ormResponse := []ContactORM{}
@@ -1217,6 +1472,51 @@ func DefaultStrictUpdateEmail(ctx context.Context, in *Email, db *gorm1.DB) (*Em
 		return nil, err
 	}
 	return &pbResponse, nil
+}
+
+// DefaultPatchEmail executes a basic gorm update call with patch behavior
+func DefaultPatchEmail(ctx context.Context, in *Email, updateMask *field_mask1.FieldMask, db *gorm1.DB) (*Email, error) {
+	if in == nil {
+		return nil, errors.New("Nil argument to DefaultPatchEmail")
+	}
+	accountID, err := auth1.GetAccountID(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	ormParams, err := (&Email{Id: in.GetId()}).ToORM(ctx)
+	if err != nil {
+		return nil, err
+	}
+	db = db.Where(&EmailORM{AccountID: accountID})
+	ormObj := EmailORM{}
+	if err := db.Where(&ormParams).First(&ormObj).Error; err != nil {
+		return nil, err
+	}
+	pbObj, err := ormObj.ToPB(ctx)
+	if err != nil {
+		return nil, err
+	}
+	for _, f := range updateMask.GetPaths() {
+		if f == "Id" {
+			pbObj.Id = in.Id
+		}
+		if f == "Address" {
+			pbObj.Address = in.Address
+		}
+	}
+	ormObj, err = pbObj.ToORM(ctx)
+	if err != nil {
+		return nil, err
+	}
+	db = db.Where(&EmailORM{AccountID: accountID})
+	if err = db.Save(&ormObj).Error; err != nil {
+		return nil, err
+	}
+	pbObj, err = ormObj.ToPB(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &pbObj, err
 }
 
 // DefaultListEmail executes a gorm list call
@@ -1510,6 +1810,23 @@ func (m *ContactsDefaultServer) Update(ctx context.Context, in *UpdateContactReq
 		return nil, err
 	}
 	return &UpdateContactResponse{Result: res}, nil
+}
+
+type ContactsPatchCustomHandler interface {
+	CustomPatch(context.Context, *PatchContactRequest) (*PatchContactResponse, error)
+}
+
+// Patch ...
+func (m *ContactsDefaultServer) Patch(ctx context.Context, in *PatchContactRequest) (*PatchContactResponse, error) {
+	if custom, ok := interface{}(m).(ContactsPatchCustomHandler); ok {
+		return custom.CustomPatch(ctx, in)
+	}
+	db := m.DB
+	res, err := DefaultPatchContact(ctx, in.GetPayload(), in.GetUpdateMask(), db)
+	if err != nil {
+		return nil, err
+	}
+	return &PatchContactResponse{Result: res}, nil
 }
 
 type ContactsDeleteCustomHandler interface {

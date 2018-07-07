@@ -78,7 +78,6 @@
   revision = "8e809c8a86450a29b90dcc9efbf062d0fe6d9746"
 
 [[projects]]
-  branch = "master"
   name = "github.com/infobloxopen/atlas-app-toolkit"
   packages = [
     "auth",
@@ -95,6 +94,7 @@
     "server"
   ]
   revision = "1498dd01b71c7ef524204741041ae42c77e8c60e"
+  version = "v0.6.0"
 
 [[projects]]
   branch = "master"
@@ -127,8 +127,8 @@
     "options",
     "types"
   ]
-  revision = "8b8e03aba10f34b472e33cead208ae96f8b2e17b"
-  version = "v0.5.1"
+  revision = "b32bf0bc50f6bec6cc6657235adb53c96569aa1c"
+  version = "v0.6.0"
 
 [[projects]]
   branch = "master"
@@ -138,7 +138,7 @@
     "pdp-service",
     "pep"
   ]
-  revision = "20649c5cb0c8eef9568422893d07808fd3243547"
+  revision = "e73e95a6ed9c7a433d9ade3159d8f2968a9bbb60"
 
 [[projects]]
   name = "github.com/jinzhu/gorm"
@@ -205,7 +205,7 @@
     "internal/timeseries",
     "trace"
   ]
-  revision = "afe8f62b1d6bbd81f31868121a50b06d8188e1f9"
+  revision = "ed29d75add3d7c4bf7ca65aac0c6df3d1420216f"
 
 [[projects]]
   branch = "master"
@@ -214,7 +214,7 @@
     "unix",
     "windows"
   ]
-  revision = "63fc586f45fe72d95d5240a5d5eb95e6503907d3"
+  revision = "151529c776cdc58ddbe7963ba9af779f3577b419"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -243,9 +243,10 @@
   packages = [
     "googleapis/api/annotations",
     "googleapis/rpc/code",
-    "googleapis/rpc/status"
+    "googleapis/rpc/status",
+    "protobuf/field_mask"
   ]
-  revision = "80063a038e333bbe006c878e4c5ce4c74d055498"
+  revision = "ff3583edef7de132f219f0efc00e097cabcc0ec0"
 
 [[projects]]
   name = "google.golang.org/grpc"
@@ -282,6 +283,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "46a217f282f015344eb423e40301f3654f1be314fc5ac7d177924db75255dde6"
+  inputs-digest = "08aa7ae5f43c7da0583e678e05b360ba452f21335a3d0e0214ecdb9f5369259f"
   solver-name = "gps-cdcl"
   solver-version = 1

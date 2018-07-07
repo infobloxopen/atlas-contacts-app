@@ -3,6 +3,7 @@ syntax = "proto3";
 package api.contacts;
 
 import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
 import "google/api/annotations.proto";
 import "github.com/lyft/protoc-gen-validate/validate/validate.proto";
 import "protoc-gen-swagger/options/annotations.proto";
@@ -243,6 +244,15 @@ message UpdateContactResponse {
     Contact result = 1;
 }
 
+message PatchContactRequest {
+    Contact payload = 1;
+    google.protobuf.FieldMask update_mask = 2;
+}
+
+message PatchContactResponse {
+    Contact result = 1;
+}
+
 message DeleteContactRequest {
     atlas.rpc.Identifier id = 1;
 }
@@ -274,6 +284,13 @@ service Contacts {
     rpc Update (UpdateContactRequest) returns (UpdateContactResponse) {
         option (google.api.http) = {
             put: "/contacts/{payload.id.resource_id}"
+            body: "payload"
+        };
+    }
+
+    rpc Patch (PatchContactRequest) returns (PatchContactResponse) {
+        option (google.api.http) = {
+            patch: "/contacts/{payload.id.resource_id}"
             body: "payload"
         };
     }

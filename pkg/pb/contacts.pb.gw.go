@@ -9,7 +9,9 @@ It translates gRPC into RESTful JSON APIs.
 package pb
 
 import (
+	"bytes"
 	"io"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/golang/protobuf/proto"
@@ -33,7 +35,11 @@ func request_Profiles_Create_0(ctx context.Context, marshaler runtime.Marshaler,
 	var protoReq CreateProfileRequest
 	var metadata runtime.ServerMetadata
 
-	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq.Payload); err != nil && err != io.EOF {
+	body, berr := ioutil.ReadAll(req.Body)
+	if berr != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
+	}
+	if err := marshaler.NewDecoder(bytes.NewReader(body)).Decode(&protoReq.Payload); err != nil && err != io.EOF {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -81,7 +87,11 @@ func request_Profiles_Update_0(ctx context.Context, marshaler runtime.Marshaler,
 	var protoReq UpdateProfileRequest
 	var metadata runtime.ServerMetadata
 
-	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq.Payload); err != nil && err != io.EOF {
+	body, berr := ioutil.ReadAll(req.Body)
+	if berr != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
+	}
+	if err := marshaler.NewDecoder(bytes.NewReader(body)).Decode(&protoReq.Payload); err != nil && err != io.EOF {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -156,7 +166,11 @@ func request_Groups_Create_0(ctx context.Context, marshaler runtime.Marshaler, c
 	var protoReq CreateGroupRequest
 	var metadata runtime.ServerMetadata
 
-	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq.Payload); err != nil && err != io.EOF {
+	body, berr := ioutil.ReadAll(req.Body)
+	if berr != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
+	}
+	if err := marshaler.NewDecoder(bytes.NewReader(body)).Decode(&protoReq.Payload); err != nil && err != io.EOF {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -204,7 +218,11 @@ func request_Groups_Update_0(ctx context.Context, marshaler runtime.Marshaler, c
 	var protoReq UpdateGroupRequest
 	var metadata runtime.ServerMetadata
 
-	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq.Payload); err != nil && err != io.EOF {
+	body, berr := ioutil.ReadAll(req.Body)
+	if berr != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
+	}
+	if err := marshaler.NewDecoder(bytes.NewReader(body)).Decode(&protoReq.Payload); err != nil && err != io.EOF {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -279,7 +297,11 @@ func request_Contacts_Create_0(ctx context.Context, marshaler runtime.Marshaler,
 	var protoReq CreateContactRequest
 	var metadata runtime.ServerMetadata
 
-	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq.Payload); err != nil && err != io.EOF {
+	body, berr := ioutil.ReadAll(req.Body)
+	if berr != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
+	}
+	if err := marshaler.NewDecoder(bytes.NewReader(body)).Decode(&protoReq.Payload); err != nil && err != io.EOF {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -327,7 +349,11 @@ func request_Contacts_Update_0(ctx context.Context, marshaler runtime.Marshaler,
 	var protoReq UpdateContactRequest
 	var metadata runtime.ServerMetadata
 
-	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq.Payload); err != nil && err != io.EOF {
+	body, berr := ioutil.ReadAll(req.Body)
+	if berr != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
+	}
+	if err := marshaler.NewDecoder(bytes.NewReader(body)).Decode(&protoReq.Payload); err != nil && err != io.EOF {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -350,6 +376,58 @@ func request_Contacts_Update_0(ctx context.Context, marshaler runtime.Marshaler,
 	}
 
 	msg, err := client.Update(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
+var (
+	filter_Contacts_Patch_0 = &utilities.DoubleArray{Encoding: map[string]int{"payload": 0, "id": 1, "resource_id": 2}, Base: []int{1, 2, 1, 1, 0, 0}, Check: []int{0, 1, 2, 3, 4, 2}}
+)
+
+func request_Contacts_Patch_0(ctx context.Context, marshaler runtime.Marshaler, client ContactsClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq PatchContactRequest
+	var metadata runtime.ServerMetadata
+
+	body, berr := ioutil.ReadAll(req.Body)
+	if berr != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
+	}
+	if err := marshaler.NewDecoder(bytes.NewReader(body)).Decode(&protoReq.Payload); err != nil && err != io.EOF {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if protoReq.UpdateMask != nil && len(protoReq.UpdateMask.GetPaths()) > 0 {
+		runtime.CamelCaseFieldMask(protoReq.UpdateMask)
+	} else {
+		if fieldMask, err := runtime.FieldMaskFromRequestBody(bytes.NewReader(body)); err != nil {
+			return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+		} else {
+			protoReq.UpdateMask = fieldMask
+		}
+	}
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["payload.id.resource_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "payload.id.resource_id")
+	}
+
+	err = runtime.PopulateFieldFromPath(&protoReq, "payload.id.resource_id", val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "payload.id.resource_id", err)
+	}
+
+	if err := runtime.PopulateQueryParameters(&protoReq, req.URL.Query(), filter_Contacts_Patch_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+
+	msg, err := client.Patch(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
@@ -402,7 +480,11 @@ func request_Contacts_SendSMS_0(ctx context.Context, marshaler runtime.Marshaler
 	var protoReq SMSRequest
 	var metadata runtime.ServerMetadata
 
-	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && err != io.EOF {
+	body, berr := ioutil.ReadAll(req.Body)
+	if berr != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
+	}
+	if err := marshaler.NewDecoder(bytes.NewReader(body)).Decode(&protoReq); err != nil && err != io.EOF {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -439,14 +521,14 @@ func RegisterProfilesHandlerFromEndpoint(ctx context.Context, mux *runtime.Serve
 	defer func() {
 		if err != nil {
 			if cerr := conn.Close(); cerr != nil {
-				grpclog.Printf("Failed to close conn to %s: %v", endpoint, cerr)
+				grpclog.Infof("Failed to close conn to %s: %v", endpoint, cerr)
 			}
 			return
 		}
 		go func() {
 			<-ctx.Done()
 			if cerr := conn.Close(); cerr != nil {
-				grpclog.Printf("Failed to close conn to %s: %v", endpoint, cerr)
+				grpclog.Infof("Failed to close conn to %s: %v", endpoint, cerr)
 			}
 		}()
 	}()
@@ -460,8 +542,8 @@ func RegisterProfilesHandler(ctx context.Context, mux *runtime.ServeMux, conn *g
 	return RegisterProfilesHandlerClient(ctx, mux, NewProfilesClient(conn))
 }
 
-// RegisterProfilesHandler registers the http handlers for service Profiles to "mux".
-// The handlers forward requests to the grpc endpoint over the given implementation of "ProfilesClient".
+// RegisterProfilesHandlerClient registers the http handlers for service Profiles
+// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "ProfilesClient".
 // Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "ProfilesClient"
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
 // "ProfilesClient" to call the correct interceptors.
@@ -649,14 +731,14 @@ func RegisterGroupsHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMu
 	defer func() {
 		if err != nil {
 			if cerr := conn.Close(); cerr != nil {
-				grpclog.Printf("Failed to close conn to %s: %v", endpoint, cerr)
+				grpclog.Infof("Failed to close conn to %s: %v", endpoint, cerr)
 			}
 			return
 		}
 		go func() {
 			<-ctx.Done()
 			if cerr := conn.Close(); cerr != nil {
-				grpclog.Printf("Failed to close conn to %s: %v", endpoint, cerr)
+				grpclog.Infof("Failed to close conn to %s: %v", endpoint, cerr)
 			}
 		}()
 	}()
@@ -670,8 +752,8 @@ func RegisterGroupsHandler(ctx context.Context, mux *runtime.ServeMux, conn *grp
 	return RegisterGroupsHandlerClient(ctx, mux, NewGroupsClient(conn))
 }
 
-// RegisterGroupsHandler registers the http handlers for service Groups to "mux".
-// The handlers forward requests to the grpc endpoint over the given implementation of "GroupsClient".
+// RegisterGroupsHandlerClient registers the http handlers for service Groups
+// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "GroupsClient".
 // Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "GroupsClient"
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
 // "GroupsClient" to call the correct interceptors.
@@ -859,14 +941,14 @@ func RegisterContactsHandlerFromEndpoint(ctx context.Context, mux *runtime.Serve
 	defer func() {
 		if err != nil {
 			if cerr := conn.Close(); cerr != nil {
-				grpclog.Printf("Failed to close conn to %s: %v", endpoint, cerr)
+				grpclog.Infof("Failed to close conn to %s: %v", endpoint, cerr)
 			}
 			return
 		}
 		go func() {
 			<-ctx.Done()
 			if cerr := conn.Close(); cerr != nil {
-				grpclog.Printf("Failed to close conn to %s: %v", endpoint, cerr)
+				grpclog.Infof("Failed to close conn to %s: %v", endpoint, cerr)
 			}
 		}()
 	}()
@@ -880,8 +962,8 @@ func RegisterContactsHandler(ctx context.Context, mux *runtime.ServeMux, conn *g
 	return RegisterContactsHandlerClient(ctx, mux, NewContactsClient(conn))
 }
 
-// RegisterContactsHandler registers the http handlers for service Contacts to "mux".
-// The handlers forward requests to the grpc endpoint over the given implementation of "ContactsClient".
+// RegisterContactsHandlerClient registers the http handlers for service Contacts
+// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "ContactsClient".
 // Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "ContactsClient"
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
 // "ContactsClient" to call the correct interceptors.
@@ -971,6 +1053,35 @@ func RegisterContactsHandlerClient(ctx context.Context, mux *runtime.ServeMux, c
 		}
 
 		forward_Contacts_Update_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("PATCH", pattern_Contacts_Patch_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		if cn, ok := w.(http.CloseNotifier); ok {
+			go func(done <-chan struct{}, closed <-chan bool) {
+				select {
+				case <-done:
+				case <-closed:
+					cancel()
+				}
+			}(ctx.Done(), cn.CloseNotify())
+		}
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateContext(ctx, mux, req)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_Contacts_Patch_0(rctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_Contacts_Patch_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -1071,6 +1182,8 @@ var (
 
 	pattern_Contacts_Update_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"contacts", "payload.id.resource_id"}, ""))
 
+	pattern_Contacts_Patch_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"contacts", "payload.id.resource_id"}, ""))
+
 	pattern_Contacts_Delete_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"contacts", "id.resource_id"}, ""))
 
 	pattern_Contacts_List_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"contacts"}, ""))
@@ -1084,6 +1197,8 @@ var (
 	forward_Contacts_Read_0 = runtime.ForwardResponseMessage
 
 	forward_Contacts_Update_0 = runtime.ForwardResponseMessage
+
+	forward_Contacts_Patch_0 = runtime.ForwardResponseMessage
 
 	forward_Contacts_Delete_0 = runtime.ForwardResponseMessage
 
