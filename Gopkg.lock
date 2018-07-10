@@ -94,7 +94,7 @@
     "rpc/resource",
     "server"
   ]
-  revision = "1498dd01b71c7ef524204741041ae42c77e8c60e"
+  revision = "18076e1d3abb72afd7cf06badc4cacf514594e6e"
 
 [[projects]]
   branch = "master"
@@ -127,8 +127,8 @@
     "options",
     "types"
   ]
-  revision = "8b8e03aba10f34b472e33cead208ae96f8b2e17b"
-  version = "v0.5.1"
+  revision = "60d07921d6f50f76fa2049a092b523d65a016bd0"
+
 
 [[projects]]
   branch = "master"

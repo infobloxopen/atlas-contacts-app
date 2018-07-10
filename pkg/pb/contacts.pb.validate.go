@@ -41,7 +41,17 @@ func (m *Profile) Validate() error {
 		return nil
 	}
 
-	// no validation rules for Id
+	if v, ok := interface{}(m.GetId()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return ProfileValidationError{
+				Field:  "Id",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
 
 	// no validation rules for Name
 
@@ -231,7 +241,17 @@ func (m *ReadProfileRequest) Validate() error {
 		return nil
 	}
 
-	// no validation rules for Id
+	if v, ok := interface{}(m.GetId()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return ReadProfileRequestValidationError{
+				Field:  "Id",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
 
 	return nil
 }
@@ -437,7 +457,17 @@ func (m *DeleteProfileRequest) Validate() error {
 		return nil
 	}
 
-	// no validation rules for Id
+	if v, ok := interface{}(m.GetId()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return DeleteProfileRequestValidationError{
+				Field:  "Id",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
 
 	return nil
 }
@@ -539,7 +569,17 @@ func (m *Group) Validate() error {
 		return nil
 	}
 
-	// no validation rules for Id
+	if v, ok := interface{}(m.GetId()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return GroupValidationError{
+				Field:  "Id",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
 
 	// no validation rules for Name
 
@@ -557,7 +597,17 @@ func (m *Group) Validate() error {
 		}
 	}
 
-	// no validation rules for ProfileId
+	if v, ok := interface{}(m.GetProfileId()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return GroupValidationError{
+				Field:  "ProfileId",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
 
 	for idx, item := range m.GetContacts() {
 		_, _ = idx, item
@@ -726,7 +776,17 @@ func (m *ReadGroupRequest) Validate() error {
 		return nil
 	}
 
-	// no validation rules for Id
+	if v, ok := interface{}(m.GetId()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return ReadGroupRequestValidationError{
+				Field:  "Id",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
 
 	return nil
 }
@@ -932,7 +992,17 @@ func (m *DeleteGroupRequest) Validate() error {
 		return nil
 	}
 
-	// no validation rules for Id
+	if v, ok := interface{}(m.GetId()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return DeleteGroupRequestValidationError{
+				Field:  "Id",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
 
 	return nil
 }
@@ -1034,7 +1104,17 @@ func (m *Contact) Validate() error {
 		return nil
 	}
 
-	// no validation rules for Id
+	if v, ok := interface{}(m.GetId()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return ContactValidationError{
+				Field:  "Id",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
 
 	// no validation rules for FirstName
 
@@ -1093,7 +1173,17 @@ func (m *Contact) Validate() error {
 		}
 	}
 
-	// no validation rules for ProfileId
+	if v, ok := interface{}(m.GetProfileId()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return ContactValidationError{
+				Field:  "ProfileId",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
 
 	if v, ok := interface{}(m.GetProfile()).(interface {
 		Validate() error
@@ -1488,7 +1578,17 @@ func (m *ReadContactRequest) Validate() error {
 		return nil
 	}
 
-	// no validation rules for Id
+	if v, ok := interface{}(m.GetId()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return ReadContactRequestValidationError{
+				Field:  "Id",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
 
 	return nil
 }
@@ -1694,7 +1794,17 @@ func (m *DeleteContactRequest) Validate() error {
 		return nil
 	}
 
-	// no validation rules for Id
+	if v, ok := interface{}(m.GetId()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return DeleteContactRequestValidationError{
+				Field:  "Id",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
 
 	return nil
 }
@@ -1833,3 +1943,93 @@ func (e SMSRequestValidationError) Error() string {
 }
 
 var _ error = SMSRequestValidationError{}
+
+// Validate checks the field values on ListContactRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *ListContactRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if v, ok := interface{}(m.GetFilter()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return ListContactRequestValidationError{
+				Field:  "Filter",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetOrderBy()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return ListContactRequestValidationError{
+				Field:  "OrderBy",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetFields()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return ListContactRequestValidationError{
+				Field:  "Fields",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetPaging()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return ListContactRequestValidationError{
+				Field:  "Paging",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
+
+	return nil
+}
+
+// ListContactRequestValidationError is the validation error returned by
+// ListContactRequest.Validate if the designated constraints aren't met.
+type ListContactRequestValidationError struct {
+	Field  string
+	Reason string
+	Cause  error
+	Key    bool
+}
+
+// Error satisfies the builtin error interface
+func (e ListContactRequestValidationError) Error() string {
+	cause := ""
+	if e.Cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
+	}
+
+	key := ""
+	if e.Key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListContactRequest.%s: %s%s",
+		key,
+		e.Field,
+		e.Reason,
+		cause)
+}
+
+var _ error = ListContactRequestValidationError{}
