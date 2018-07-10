@@ -130,8 +130,8 @@
     "options",
     "types"
   ]
-  revision = "b32bf0bc50f6bec6cc6657235adb53c96569aa1c"
-  version = "v0.6.0"
+  revision = "544b78ce45f9bb68a08054104002fcda2b49247c"
+
 
 [[projects]]
   branch = "master"
