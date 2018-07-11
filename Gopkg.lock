@@ -97,7 +97,7 @@
     "rpc/resource",
     "server"
   ]
-  revision = "6ec9bf2ac6c7de8418a472c23b2d905093408b49"
+  revision = "d7c924e4971c40d33d89efb41f7773ce96e93db7"
 
 [[projects]]
   branch = "master"

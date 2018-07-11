@@ -73,7 +73,7 @@ type ProfileORM struct {
 	AccountID string
 	Contacts  []*ContactORM `gorm:"foreignkey:ProfileId;association_foreignkey:Id"`
 	Groups    []*GroupORM   `gorm:"foreignkey:ProfileId;association_foreignkey:Id"`
-	Id        int64         `gorm:"type:serial"`
+	Id        int64         `gorm:"type:serial;primary_key"`
 	Name      string
 	Notes     string
 }
@@ -93,12 +93,10 @@ func (m *Profile) ToORM(ctx context.Context) (ProfileORM, error) {
 			return to, err
 		}
 	}
-	if m.Id != nil {
-		if v, err := resource1.DecodeInt64(&Profile{}, m.Id); err != nil {
-			return to, err
-		} else {
-			to.Id = v
-		}
+	if v, err := resource1.DecodeInt64(&Profile{}, m.Id); err != nil {
+		return to, err
+	} else {
+		to.Id = v
 	}
 	to.Name = m.Name
 	to.Notes = m.Notes
@@ -145,7 +143,7 @@ func (m *ProfileORM) ToPB(ctx context.Context) (Profile, error) {
 			return to, err
 		}
 	}
-	if v, err := resource1.EncodeInt64(&Profile{}, m.Id); err != nil {
+	if v, err := resource1.Encode(&Profile{}, m.Id); err != nil {
 		return to, err
 	} else {
 		to.Id = v
@@ -206,7 +204,7 @@ type ProfileWithAfterToPB interface {
 type GroupORM struct {
 	AccountID string
 	Contacts  []*ContactORM `gorm:"many2many:group_contacts;foreignkey:Id;association_foreignkey:Id;jointable_foreignkey:group_id;association_jointable_foreignkey:contact_id"`
-	Id        int64         `gorm:"type:serial"`
+	Id        int64         `gorm:"type:serial;primary_key"`
 	Name      string
 	Notes     string
 	Profile   *ProfileORM `gorm:"foreignkey:ProfileId;association_foreignkey:Id"`
@@ -228,12 +226,10 @@ func (m *Group) ToORM(ctx context.Context) (GroupORM, error) {
 			return to, err
 		}
 	}
-	if m.Id != nil {
-		if v, err := resource1.DecodeInt64(&Group{}, m.Id); err != nil {
-			return to, err
-		} else {
-			to.Id = v
-		}
+	if v, err := resource1.DecodeInt64(&Group{}, m.Id); err != nil {
+		return to, err
+	} else {
+		to.Id = v
 	}
 	to.Name = m.Name
 	to.Notes = m.Notes
@@ -244,12 +240,10 @@ func (m *Group) ToORM(ctx context.Context) (GroupORM, error) {
 		}
 		to.Profile = &tempProfile
 	}
-	if m.ProfileId != nil {
-		if v, err := resource1.DecodeInt64(&Profile{}, m.ProfileId); err != nil {
-			return to, err
-		} else {
-			to.ProfileId = &v
-		}
+	if v, err := resource1.DecodeInt64(&Profile{}, m.ProfileId); err != nil {
+		return to, err
+	} else {
+		to.ProfileId = &v
 	}
 	for _, v := range m.Contacts {
 		if v != nil {
@@ -283,7 +277,7 @@ func (m *GroupORM) ToPB(ctx context.Context) (Group, error) {
 			return to, err
 		}
 	}
-	if v, err := resource1.EncodeInt64(&Group{}, m.Id); err != nil {
+	if v, err := resource1.Encode(&Group{}, m.Id); err != nil {
 		return to, err
 	} else {
 		to.Id = v
@@ -298,7 +292,13 @@ func (m *GroupORM) ToPB(ctx context.Context) (Group, error) {
 		to.Profile = &tempProfile
 	}
 	if m.ProfileId != nil {
-		if v, err := resource1.EncodeInt64(&Profile{}, *m.ProfileId); err != nil {
+		if v, err := resource1.Encode(&Profile{}, *m.ProfileId); err != nil {
+			return to, err
+		} else {
+			to.ProfileId = v
+		}
+	} else {
+		if v, err := resource1.Encode(&Profile{}, nil); err != nil {
 			return to, err
 		} else {
 			to.ProfileId = v
@@ -350,7 +350,7 @@ type ContactORM struct {
 	FirstName   string
 	Groups      []*GroupORM `gorm:"many2many:group_contacts;foreignkey:Id;association_foreignkey:Id;jointable_foreignkey:contact_id;association_jointable_foreignkey:group_id"`
 	HomeAddress *AddressORM `gorm:"foreignkey:HomeAddressContactId;association_foreignkey:Id"`
-	Id          int64       `gorm:"type:serial"`
+	Id          int64       `gorm:"type:serial;primary_key"`
 	LastName    string
 	MiddleName  string
 	Nicknames   *postgres1.Jsonb `gorm:"type:jsonb"`
@@ -375,12 +375,10 @@ func (m *Contact) ToORM(ctx context.Context) (ContactORM, error) {
 			return to, err
 		}
 	}
-	if m.Id != nil {
-		if v, err := resource1.DecodeInt64(&Contact{}, m.Id); err != nil {
-			return to, err
-		} else {
-			to.Id = v
-		}
+	if v, err := resource1.DecodeInt64(&Contact{}, m.Id); err != nil {
+		return to, err
+	} else {
+		to.Id = v
 	}
 	to.FirstName = m.FirstName
 	to.MiddleName = m.MiddleName
@@ -411,12 +409,10 @@ func (m *Contact) ToORM(ctx context.Context) (ContactORM, error) {
 		}
 		to.WorkAddress = &tempWorkAddress
 	}
-	if m.ProfileId != nil {
-		if v, err := resource1.DecodeInt64(&Profile{}, m.ProfileId); err != nil {
-			return to, err
-		} else {
-			to.ProfileId = &v
-		}
+	if v, err := resource1.DecodeInt64(&Profile{}, m.ProfileId); err != nil {
+		return to, err
+	} else {
+		to.ProfileId = &v
 	}
 	if m.Profile != nil {
 		tempProfile, err := m.Profile.ToORM(ctx)
@@ -460,7 +456,7 @@ func (m *ContactORM) ToPB(ctx context.Context) (Contact, error) {
 			return to, err
 		}
 	}
-	if v, err := resource1.EncodeInt64(&Contact{}, m.Id); err != nil {
+	if v, err := resource1.Encode(&Contact{}, m.Id); err != nil {
 		return to, err
 	} else {
 		to.Id = v
@@ -495,7 +491,13 @@ func (m *ContactORM) ToPB(ctx context.Context) (Contact, error) {
 		to.WorkAddress = &tempWorkAddress
 	}
 	if m.ProfileId != nil {
-		if v, err := resource1.EncodeInt64(&Profile{}, *m.ProfileId); err != nil {
+		if v, err := resource1.Encode(&Profile{}, *m.ProfileId); err != nil {
+			return to, err
+		} else {
+			to.ProfileId = v
+		}
+	} else {
+		if v, err := resource1.Encode(&Profile{}, nil); err != nil {
 			return to, err
 		} else {
 			to.ProfileId = v
