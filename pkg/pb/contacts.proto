@@ -18,7 +18,7 @@ message Profile {
       ormable: true,
       multi_account: true
     };
-    atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "serial"}];
+    atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "serial" primary_key: true}];
     string name = 2;
     string notes = 3;
     repeated Contact contacts = 4;
@@ -106,7 +106,7 @@ message Group {
       ormable: true,
       multi_account: true
     };
-    atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "serial"}];
+    atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "serial" primary_key: true}];
     string name = 2;
     string notes = 3;
     Profile profile = 4 [(gorm.field).belongs_to = {}];
@@ -195,7 +195,7 @@ message Contact {
       ormable: true,
       multi_account: true
     };
-    atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "serial"}];
+    atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "serial"  primary_key: true}];
     string first_name = 2;
     string middle_name = 3;
     string last_name = 4;
