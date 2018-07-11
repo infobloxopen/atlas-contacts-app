@@ -76,7 +76,8 @@ func (m *ContactORM) BeforeUpdate(scope *gorm.Scope) (err error) {
 
 // CustomRead method overrides the default Read function and adds custom errors with multiple details.
 func (m *ContactsDefaultServer) CustomRead(ctx context.Context, req *ReadContactRequest) (*ReadContactResponse, error) {
-	res, err := DefaultReadContact(ctx, &Contact{Id: req.GetId()}, m.DB)
+	db := m.DB.Preload("Emails")
+	res, err := DefaultReadContact(ctx, &Contact{Id: req.GetId()}, db)
 	if err != nil {
 		st := status.Newf(codes.Internal, "Unable to read contact. Error %v", err)
 		st, _ = st.WithDetails(errdetails.New(codes.Internal, "CustomRead", "Custom error message"))
@@ -170,7 +171,7 @@ func (m *ContactsDefaultServer) CustomList(ctx context.Context, in *ListContactR
 			db = db.Joins(join)
 		}
 	}
-
+	db = db.Preload("Emails")
 	res, err := DefaultListContact(ctx, db, in)
 	if err != nil {
 		return nil, err
