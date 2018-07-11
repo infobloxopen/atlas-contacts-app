@@ -1,12 +1,10 @@
 package pb
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/infobloxopen/atlas-app-toolkit/query"
 	"github.com/infobloxopen/atlas-app-toolkit/rpc/errdetails"
-	"github.com/jinzhu/gorm"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -39,34 +37,6 @@ func (m *ContactORM) AfterToPB(ctx context.Context, c *Contact) error {
 		}
 	}
 	return nil
-}
-
-// Hooks and direct db access:
-// Hooks Documentation: http://gorm.io/docs/hooks.html
-// Database access: http://gorm.io/docs/sql_builder.html
-// Below is an example that shows how to add a hook that runs before the Update method and how to access the database directly.
-
-// BeforeUpdate runs before the Update method and checks to see if the ID provided already exists.
-func (m *ContactORM) BeforeUpdate(scope *gorm.Scope) (err error) {
-	// Create a new db access point
-	dbc := scope.NewDB()
-
-	// To execute commands directly :
-	// dbc.Exec("SOME SQL COMMAND")
-
-	// Executes the raw sql cmd and gets query response in rows
-	rows, err := dbc.Raw("SELECT * FROM contacts WHERE id=" + fmt.Sprint(m.Id)).Rows() // (*sql.Rows, error)
-	defer rows.Close()
-	if err != nil {
-		return err
-	}
-	// Check to see if a row with id already exists
-	if rows.Next() {
-		// Contact exists proceed to default update method
-		return nil
-	} else {
-		return fmt.Errorf("NOT_EXISTS")
-	}
 }
 
 // Overriding CRUD Methods:
