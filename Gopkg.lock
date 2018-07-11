@@ -29,6 +29,9 @@
     "jsonpb",
     "proto",
     "protoc-gen-go/descriptor",
+    "protoc-gen-go/generator",
+    "protoc-gen-go/generator/internal/remap",
+    "protoc-gen-go/plugin",
     "ptypes",
     "ptypes/any",
     "ptypes/duration",
@@ -36,7 +39,7 @@
     "ptypes/struct",
     "ptypes/timestamp"
   ]
-  revision = "9eb2c01ac278a5d89ce4b2be68fe4500955d8179"
+  revision = "0cb4f732569330e7b40d8fcee91c41aafaaddc4f"
 
 [[projects]]
   name = "github.com/google/uuid"
@@ -94,7 +97,7 @@
     "rpc/resource",
     "server"
   ]
-  revision = "18076e1d3abb72afd7cf06badc4cacf514594e6e"
+  revision = "6ec9bf2ac6c7de8418a472c23b2d905093408b49"
 
 [[projects]]
   branch = "master"
@@ -127,8 +130,8 @@
     "options",
     "types"
   ]
-  revision = "60d07921d6f50f76fa2049a092b523d65a016bd0"
-
+  revision = "b32bf0bc50f6bec6cc6657235adb53c96569aa1c"
+  version = "v0.6.0"
 
 [[projects]]
   branch = "master"
@@ -138,7 +141,7 @@
     "pdp-service",
     "pep"
   ]
-  revision = "20649c5cb0c8eef9568422893d07808fd3243547"
+  revision = "1e83dfa8abb530682048ef4c21eb302c870ced10"
 
 [[projects]]
   name = "github.com/jinzhu/gorm"
@@ -205,7 +208,7 @@
     "internal/timeseries",
     "trace"
   ]
-  revision = "afe8f62b1d6bbd81f31868121a50b06d8188e1f9"
+  revision = "039a4258aec0ad3c79b905677cceeab13b296a77"
 
 [[projects]]
   branch = "master"
@@ -214,7 +217,7 @@
     "unix",
     "windows"
   ]
-  revision = "63fc586f45fe72d95d5240a5d5eb95e6503907d3"
+  revision = "1b2967e3c290b7c545b3db0deeda16e9be4f98a2"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -245,7 +248,7 @@
     "googleapis/rpc/code",
     "googleapis/rpc/status"
   ]
-  revision = "80063a038e333bbe006c878e4c5ce4c74d055498"
+  revision = "e92b116572682a5b432ddd840aeaba2a559eeff1"
 
 [[projects]]
   name = "google.golang.org/grpc"
@@ -282,6 +285,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "46a217f282f015344eb423e40301f3654f1be314fc5ac7d177924db75255dde6"
+  inputs-digest = "c872ae64785eb62f7fc7ca976b4d715bd1c8b33da0bf3d3f0f11c767b7a6f8ba"
   solver-name = "gps-cdcl"
   solver-version = 1

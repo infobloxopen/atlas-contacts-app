@@ -1,5 +1,9 @@
 [[constraint]]
   branch = "master"
+  name = "github.com/infobloxopen/atlas-app-toolkit"
+
+[[constraint]]
+  branch = "master"
   name = "github.com/golang/protobuf"
 
 [[constraint]]
