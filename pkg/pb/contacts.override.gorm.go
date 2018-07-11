@@ -5,6 +5,7 @@ import (
 
 	"github.com/infobloxopen/atlas-app-toolkit/query"
 	"github.com/infobloxopen/atlas-app-toolkit/rpc/errdetails"
+	"github.com/jinzhu/gorm"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -49,7 +50,7 @@ func (m *ContactsDefaultServer) CustomRead(ctx context.Context, req *ReadContact
 	res, err := DefaultReadContact(ctx, &Contact{Id: req.GetId()}, m.DB)
 	if err != nil {
 		code := codes.Internal
-		if (err == gorm.ErrRecordNotFound) {
+		if err == gorm.ErrRecordNotFound {
 			code = codes.NotFound
 		}
 		st := status.Newf(code, "Unable to read contact. Error %v", err)
