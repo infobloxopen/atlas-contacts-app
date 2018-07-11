@@ -16,6 +16,7 @@ It has these top-level messages:
 	UpdateProfileRequest
 	UpdateProfileResponse
 	DeleteProfileRequest
+	ListProfileRequest
 	ListProfilesResponse
 	Group
 	CreateGroupRequest
@@ -25,6 +26,7 @@ It has these top-level messages:
 	UpdateGroupRequest
 	UpdateGroupResponse
 	DeleteGroupRequest
+	ListGroupRequest
 	ListGroupsResponse
 	Contact
 	Email
@@ -737,7 +739,6 @@ func DefaultReadProfile(ctx context.Context, in *Profile, db *gorm1.DB) (*Profil
 	if err != nil {
 		return nil, err
 	}
-	db = db.Preload("Contacts").Preload("Groups")
 	ormResponse := ProfileORM{}
 	if err = db.Where(&ormParams).First(&ormResponse).Error; err != nil {
 		return nil, err
@@ -797,6 +798,11 @@ func DefaultStrictUpdateProfile(ctx context.Context, in *Profile, db *gorm1.DB) 
 	if err != nil {
 		return nil, err
 	}
+	count := 1
+	err = db.Model(&ormObj).Where("id=?", ormObj.Id).Count(&count).Error
+	if err != nil {
+		return nil, err
+	}
 	filterContacts := ContactORM{}
 	if ormObj.Id == 0 {
 		return nil, errors.New("Can't do overwriting update with no Id value for ProfileORM")
@@ -825,7 +831,10 @@ func DefaultStrictUpdateProfile(ctx context.Context, in *Profile, db *gorm1.DB) 
 	if err != nil {
 		return nil, err
 	}
-	return &pbResponse, nil
+	if count == 0 {
+		err = gateway1.SetCreated(ctx, "")
+	}
+	return &pbResponse, err
 }
 
 // getCollectionOperators takes collection operator values from corresponding message fields
@@ -860,7 +869,7 @@ func DefaultListProfile(ctx context.Context, db *gorm1.DB, req interface{}) ([]*
 	if err != nil {
 		return nil, err
 	}
-	db, err = gorm2.ApplyCollectionOperators(db, f, s, p, fs)
+	db, err = gorm2.ApplyCollectionOperators(db, &ProfileORM{}, f, s, p, fs)
 	if err != nil {
 		return nil, err
 	}
@@ -870,7 +879,6 @@ func DefaultListProfile(ctx context.Context, db *gorm1.DB, req interface{}) ([]*
 		return nil, err
 	}
 	db = db.Where(&ormParams)
-	db = db.Preload("Contacts").Preload("Groups")
 	db = db.Order("id")
 	if err := db.Find(&ormResponse).Error; err != nil {
 		return nil, err
@@ -911,7 +919,6 @@ func DefaultReadGroup(ctx context.Context, in *Group, db *gorm1.DB) (*Group, err
 	if err != nil {
 		return nil, err
 	}
-	db = db.Preload("Contacts").Preload("Profile")
 	ormResponse := GroupORM{}
 	if err = db.Where(&ormParams).First(&ormResponse).Error; err != nil {
 		return nil, err
@@ -971,6 +978,11 @@ func DefaultStrictUpdateGroup(ctx context.Context, in *Group, db *gorm1.DB) (*Gr
 	if err != nil {
 		return nil, err
 	}
+	count := 1
+	err = db.Model(&ormObj).Where("id=?", ormObj.Id).Count(&count).Error
+	if err != nil {
+		return nil, err
+	}
 	db = db.Where(&GroupORM{AccountID: ormObj.AccountID})
 	if err = db.Save(&ormObj).Error; err != nil {
 		return nil, err
@@ -979,7 +991,10 @@ func DefaultStrictUpdateGroup(ctx context.Context, in *Group, db *gorm1.DB) (*Gr
 	if err != nil {
 		return nil, err
 	}
-	return &pbResponse, nil
+	if count == 0 {
+		err = gateway1.SetCreated(ctx, "")
+	}
+	return &pbResponse, err
 }
 
 // DefaultListGroup executes a gorm list call
@@ -989,7 +1004,7 @@ func DefaultListGroup(ctx context.Context, db *gorm1.DB, req interface{}) ([]*Gr
 	if err != nil {
 		return nil, err
 	}
-	db, err = gorm2.ApplyCollectionOperators(db, f, s, p, fs)
+	db, err = gorm2.ApplyCollectionOperators(db, &GroupORM{}, f, s, p, fs)
 	if err != nil {
 		return nil, err
 	}
@@ -999,7 +1014,6 @@ func DefaultListGroup(ctx context.Context, db *gorm1.DB, req interface{}) ([]*Gr
 		return nil, err
 	}
 	db = db.Where(&ormParams)
-	db = db.Preload("Contacts").Preload("Profile")
 	db = db.Order("id")
 	if err := db.Find(&ormResponse).Error; err != nil {
 		return nil, err
@@ -1040,7 +1054,6 @@ func DefaultReadContact(ctx context.Context, in *Contact, db *gorm1.DB) (*Contac
 	if err != nil {
 		return nil, err
 	}
-	db = db.Preload("Emails").Preload("Groups").Preload("HomeAddress").Preload("Profile").Preload("WorkAddress")
 	ormResponse := ContactORM{}
 	if err = db.Where(&ormParams).First(&ormResponse).Error; err != nil {
 		return nil, err
@@ -1100,6 +1113,11 @@ func DefaultStrictUpdateContact(ctx context.Context, in *Contact, db *gorm1.DB) 
 	if err != nil {
 		return nil, err
 	}
+	count := 1
+	err = db.Model(&ormObj).Where("id=?", ormObj.Id).Count(&count).Error
+	if err != nil {
+		return nil, err
+	}
 	filterEmails := EmailORM{}
 	if ormObj.Id == 0 {
 		return nil, errors.New("Can't do overwriting update with no Id value for ContactORM")
@@ -1138,7 +1156,10 @@ func DefaultStrictUpdateContact(ctx context.Context, in *Contact, db *gorm1.DB) 
 	if err != nil {
 		return nil, err
 	}
-	return &pbResponse, nil
+	if count == 0 {
+		err = gateway1.SetCreated(ctx, "")
+	}
+	return &pbResponse, err
 }
 
 // DefaultListContact executes a gorm list call
@@ -1148,7 +1169,7 @@ func DefaultListContact(ctx context.Context, db *gorm1.DB, req interface{}) ([]*
 	if err != nil {
 		return nil, err
 	}
-	db, err = gorm2.ApplyCollectionOperators(db, f, s, p, fs)
+	db, err = gorm2.ApplyCollectionOperators(db, &ContactORM{}, f, s, p, fs)
 	if err != nil {
 		return nil, err
 	}
@@ -1158,7 +1179,6 @@ func DefaultListContact(ctx context.Context, db *gorm1.DB, req interface{}) ([]*
 		return nil, err
 	}
 	db = db.Where(&ormParams)
-	db = db.Preload("Emails").Preload("Groups").Preload("HomeAddress").Preload("Profile").Preload("WorkAddress")
 	db = db.Order("id")
 	if err := db.Find(&ormResponse).Error; err != nil {
 		return nil, err
@@ -1258,6 +1278,11 @@ func DefaultStrictUpdateEmail(ctx context.Context, in *Email, db *gorm1.DB) (*Em
 	if err != nil {
 		return nil, err
 	}
+	count := 1
+	err = db.Model(&ormObj).Where("id=?", ormObj.Id).Count(&count).Error
+	if err != nil {
+		return nil, err
+	}
 	db = db.Where(&EmailORM{AccountID: ormObj.AccountID})
 	if err = db.Save(&ormObj).Error; err != nil {
 		return nil, err
@@ -1266,7 +1291,10 @@ func DefaultStrictUpdateEmail(ctx context.Context, in *Email, db *gorm1.DB) (*Em
 	if err != nil {
 		return nil, err
 	}
-	return &pbResponse, nil
+	if count == 0 {
+		err = gateway1.SetCreated(ctx, "")
+	}
+	return &pbResponse, err
 }
 
 // DefaultListEmail executes a gorm list call
@@ -1276,7 +1304,7 @@ func DefaultListEmail(ctx context.Context, db *gorm1.DB, req interface{}) ([]*Em
 	if err != nil {
 		return nil, err
 	}
-	db, err = gorm2.ApplyCollectionOperators(db, f, s, p, fs)
+	db, err = gorm2.ApplyCollectionOperators(db, &EmailORM{}, f, s, p, fs)
 	if err != nil {
 		return nil, err
 	}
@@ -1324,7 +1352,7 @@ func DefaultListAddress(ctx context.Context, db *gorm1.DB, req interface{}) ([]*
 	if err != nil {
 		return nil, err
 	}
-	db, err = gorm2.ApplyCollectionOperators(db, f, s, p, fs)
+	db, err = gorm2.ApplyCollectionOperators(db, &AddressORM{}, f, s, p, fs)
 	if err != nil {
 		return nil, err
 	}
@@ -1416,11 +1444,11 @@ func (m *ProfilesDefaultServer) Delete(ctx context.Context, in *DeleteProfileReq
 }
 
 type ProfilesListCustomHandler interface {
-	CustomList(context.Context, *google_protobuf.Empty) (*ListProfilesResponse, error)
+	CustomList(context.Context, *ListProfileRequest) (*ListProfilesResponse, error)
 }
 
 // List ...
-func (m *ProfilesDefaultServer) List(ctx context.Context, in *google_protobuf.Empty) (*ListProfilesResponse, error) {
+func (m *ProfilesDefaultServer) List(ctx context.Context, in *ListProfileRequest) (*ListProfilesResponse, error) {
 	if custom, ok := interface{}(m).(ProfilesListCustomHandler); ok {
 		return custom.CustomList(ctx, in)
 	}
@@ -1500,11 +1528,11 @@ func (m *GroupsDefaultServer) Delete(ctx context.Context, in *DeleteGroupRequest
 }
 
 type GroupsListCustomHandler interface {
-	CustomList(context.Context, *google_protobuf.Empty) (*ListGroupsResponse, error)
+	CustomList(context.Context, *ListGroupRequest) (*ListGroupsResponse, error)
 }
 
 // List ...
-func (m *GroupsDefaultServer) List(ctx context.Context, in *google_protobuf.Empty) (*ListGroupsResponse, error) {
+func (m *GroupsDefaultServer) List(ctx context.Context, in *ListGroupRequest) (*ListGroupsResponse, error) {
 	if custom, ok := interface{}(m).(GroupsListCustomHandler); ok {
 		return custom.CustomList(ctx, in)
 	}

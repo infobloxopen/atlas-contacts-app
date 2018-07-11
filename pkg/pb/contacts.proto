@@ -53,6 +53,13 @@ message DeleteProfileRequest {
     atlas.rpc.Identifier id = 1;
 }
 
+message ListProfileRequest {
+    infoblox.api.Filtering filter = 1;
+    infoblox.api.Sorting order_by = 2;
+    infoblox.api.FieldSelection fields = 3;
+    infoblox.api.Pagination paging = 4;
+}
+
 message ListProfilesResponse {
     repeated Profile results = 1;
 }
@@ -86,7 +93,7 @@ service Profiles {
         option (gorm.method).object_type = "Profile";
     }
 
-    rpc List (google.protobuf.Empty) returns (ListProfilesResponse) {
+    rpc List (ListProfileRequest) returns (ListProfilesResponse) {
         option (google.api.http) = {
             get: "/profiles"
         };
@@ -135,6 +142,13 @@ message DeleteGroupRequest {
     atlas.rpc.Identifier id = 1;
 }
 
+message ListGroupRequest {
+    infoblox.api.Filtering filter = 1;
+    infoblox.api.Sorting order_by = 2;
+    infoblox.api.FieldSelection fields = 3;
+    infoblox.api.Pagination paging = 4;
+}
+
 message ListGroupsResponse {
     repeated Group results = 1;
 }
@@ -168,7 +182,7 @@ service Groups {
         option (gorm.method).object_type = "Group";
     }
 
-    rpc List (google.protobuf.Empty) returns (ListGroupsResponse) {
+    rpc List (ListGroupRequest) returns (ListGroupsResponse) {
         option (google.api.http) = {
             get: "/groups"
         };

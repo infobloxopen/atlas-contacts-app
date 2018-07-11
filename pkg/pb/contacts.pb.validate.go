@@ -503,6 +503,96 @@ func (e DeleteProfileRequestValidationError) Error() string {
 
 var _ error = DeleteProfileRequestValidationError{}
 
+// Validate checks the field values on ListProfileRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *ListProfileRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if v, ok := interface{}(m.GetFilter()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return ListProfileRequestValidationError{
+				Field:  "Filter",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetOrderBy()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return ListProfileRequestValidationError{
+				Field:  "OrderBy",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetFields()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return ListProfileRequestValidationError{
+				Field:  "Fields",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetPaging()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return ListProfileRequestValidationError{
+				Field:  "Paging",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
+
+	return nil
+}
+
+// ListProfileRequestValidationError is the validation error returned by
+// ListProfileRequest.Validate if the designated constraints aren't met.
+type ListProfileRequestValidationError struct {
+	Field  string
+	Reason string
+	Cause  error
+	Key    bool
+}
+
+// Error satisfies the builtin error interface
+func (e ListProfileRequestValidationError) Error() string {
+	cause := ""
+	if e.Cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
+	}
+
+	key := ""
+	if e.Key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListProfileRequest.%s: %s%s",
+		key,
+		e.Field,
+		e.Reason,
+		cause)
+}
+
+var _ error = ListProfileRequestValidationError{}
+
 // Validate checks the field values on ListProfilesResponse with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, an error is returned.
@@ -1037,6 +1127,96 @@ func (e DeleteGroupRequestValidationError) Error() string {
 }
 
 var _ error = DeleteGroupRequestValidationError{}
+
+// Validate checks the field values on ListGroupRequest with the rules defined
+// in the proto definition for this message. If any rules are violated, an
+// error is returned.
+func (m *ListGroupRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if v, ok := interface{}(m.GetFilter()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return ListGroupRequestValidationError{
+				Field:  "Filter",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetOrderBy()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return ListGroupRequestValidationError{
+				Field:  "OrderBy",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetFields()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return ListGroupRequestValidationError{
+				Field:  "Fields",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetPaging()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return ListGroupRequestValidationError{
+				Field:  "Paging",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
+
+	return nil
+}
+
+// ListGroupRequestValidationError is the validation error returned by
+// ListGroupRequest.Validate if the designated constraints aren't met.
+type ListGroupRequestValidationError struct {
+	Field  string
+	Reason string
+	Cause  error
+	Key    bool
+}
+
+// Error satisfies the builtin error interface
+func (e ListGroupRequestValidationError) Error() string {
+	cause := ""
+	if e.Cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
+	}
+
+	key := ""
+	if e.Key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListGroupRequest.%s: %s%s",
+		key,
+		e.Field,
+		e.Reason,
+		cause)
+}
+
+var _ error = ListGroupRequestValidationError{}
 
 // Validate checks the field values on ListGroupsResponse with the rules
 // defined in the proto definition for this message. If any rules are
