@@ -1,12 +1,16 @@
 package main
 
 import (
-	"github.com/infobloxopen/atlas-app-toolkit/errors"
+	"context"
+	"regexp"
 
 	"google.golang.org/grpc/codes"
 
-	"context"
-	"regexp"
+	"github.com/infobloxopen/atlas-app-toolkit/errors"
+	"github.com/infobloxopen/atlas-app-toolkit/requestid"
+	"github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus/ctxlogrus"
+	"github.com/sirupsen/logrus"
+	"github.com/jinzhu/gorm"
 )
 
 var ErrorMappings = []errors.MapFunc{
@@ -30,10 +34,20 @@ var ErrorMappings = []errors.MapFunc{
 	),
 
 	errors.NewMapping(
+		gorm.ErrRecordNotFound,
+		errors.NewContainer(codes.NotFound, "record not found"),
+	),
+
+	errors.NewMapping(
 		// Here CondAnd without condition functions serves as 'default'.
 		errors.CondAnd(),
 		errors.MapFunc(func(ctx context.Context, err error) (error, bool) {
-			return errors.NewContainer(codes.Internal, "Error: %s", err), true
+			ctxlogrus.AddFields(ctx, logrus.Fields{"internal-error": err})
+			reqID, exist := requestid.FromContext(ctx)
+			if exist {
+				return errors.NewContainer(codes.Internal, "Internal error occured. For more details see log for request %s", reqID), true
+			}
+			return errors.NewContainer(codes.Internal, "Internal error occured."), true
 		}),
 	),
 }

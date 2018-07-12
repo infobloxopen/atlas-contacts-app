@@ -2,12 +2,9 @@ package main
 
 import (
 	"github.com/grpc-ecosystem/go-grpc-middleware"
-	"github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
 	"github.com/grpc-ecosystem/go-grpc-middleware/validator"
 	toolkit_auth "github.com/infobloxopen/atlas-app-toolkit/auth"
-	"github.com/infobloxopen/atlas-app-toolkit/errors"
 	"github.com/infobloxopen/atlas-app-toolkit/gateway"
-	"github.com/infobloxopen/atlas-app-toolkit/requestid"
 	"github.com/infobloxopen/atlas-contacts-app/cmd"
 	"github.com/infobloxopen/atlas-contacts-app/pkg/pb"
 	"github.com/infobloxopen/atlas-contacts-app/pkg/svc"
@@ -15,16 +12,19 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
+	"github.com/infobloxopen/atlas-app-toolkit/requestid"
+	"github.com/infobloxopen/atlas-app-toolkit/errors"
+	"github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
 )
 
 func NewGRPCServer(logger *logrus.Logger, db *gorm.DB) (*grpc.Server, error) {
 	interceptors := []grpc.UnaryServerInterceptor{
+		grpc_logrus.UnaryServerInterceptor(logrus.NewEntry(logger)),
+		requestid.UnaryServerInterceptor(),
+		errors.UnaryServerInterceptor(ErrorMappings...),
 		// validation interceptor
 		grpc_validator.UnaryServerInterceptor(),
-		grpc_logrus.UnaryServerInterceptor(logrus.NewEntry(logger)),
-		errors.UnaryServerInterceptor(ErrorMappings...),
 		gateway.UnaryServerInterceptor(),
-		requestid.UnaryServerInterceptor(),
 	}
 	// add authorization interceptor if authz service address is provided
 	if AuthzAddr != "" {

@@ -5,6 +5,7 @@ import (
 
 	"github.com/infobloxopen/atlas-app-toolkit/query"
 	"github.com/infobloxopen/atlas-app-toolkit/rpc/errdetails"
+	"github.com/jinzhu/gorm"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -49,9 +50,13 @@ func (m *ContactsDefaultServer) CustomRead(ctx context.Context, req *ReadContact
 	db := m.DB.Preload("Emails")
 	res, err := DefaultReadContact(ctx, &Contact{Id: req.GetId()}, db)
 	if err != nil {
-		st := status.Newf(codes.Internal, "Unable to read contact. Error %v", err)
-		st, _ = st.WithDetails(errdetails.New(codes.Internal, "CustomRead", "Custom error message"))
-		st, _ = st.WithDetails(errdetails.New(codes.Internal, "CustomRead", "Another custom error message"))
+		code := codes.Internal
+		if err == gorm.ErrRecordNotFound {
+			code = codes.NotFound
+		}
+		st := status.Newf(code, "Unable to read contact. Error %v", err)
+		st, _ = st.WithDetails(errdetails.New(codes.InvalidArgument, "CustomRead", "Example of custom error message"))
+		st, _ = st.WithDetails(errdetails.New(codes.InvalidArgument, "CustomRead", "Another example of custom error message"))
 		return nil, st.Err()
 	}
 	return &ReadContactResponse{Result: res}, nil
