@@ -16,6 +16,7 @@ It has these top-level messages:
 	UpdateProfileRequest
 	UpdateProfileResponse
 	DeleteProfileRequest
+	ListProfileRequest
 	ListProfilesResponse
 	Group
 	CreateGroupRequest
@@ -25,6 +26,7 @@ It has these top-level messages:
 	UpdateGroupRequest
 	UpdateGroupResponse
 	DeleteGroupRequest
+	ListGroupRequest
 	ListGroupsResponse
 	Contact
 	Email
@@ -38,6 +40,7 @@ It has these top-level messages:
 	DeleteContactRequest
 	ListContactsResponse
 	SMSRequest
+	ListContactRequest
 */
 package pb
 
@@ -61,6 +64,7 @@ import _ "google.golang.org/genproto/protobuf/field_mask"
 import _ "google.golang.org/genproto/googleapis/api/annotations"
 import _ "github.com/lyft/protoc-gen-validate/validate"
 import _ "github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger/options"
+import _ "github.com/infobloxopen/atlas-app-toolkit/query"
 import _ "github.com/infobloxopen/atlas-app-toolkit/rpc/resource"
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -71,7 +75,7 @@ type ProfileORM struct {
 	AccountID string
 	Contacts  []*ContactORM `gorm:"foreignkey:ProfileId;association_foreignkey:Id"`
 	Groups    []*GroupORM   `gorm:"foreignkey:ProfileId;association_foreignkey:Id"`
-	Id        *int64        `gorm:"type:serial"`
+	Id        int64         `gorm:"type:serial;primary_key"`
 	Name      string
 	Notes     string
 }
@@ -94,7 +98,7 @@ func (m *Profile) ToORM(ctx context.Context) (ProfileORM, error) {
 	if v, err := resource1.DecodeInt64(&Profile{}, m.Id); err != nil {
 		return to, err
 	} else {
-		to.Id = &v
+		to.Id = v
 	}
 	to.Name = m.Name
 	to.Notes = m.Notes
@@ -141,18 +145,10 @@ func (m *ProfileORM) ToPB(ctx context.Context) (Profile, error) {
 			return to, err
 		}
 	}
-	if m.Id != nil {
-		if v, err := resource1.Encode(&Profile{}, *m.Id); err != nil {
-			return to, err
-		} else {
-			to.Id = v
-		}
+	if v, err := resource1.Encode(&Profile{}, m.Id); err != nil {
+		return to, err
 	} else {
-		if v, err := resource1.Encode(&Profile{}, nil); err != nil {
-			return to, err
-		} else {
-			to.Id = v
-		}
+		to.Id = v
 	}
 	to.Name = m.Name
 	to.Notes = m.Notes
@@ -210,7 +206,7 @@ type ProfileWithAfterToPB interface {
 type GroupORM struct {
 	AccountID string
 	Contacts  []*ContactORM `gorm:"foreignkey:Id;association_foreignkey:Id;many2many:group_contacts;jointable_foreignkey:group_id;association_jointable_foreignkey:contact_id"`
-	Id        *int64        `gorm:"type:serial"`
+	Id        int64         `gorm:"type:serial;primary_key"`
 	Name      string
 	Notes     string
 	Profile   *ProfileORM `gorm:"foreignkey:ProfileId;association_foreignkey:Id"`
@@ -235,7 +231,7 @@ func (m *Group) ToORM(ctx context.Context) (GroupORM, error) {
 	if v, err := resource1.DecodeInt64(&Group{}, m.Id); err != nil {
 		return to, err
 	} else {
-		to.Id = &v
+		to.Id = v
 	}
 	to.Name = m.Name
 	to.Notes = m.Notes
@@ -283,18 +279,10 @@ func (m *GroupORM) ToPB(ctx context.Context) (Group, error) {
 			return to, err
 		}
 	}
-	if m.Id != nil {
-		if v, err := resource1.Encode(&Group{}, *m.Id); err != nil {
-			return to, err
-		} else {
-			to.Id = v
-		}
+	if v, err := resource1.Encode(&Group{}, m.Id); err != nil {
+		return to, err
 	} else {
-		if v, err := resource1.Encode(&Group{}, nil); err != nil {
-			return to, err
-		} else {
-			to.Id = v
-		}
+		to.Id = v
 	}
 	to.Name = m.Name
 	to.Notes = m.Notes
@@ -364,7 +352,7 @@ type ContactORM struct {
 	FirstName   string
 	Groups      []*GroupORM `gorm:"foreignkey:Id;association_foreignkey:Id;many2many:group_contacts;jointable_foreignkey:contact_id;association_jointable_foreignkey:group_id"`
 	HomeAddress *AddressORM `gorm:"foreignkey:HomeAddressContactId;association_foreignkey:Id"`
-	Id          *int64      `gorm:"type:serial"`
+	Id          int64       `gorm:"type:serial;primary_key"`
 	LastName    string
 	MiddleName  string
 	Nicknames   *postgres1.Jsonb `gorm:"type:jsonb"`
@@ -392,7 +380,7 @@ func (m *Contact) ToORM(ctx context.Context) (ContactORM, error) {
 	if v, err := resource1.DecodeInt64(&Contact{}, m.Id); err != nil {
 		return to, err
 	} else {
-		to.Id = &v
+		to.Id = v
 	}
 	to.FirstName = m.FirstName
 	to.MiddleName = m.MiddleName
@@ -470,18 +458,10 @@ func (m *ContactORM) ToPB(ctx context.Context) (Contact, error) {
 			return to, err
 		}
 	}
-	if m.Id != nil {
-		if v, err := resource1.Encode(&Contact{}, *m.Id); err != nil {
-			return to, err
-		} else {
-			to.Id = v
-		}
+	if v, err := resource1.Encode(&Contact{}, m.Id); err != nil {
+		return to, err
 	} else {
-		if v, err := resource1.Encode(&Contact{}, nil); err != nil {
-			return to, err
-		} else {
-			to.Id = v
-		}
+		to.Id = v
 	}
 	to.FirstName = m.FirstName
 	to.MiddleName = m.MiddleName
@@ -806,7 +786,7 @@ func DefaultDeleteProfile(ctx context.Context, in *Profile, db *gorm1.DB) error 
 	if err != nil {
 		return err
 	}
-	if ormObj.Id == nil || *ormObj.Id == 0 {
+	if ormObj.Id == 0 {
 		return errors.New("A non-zero ID value is required for a delete call")
 	}
 	err = db.Where(&ormObj).Delete(&ProfileORM{}).Error
@@ -828,21 +808,21 @@ func DefaultStrictUpdateProfile(ctx context.Context, in *Profile, db *gorm1.DB) 
 		return nil, err
 	}
 	filterContacts := ContactORM{}
-	if ormObj.Id == nil || *ormObj.Id == 0 {
+	if ormObj.Id == 0 {
 		return nil, errors.New("Can't do overwriting update with no Id value for ProfileORM")
 	}
 	filterContacts.ProfileId = new(int64)
-	*filterContacts.ProfileId = *ormObj.Id
+	*filterContacts.ProfileId = ormObj.Id
 	filterContacts.AccountID = ormObj.AccountID
 	if err = db.Where(filterContacts).Delete(ContactORM{}).Error; err != nil {
 		return nil, err
 	}
 	filterGroups := GroupORM{}
-	if ormObj.Id == nil || *ormObj.Id == 0 {
+	if ormObj.Id == 0 {
 		return nil, errors.New("Can't do overwriting update with no Id value for ProfileORM")
 	}
 	filterGroups.ProfileId = new(int64)
-	*filterGroups.ProfileId = *ormObj.Id
+	*filterGroups.ProfileId = ormObj.Id
 	filterGroups.AccountID = ormObj.AccountID
 	if err = db.Where(filterGroups).Delete(GroupORM{}).Error; err != nil {
 		return nil, err
@@ -896,11 +876,11 @@ func DefaultPatchProfile(ctx context.Context, in *Profile, updateMask *field_mas
 		if f == "Contacts" {
 			pbObj.Contacts = in.Contacts
 			filterContacts := ContactORM{}
-			if ormObj.Id == nil || *ormObj.Id == 0 {
+			if ormObj.Id == 0 {
 				return nil, errors.New("Can't do overwriting update with no Id value for ProfileORM")
 			}
 			filterContacts.ProfileId = new(int64)
-			*filterContacts.ProfileId = *ormObj.Id
+			*filterContacts.ProfileId = ormObj.Id
 			filterContacts.AccountID = ormObj.AccountID
 			if err = db.Where(filterContacts).Delete(ContactORM{}).Error; err != nil {
 				return nil, err
@@ -909,11 +889,11 @@ func DefaultPatchProfile(ctx context.Context, in *Profile, updateMask *field_mas
 		if f == "Groups" {
 			pbObj.Groups = in.Groups
 			filterGroups := GroupORM{}
-			if ormObj.Id == nil || *ormObj.Id == 0 {
+			if ormObj.Id == 0 {
 				return nil, errors.New("Can't do overwriting update with no Id value for ProfileORM")
 			}
 			filterGroups.ProfileId = new(int64)
-			*filterGroups.ProfileId = *ormObj.Id
+			*filterGroups.ProfileId = ormObj.Id
 			filterGroups.AccountID = ormObj.AccountID
 			if err = db.Where(filterGroups).Delete(GroupORM{}).Error; err != nil {
 				return nil, err
@@ -1060,7 +1040,7 @@ func DefaultDeleteGroup(ctx context.Context, in *Group, db *gorm1.DB) error {
 	if err != nil {
 		return err
 	}
-	if ormObj.Id == nil || *ormObj.Id == 0 {
+	if ormObj.Id == 0 {
 		return errors.New("A non-zero ID value is required for a delete call")
 	}
 	err = db.Where(&ormObj).Delete(&GroupORM{}).Error
@@ -1252,7 +1232,7 @@ func DefaultDeleteContact(ctx context.Context, in *Contact, db *gorm1.DB) error 
 	if err != nil {
 		return err
 	}
-	if ormObj.Id == nil || *ormObj.Id == 0 {
+	if ormObj.Id == 0 {
 		return errors.New("A non-zero ID value is required for a delete call")
 	}
 	err = db.Where(&ormObj).Delete(&ContactORM{}).Error
@@ -1274,31 +1254,31 @@ func DefaultStrictUpdateContact(ctx context.Context, in *Contact, db *gorm1.DB) 
 		return nil, err
 	}
 	filterEmails := EmailORM{}
-	if ormObj.Id == nil || *ormObj.Id == 0 {
+	if ormObj.Id == 0 {
 		return nil, errors.New("Can't do overwriting update with no Id value for ContactORM")
 	}
 	filterEmails.ContactId = new(int64)
-	*filterEmails.ContactId = *ormObj.Id
+	*filterEmails.ContactId = ormObj.Id
 	filterEmails.AccountID = ormObj.AccountID
 	if err = db.Where(filterEmails).Delete(EmailORM{}).Error; err != nil {
 		return nil, err
 	}
 	filterHomeAddress := AddressORM{}
-	if ormObj.Id == nil || *ormObj.Id == 0 {
+	if ormObj.Id == 0 {
 		return nil, errors.New("Can't do overwriting update with no Id value for ContactORM")
 	}
 	filterHomeAddress.HomeAddressContactId = new(int64)
-	*filterHomeAddress.HomeAddressContactId = *ormObj.Id
+	*filterHomeAddress.HomeAddressContactId = ormObj.Id
 	filterHomeAddress.AccountID = ormObj.AccountID
 	if err = db.Where(filterHomeAddress).Delete(AddressORM{}).Error; err != nil {
 		return nil, err
 	}
 	filterWorkAddress := AddressORM{}
-	if ormObj.Id == nil || *ormObj.Id == 0 {
+	if ormObj.Id == 0 {
 		return nil, errors.New("Can't do overwriting update with no Id value for ContactORM")
 	}
 	filterWorkAddress.WorkAddressContactId = new(int64)
-	*filterWorkAddress.WorkAddressContactId = *ormObj.Id
+	*filterWorkAddress.WorkAddressContactId = ormObj.Id
 	filterWorkAddress.AccountID = ormObj.AccountID
 	if err = db.Where(filterWorkAddress).Delete(AddressORM{}).Error; err != nil {
 		return nil, err
@@ -1361,11 +1341,11 @@ func DefaultPatchContact(ctx context.Context, in *Contact, updateMask *field_mas
 		if f == "Emails" {
 			pbObj.Emails = in.Emails
 			filterEmails := EmailORM{}
-			if ormObj.Id == nil || *ormObj.Id == 0 {
+			if ormObj.Id == 0 {
 				return nil, errors.New("Can't do overwriting update with no Id value for ContactORM")
 			}
 			filterEmails.ContactId = new(int64)
-			*filterEmails.ContactId = *ormObj.Id
+			*filterEmails.ContactId = ormObj.Id
 			filterEmails.AccountID = ormObj.AccountID
 			if err = db.Where(filterEmails).Delete(EmailORM{}).Error; err != nil {
 				return nil, err
@@ -1374,11 +1354,11 @@ func DefaultPatchContact(ctx context.Context, in *Contact, updateMask *field_mas
 		if f == "HomeAddress" {
 			pbObj.HomeAddress = in.HomeAddress
 			filterHomeAddress := AddressORM{}
-			if ormObj.Id == nil || *ormObj.Id == 0 {
+			if ormObj.Id == 0 {
 				return nil, errors.New("Can't do overwriting update with no Id value for ContactORM")
 			}
 			filterHomeAddress.HomeAddressContactId = new(int64)
-			*filterHomeAddress.HomeAddressContactId = *ormObj.Id
+			*filterHomeAddress.HomeAddressContactId = ormObj.Id
 			filterHomeAddress.AccountID = ormObj.AccountID
 			if err = db.Where(filterHomeAddress).Delete(AddressORM{}).Error; err != nil {
 				return nil, err
@@ -1387,11 +1367,11 @@ func DefaultPatchContact(ctx context.Context, in *Contact, updateMask *field_mas
 		if f == "WorkAddress" {
 			pbObj.WorkAddress = in.WorkAddress
 			filterWorkAddress := AddressORM{}
-			if ormObj.Id == nil || *ormObj.Id == 0 {
+			if ormObj.Id == 0 {
 				return nil, errors.New("Can't do overwriting update with no Id value for ContactORM")
 			}
 			filterWorkAddress.WorkAddressContactId = new(int64)
-			*filterWorkAddress.WorkAddressContactId = *ormObj.Id
+			*filterWorkAddress.WorkAddressContactId = ormObj.Id
 			filterWorkAddress.AccountID = ormObj.AccountID
 			if err = db.Where(filterWorkAddress).Delete(AddressORM{}).Error; err != nil {
 				return nil, err
@@ -1773,7 +1753,7 @@ type ProfilesProfileWithBeforeDelete interface {
 }
 
 // List ...
-func (m *ProfilesDefaultServer) List(ctx context.Context, in *google_protobuf.Empty) (*ListProfilesResponse, error) {
+func (m *ProfilesDefaultServer) List(ctx context.Context, in *ListProfileRequest) (*ListProfilesResponse, error) {
 	db := m.DB
 	if custom, ok := interface{}(in).(ProfilesProfileWithBeforeList); ok {
 		var err error
@@ -1791,7 +1771,7 @@ func (m *ProfilesDefaultServer) List(ctx context.Context, in *google_protobuf.Em
 
 // ProfilesProfileWithBeforeList called before DefaultListProfile in the default List handler
 type ProfilesProfileWithBeforeList interface {
-	BeforeList(context.Context, *google_protobuf.Empty, *gorm1.DB) (context.Context, *gorm1.DB, error)
+	BeforeList(context.Context, *ListProfileRequest, *gorm1.DB) (context.Context, *gorm1.DB, error)
 }
 type GroupsDefaultServer struct {
 	DB *gorm1.DB
@@ -1882,7 +1862,7 @@ type GroupsGroupWithBeforeDelete interface {
 }
 
 // List ...
-func (m *GroupsDefaultServer) List(ctx context.Context, in *google_protobuf.Empty) (*ListGroupsResponse, error) {
+func (m *GroupsDefaultServer) List(ctx context.Context, in *ListGroupRequest) (*ListGroupsResponse, error) {
 	db := m.DB
 	if custom, ok := interface{}(in).(GroupsGroupWithBeforeList); ok {
 		var err error
@@ -1900,7 +1880,7 @@ func (m *GroupsDefaultServer) List(ctx context.Context, in *google_protobuf.Empt
 
 // GroupsGroupWithBeforeList called before DefaultListGroup in the default List handler
 type GroupsGroupWithBeforeList interface {
-	BeforeList(context.Context, *google_protobuf.Empty, *gorm1.DB) (context.Context, *gorm1.DB, error)
+	BeforeList(context.Context, *ListGroupRequest, *gorm1.DB) (context.Context, *gorm1.DB, error)
 }
 type ContactsDefaultServer struct {
 	DB *gorm1.DB
@@ -1991,7 +1971,7 @@ type ContactsContactWithBeforeDelete interface {
 }
 
 // List ...
-func (m *ContactsDefaultServer) List(ctx context.Context, in *google_protobuf.Empty) (*ListContactsResponse, error) {
+func (m *ContactsDefaultServer) List(ctx context.Context, in *ListContactRequest) (*ListContactsResponse, error) {
 	db := m.DB
 	if custom, ok := interface{}(in).(ContactsContactWithBeforeList); ok {
 		var err error
@@ -2009,7 +1989,7 @@ func (m *ContactsDefaultServer) List(ctx context.Context, in *google_protobuf.Em
 
 // ContactsContactWithBeforeList called before DefaultListContact in the default List handler
 type ContactsContactWithBeforeList interface {
-	BeforeList(context.Context, *google_protobuf.Empty, *gorm1.DB) (context.Context, *gorm1.DB, error)
+	BeforeList(context.Context, *ListContactRequest, *gorm1.DB) (context.Context, *gorm1.DB, error)
 }
 
 // SendSMS ...

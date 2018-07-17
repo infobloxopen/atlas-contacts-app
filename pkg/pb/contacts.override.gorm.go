@@ -1,8 +1,9 @@
 package pb
 
 import (
-	"fmt"
+	"strings"
 
+	"github.com/infobloxopen/atlas-app-toolkit/query"
 	"github.com/infobloxopen/atlas-app-toolkit/rpc/errdetails"
 	"github.com/infobloxopen/atlas-app-toolkit/auth"
 	"github.com/jinzhu/gorm"
@@ -51,34 +52,6 @@ func (m *ContactORM) AfterToPB(ctx context.Context, c *Contact) error {
 	return nil
 }
 
-// Hooks and direct db access:
-// Hooks Documentation: http://gorm.io/docs/hooks.html
-// Database access: http://gorm.io/docs/sql_builder.html
-// Below is an example that shows how to add a hook that runs before the Update method and how to access the database directly.
-
-// BeforeUpdate runs before the Update method and checks to see if the ID provided already exists.
-func (m *ContactORM) BeforeUpdate(scope *gorm.Scope) (err error) {
-	// Create a new db access point
-	dbc := scope.NewDB()
-
-	// To execute commands directly :
-	// dbc.Exec("SOME SQL COMMAND")
-
-	// Executes the raw sql cmd and gets query response in rows
-	rows, err := dbc.Raw("SELECT * FROM contacts WHERE id=" + fmt.Sprint(m.Id)).Rows() // (*sql.Rows, error)
-	defer rows.Close()
-	if err != nil {
-		return err
-	}
-	// Check to see if a row with id already exists
-	if rows.Next() {
-		// Contact exists proceed to default update method
-		return nil
-	} else {
-		return fmt.Errorf("NOT_EXISTS")
-	}
-}
-
 // Overriding CRUD Methods:
 // For the example below we will be overriding the Read method.
 // To override a CRUD method we need to find the Custom method (CustomCreate, CustomRead, CustomUpdate, CustomDelete)
@@ -86,12 +59,130 @@ func (m *ContactORM) BeforeUpdate(scope *gorm.Scope) (err error) {
 
 // CustomRead method overrides the default Read function and adds custom errors with multiple details.
 func (m *ContactsDefaultServer) CustomRead(ctx context.Context, req *ReadContactRequest) (*ReadContactResponse, error) {
-	res, err := DefaultReadContact(ctx, &Contact{Id: req.GetId()}, m.DB)
+	db := m.DB.Preload("Emails")
+	res, err := DefaultReadContact(ctx, &Contact{Id: req.GetId()}, db)
 	if err != nil {
-		st := status.Newf(codes.Internal, "Unable to read contact. Error %v", err)
-		st, _ = st.WithDetails(errdetails.New(codes.Internal, "CustomRead", "Custom error message"))
-		st, _ = st.WithDetails(errdetails.New(codes.Internal, "CustomRead", "Another custom error message"))
+		code := codes.Internal
+		if err == gorm.ErrRecordNotFound {
+			code = codes.NotFound
+		}
+		st := status.Newf(code, "Unable to read contact. Error %v", err)
+		st, _ = st.WithDetails(errdetails.New(codes.InvalidArgument, "CustomRead", "Example of custom error message"))
+		st, _ = st.WithDetails(errdetails.New(codes.InvalidArgument, "CustomRead", "Another example of custom error message"))
 		return nil, st.Err()
 	}
 	return &ReadContactResponse{Result: res}, nil
+}
+
+type FilteringIteratorCallback func(path []string, f interface{}) (interface{}, string)
+
+// IterateFiltering call callback function for each condtion struct of *Filtering.
+// Callback results override original Filtering condition and append list of joins,
+// so finally IterateFiltering returns modified *Filtering with
+// list of join conditions for supporting new *Filtering
+func IterateFiltering(f *query.Filtering, callback FilteringIteratorCallback) []string {
+	joins := []string{}
+
+	var getOperator func(interface{}) interface{}
+
+	doCallback := func(path []string, f interface{}) interface{} {
+		res, join := callback(path, f)
+		if res != nil {
+			if join != "" {
+				joins = append(joins, join)
+			}
+			return res
+		}
+		return f
+	}
+
+	getOperator = func(f interface{}) interface{} {
+		val := f.(*query.LogicalOperator)
+
+		left := val.GetLeft()
+		switch leftVal := left.(type) {
+		case *query.LogicalOperator_LeftOperator:
+			val.SetLeft(getOperator(leftVal.LeftOperator))
+
+		case *query.LogicalOperator_LeftStringCondition:
+			val.SetLeft(doCallback(leftVal.LeftStringCondition.GetFieldPath(), leftVal.LeftStringCondition))
+
+		case *query.LogicalOperator_LeftNumberCondition:
+			val.SetLeft(doCallback(leftVal.LeftNumberCondition.GetFieldPath(), leftVal.LeftNumberCondition))
+
+		case *query.LogicalOperator_LeftNullCondition:
+			val.SetLeft(doCallback(leftVal.LeftNullCondition.GetFieldPath(), leftVal.LeftNullCondition))
+		}
+
+		right := val.GetRight()
+		switch rightVal := right.(type) {
+		case *query.LogicalOperator_RightOperator:
+			val.SetRight(getOperator(rightVal.RightOperator))
+
+		case *query.LogicalOperator_RightStringCondition:
+			val.SetRight(doCallback(rightVal.RightStringCondition.GetFieldPath(), rightVal.RightStringCondition))
+
+		case *query.LogicalOperator_RightNumberCondition:
+			val.SetRight(doCallback(rightVal.RightNumberCondition.GetFieldPath(), rightVal.RightNumberCondition))
+
+		case *query.LogicalOperator_RightNullCondition:
+			val.SetRight(doCallback(rightVal.RightNullCondition.GetFieldPath(), rightVal.RightNullCondition))
+		}
+		return val
+	}
+
+	root := f.GetRoot()
+	switch val := root.(type) {
+	case *query.Filtering_Operator:
+		f.SetRoot(getOperator(val.Operator))
+
+	case *query.Filtering_StringCondition:
+		f.SetRoot(doCallback(val.StringCondition.GetFieldPath(), val.StringCondition))
+
+	case *query.Filtering_NumberCondition:
+		f.SetRoot(doCallback(val.NumberCondition.GetFieldPath(), val.NumberCondition))
+
+	case *query.Filtering_NullCondition:
+		f.SetRoot(doCallback(val.NullCondition.GetFieldPath(), val.NullCondition))
+	}
+	return joins
+}
+
+// CustomList method overrides the default Read function and modify Filtering to support synthetic fields.
+func (m *ContactsDefaultServer) CustomList(ctx context.Context, in *ListContactRequest) (*ListContactsResponse, error) {
+	db := m.DB
+	f := in.GetFilter()
+	if f != nil {
+		joins := IterateFiltering(f, supportSynteticFields())
+		for _, join := range joins {
+			db = db.Joins(join)
+		}
+	}
+	db = db.Preload("Emails")
+	res, err := DefaultListContact(ctx, db, in)
+	if err != nil {
+		return nil, err
+	}
+	return &ListContactsResponse{Results: res}, nil
+}
+
+// callback function for IterateFiltering to support "primary_email" (synthetic field) filtering
+func supportSynteticFields() FilteringIteratorCallback {
+	syntheticFound := false
+	return func(path []string, f interface{}) (interface{}, string) {
+		join := ""
+		switch strings.Join(path, ".") {
+		case "primary_email":
+			sc, ok := f.(*query.StringCondition)
+			if ok {
+				sc.FieldPath = []string{"emails", "address"}
+				if !syntheticFound {
+					join = "join emails on contacts.id = emails.contact_id and emails.is_primary = true"
+					syntheticFound = true
+				}
+				return sc, join
+			}
+		}
+		return nil, ""
+	}
 }

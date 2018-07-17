@@ -9,6 +9,7 @@ import "github.com/lyft/protoc-gen-validate/validate/validate.proto";
 import "protoc-gen-swagger/options/annotations.proto";
 import "github.com/infobloxopen/protoc-gen-gorm/options/gorm.proto";
 import "github.com/infobloxopen/protoc-gen-gorm/types/types.proto";
+import "github.com/infobloxopen/atlas-app-toolkit/query/collection_operators.proto";
 import "github.com/infobloxopen/atlas-app-toolkit/rpc/resource/resource.proto";
 
 option go_package = "github.com/infobloxopen/atlas-contacts-app/pkg/pb;pb";
@@ -18,7 +19,7 @@ message Profile {
       ormable: true,
       multi_account: true
     };
-    atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "serial"}];
+    atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "serial" primary_key: true}];
     string name = 2;
     string notes = 3;
     repeated Contact contacts = 4;
@@ -51,6 +52,13 @@ message UpdateProfileResponse {
 
 message DeleteProfileRequest {
     atlas.rpc.Identifier id = 1;
+}
+
+message ListProfileRequest {
+    infoblox.api.Filtering filter = 1;
+    infoblox.api.Sorting order_by = 2;
+    infoblox.api.FieldSelection fields = 3;
+    infoblox.api.Pagination paging = 4;
 }
 
 message ListProfilesResponse {
@@ -86,7 +94,7 @@ service Profiles {
         option (gorm.method).object_type = "Profile";
     }
 
-    rpc List (google.protobuf.Empty) returns (ListProfilesResponse) {
+    rpc List (ListProfileRequest) returns (ListProfilesResponse) {
         option (google.api.http) = {
             get: "/profiles"
         };
@@ -99,7 +107,7 @@ message Group {
       ormable: true,
       multi_account: true
     };
-    atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "serial"}];
+    atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "serial" primary_key: true}];
     string name = 2;
     string notes = 3;
     Profile profile = 4 [(gorm.field).belongs_to = {}];
@@ -135,6 +143,13 @@ message DeleteGroupRequest {
     atlas.rpc.Identifier id = 1;
 }
 
+message ListGroupRequest {
+    infoblox.api.Filtering filter = 1;
+    infoblox.api.Sorting order_by = 2;
+    infoblox.api.FieldSelection fields = 3;
+    infoblox.api.Pagination paging = 4;
+}
+
 message ListGroupsResponse {
     repeated Group results = 1;
 }
@@ -168,7 +183,7 @@ service Groups {
         option (gorm.method).object_type = "Group";
     }
 
-    rpc List (google.protobuf.Empty) returns (ListGroupsResponse) {
+    rpc List (ListGroupRequest) returns (ListGroupsResponse) {
         option (google.api.http) = {
             get: "/groups"
         };
@@ -181,7 +196,7 @@ message Contact {
       ormable: true,
       multi_account: true
     };
-    atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "serial"}];
+    atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "serial"  primary_key: true}];
     string first_name = 2;
     string middle_name = 3;
     string last_name = 4;
@@ -258,6 +273,14 @@ message SMSRequest {
     string message = 2;
 }
 
+message ListContactRequest {
+    infoblox.api.Filtering filter = 1;
+    infoblox.api.Sorting order_by = 2;
+    infoblox.api.FieldSelection fields = 3;
+    infoblox.api.Pagination paging = 4;
+}
+
+
 service Contacts {
     option (gorm.server).autogen = true;
     rpc Create (CreateContactRequest) returns (CreateContactResponse) {
@@ -287,7 +310,7 @@ service Contacts {
         option (gorm.method).object_type = "Contact";
     }
 
-    rpc List (google.protobuf.Empty) returns (ListContactsResponse) {
+    rpc List (ListContactRequest) returns (ListContactsResponse) {
         option (google.api.http) = {
             get: "/contacts"
         };
