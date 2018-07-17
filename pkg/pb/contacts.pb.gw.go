@@ -345,6 +345,10 @@ func request_Contacts_Read_0(ctx context.Context, marshaler runtime.Marshaler, c
 
 }
 
+var (
+	filter_Contacts_Update_0 = &utilities.DoubleArray{Encoding: map[string]int{"payload": 0, "id": 1, "resource_id": 2}, Base: []int{1, 2, 1, 1, 0, 0}, Check: []int{0, 1, 2, 3, 4, 2}}
+)
+
 func request_Contacts_Update_0(ctx context.Context, marshaler runtime.Marshaler, client ContactsClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq UpdateContactRequest
 	var metadata runtime.ServerMetadata
@@ -375,59 +379,11 @@ func request_Contacts_Update_0(ctx context.Context, marshaler runtime.Marshaler,
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "payload.id.resource_id", err)
 	}
 
+	if err := runtime.PopulateQueryParameters(&protoReq, req.URL.Query(), filter_Contacts_Update_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+
 	msg, err := client.Update(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
-	return msg, metadata, err
-
-}
-
-var (
-	filter_Contacts_Patch_0 = &utilities.DoubleArray{Encoding: map[string]int{"payload": 0, "id": 1, "resource_id": 2}, Base: []int{1, 2, 1, 1, 0, 0}, Check: []int{0, 1, 2, 3, 4, 2}}
-)
-
-func request_Contacts_Patch_0(ctx context.Context, marshaler runtime.Marshaler, client ContactsClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq PatchContactRequest
-	var metadata runtime.ServerMetadata
-
-	body, berr := ioutil.ReadAll(req.Body)
-	if berr != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
-	}
-	if err := marshaler.NewDecoder(bytes.NewReader(body)).Decode(&protoReq.Payload); err != nil && err != io.EOF {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	if protoReq.UpdateMask != nil && len(protoReq.UpdateMask.GetPaths()) > 0 {
-		runtime.CamelCaseFieldMask(protoReq.UpdateMask)
-	} else {
-		if fieldMask, err := runtime.FieldMaskFromRequestBody(bytes.NewReader(body)); err != nil {
-			return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-		} else {
-			protoReq.UpdateMask = fieldMask
-		}
-	}
-
-	var (
-		val string
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["payload.id.resource_id"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "payload.id.resource_id")
-	}
-
-	err = runtime.PopulateFieldFromPath(&protoReq, "payload.id.resource_id", val)
-
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "payload.id.resource_id", err)
-	}
-
-	if err := runtime.PopulateQueryParameters(&protoReq, req.URL.Query(), filter_Contacts_Patch_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-
-	msg, err := client.Patch(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
@@ -1056,35 +1012,6 @@ func RegisterContactsHandlerClient(ctx context.Context, mux *runtime.ServeMux, c
 
 	})
 
-	mux.Handle("PATCH", pattern_Contacts_Patch_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		if cn, ok := w.(http.CloseNotifier); ok {
-			go func(done <-chan struct{}, closed <-chan bool) {
-				select {
-				case <-done:
-				case <-closed:
-					cancel()
-				}
-			}(ctx.Done(), cn.CloseNotify())
-		}
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req)
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := request_Contacts_Patch_0(rctx, inboundMarshaler, client, req, pathParams)
-		ctx = runtime.NewServerMetadataContext(ctx, md)
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-
-		forward_Contacts_Patch_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
-	})
-
 	mux.Handle("DELETE", pattern_Contacts_Delete_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
@@ -1182,8 +1109,6 @@ var (
 
 	pattern_Contacts_Update_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"contacts", "payload.id.resource_id"}, ""))
 
-	pattern_Contacts_Patch_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"contacts", "payload.id.resource_id"}, ""))
-
 	pattern_Contacts_Delete_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"contacts", "id.resource_id"}, ""))
 
 	pattern_Contacts_List_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"contacts"}, ""))
@@ -1197,8 +1122,6 @@ var (
 	forward_Contacts_Read_0 = runtime.ForwardResponseMessage
 
 	forward_Contacts_Update_0 = runtime.ForwardResponseMessage
-
-	forward_Contacts_Patch_0 = runtime.ForwardResponseMessage
 
 	forward_Contacts_Delete_0 = runtime.ForwardResponseMessage
 

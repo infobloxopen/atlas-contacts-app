@@ -197,36 +197,6 @@
         "tags": [
           "Contacts"
         ]
-      },
-      "patch": {
-        "operationId": "Patch",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/contactsPatchContactResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "payload.id.resource_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/apicontactsContact"
-            }
-          }
-        ],
-        "tags": [
-          "Contacts"
-        ]
       }
     },
     "/groups": {
@@ -686,14 +656,6 @@
           "items": {
             "$ref": "#/definitions/contactsProfile"
           }
-        }
-      }
-    },
-    "contactsPatchContactResponse": {
-      "type": "object",
-      "properties": {
-        "result": {
-          "$ref": "#/definitions/apicontactsContact"
         }
       }
     },

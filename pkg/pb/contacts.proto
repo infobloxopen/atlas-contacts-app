@@ -238,18 +238,10 @@ message ReadContactResponse {
 
 message UpdateContactRequest {
     Contact payload = 1;
-}
-
-message UpdateContactResponse {
-    Contact result = 1;
-}
-
-message PatchContactRequest {
-    Contact payload = 1;
     google.protobuf.FieldMask update_mask = 2;
 }
 
-message PatchContactResponse {
+message UpdateContactResponse {
     Contact result = 1;
 }
 
@@ -284,13 +276,6 @@ service Contacts {
     rpc Update (UpdateContactRequest) returns (UpdateContactResponse) {
         option (google.api.http) = {
             put: "/contacts/{payload.id.resource_id}"
-            body: "payload"
-        };
-    }
-
-    rpc Patch (PatchContactRequest) returns (PatchContactResponse) {
-        option (google.api.http) = {
-            patch: "/contacts/{payload.id.resource_id}"
             body: "payload"
         };
     }

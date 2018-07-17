@@ -103,6 +103,21 @@ type ProfileValidationError struct {
 	Key    bool
 }
 
+// GetField function returns Field value.
+func (e ProfileValidationError) GetField() string { return e.Field }
+
+// GetReason function returns Reason value.
+func (e ProfileValidationError) GetReason() string { return e.Reason }
+
+// GetCause function returns Cause value.
+func (e ProfileValidationError) GetCause() error { return e.Cause }
+
+// GetKey function returns Key value.
+func (e ProfileValidationError) GetKey() bool { return e.Key }
+
+// GetErrorName returns Error Name value.
+func (e ProfileValidationError) GetErrorName() string { return "ProfileValidationError" }
+
 // Error satisfies the builtin error interface
 func (e ProfileValidationError) Error() string {
 	cause := ""
@@ -124,6 +139,14 @@ func (e ProfileValidationError) Error() string {
 }
 
 var _ error = ProfileValidationError{}
+
+var _ interface {
+	GetField() string
+	GetReason() string
+	GetKey() bool
+	GetCause() error
+	GetErrorName() string
+} = ProfileValidationError{}
 
 // Validate checks the field values on CreateProfileRequest with the rules
 // defined in the proto definition for this message. If any rules are
@@ -157,6 +180,23 @@ type CreateProfileRequestValidationError struct {
 	Key    bool
 }
 
+// GetField function returns Field value.
+func (e CreateProfileRequestValidationError) GetField() string { return e.Field }
+
+// GetReason function returns Reason value.
+func (e CreateProfileRequestValidationError) GetReason() string { return e.Reason }
+
+// GetCause function returns Cause value.
+func (e CreateProfileRequestValidationError) GetCause() error { return e.Cause }
+
+// GetKey function returns Key value.
+func (e CreateProfileRequestValidationError) GetKey() bool { return e.Key }
+
+// GetErrorName returns Error Name value.
+func (e CreateProfileRequestValidationError) GetErrorName() string {
+	return "CreateProfileRequestValidationError"
+}
+
 // Error satisfies the builtin error interface
 func (e CreateProfileRequestValidationError) Error() string {
 	cause := ""
@@ -178,6 +218,14 @@ func (e CreateProfileRequestValidationError) Error() string {
 }
 
 var _ error = CreateProfileRequestValidationError{}
+
+var _ interface {
+	GetField() string
+	GetReason() string
+	GetKey() bool
+	GetCause() error
+	GetErrorName() string
+} = CreateProfileRequestValidationError{}
 
 // Validate checks the field values on CreateProfileResponse with the rules
 // defined in the proto definition for this message. If any rules are
@@ -211,6 +259,23 @@ type CreateProfileResponseValidationError struct {
 	Key    bool
 }
 
+// GetField function returns Field value.
+func (e CreateProfileResponseValidationError) GetField() string { return e.Field }
+
+// GetReason function returns Reason value.
+func (e CreateProfileResponseValidationError) GetReason() string { return e.Reason }
+
+// GetCause function returns Cause value.
+func (e CreateProfileResponseValidationError) GetCause() error { return e.Cause }
+
+// GetKey function returns Key value.
+func (e CreateProfileResponseValidationError) GetKey() bool { return e.Key }
+
+// GetErrorName returns Error Name value.
+func (e CreateProfileResponseValidationError) GetErrorName() string {
+	return "CreateProfileResponseValidationError"
+}
+
 // Error satisfies the builtin error interface
 func (e CreateProfileResponseValidationError) Error() string {
 	cause := ""
@@ -232,6 +297,14 @@ func (e CreateProfileResponseValidationError) Error() string {
 }
 
 var _ error = CreateProfileResponseValidationError{}
+
+var _ interface {
+	GetField() string
+	GetReason() string
+	GetKey() bool
+	GetCause() error
+	GetErrorName() string
+} = CreateProfileResponseValidationError{}
 
 // Validate checks the field values on ReadProfileRequest with the rules
 // defined in the proto definition for this message. If any rules are
@@ -265,6 +338,23 @@ type ReadProfileRequestValidationError struct {
 	Key    bool
 }
 
+// GetField function returns Field value.
+func (e ReadProfileRequestValidationError) GetField() string { return e.Field }
+
+// GetReason function returns Reason value.
+func (e ReadProfileRequestValidationError) GetReason() string { return e.Reason }
+
+// GetCause function returns Cause value.
+func (e ReadProfileRequestValidationError) GetCause() error { return e.Cause }
+
+// GetKey function returns Key value.
+func (e ReadProfileRequestValidationError) GetKey() bool { return e.Key }
+
+// GetErrorName returns Error Name value.
+func (e ReadProfileRequestValidationError) GetErrorName() string {
+	return "ReadProfileRequestValidationError"
+}
+
 // Error satisfies the builtin error interface
 func (e ReadProfileRequestValidationError) Error() string {
 	cause := ""
@@ -286,6 +376,14 @@ func (e ReadProfileRequestValidationError) Error() string {
 }
 
 var _ error = ReadProfileRequestValidationError{}
+
+var _ interface {
+	GetField() string
+	GetReason() string
+	GetKey() bool
+	GetCause() error
+	GetErrorName() string
+} = ReadProfileRequestValidationError{}
 
 // Validate checks the field values on ReadProfileResponse with the rules
 // defined in the proto definition for this message. If any rules are
@@ -319,6 +417,23 @@ type ReadProfileResponseValidationError struct {
 	Key    bool
 }
 
+// GetField function returns Field value.
+func (e ReadProfileResponseValidationError) GetField() string { return e.Field }
+
+// GetReason function returns Reason value.
+func (e ReadProfileResponseValidationError) GetReason() string { return e.Reason }
+
+// GetCause function returns Cause value.
+func (e ReadProfileResponseValidationError) GetCause() error { return e.Cause }
+
+// GetKey function returns Key value.
+func (e ReadProfileResponseValidationError) GetKey() bool { return e.Key }
+
+// GetErrorName returns Error Name value.
+func (e ReadProfileResponseValidationError) GetErrorName() string {
+	return "ReadProfileResponseValidationError"
+}
+
 // Error satisfies the builtin error interface
 func (e ReadProfileResponseValidationError) Error() string {
 	cause := ""
@@ -340,6 +455,14 @@ func (e ReadProfileResponseValidationError) Error() string {
 }
 
 var _ error = ReadProfileResponseValidationError{}
+
+var _ interface {
+	GetField() string
+	GetReason() string
+	GetKey() bool
+	GetCause() error
+	GetErrorName() string
+} = ReadProfileResponseValidationError{}
 
 // Validate checks the field values on UpdateProfileRequest with the rules
 // defined in the proto definition for this message. If any rules are
@@ -373,6 +496,23 @@ type UpdateProfileRequestValidationError struct {
 	Key    bool
 }
 
+// GetField function returns Field value.
+func (e UpdateProfileRequestValidationError) GetField() string { return e.Field }
+
+// GetReason function returns Reason value.
+func (e UpdateProfileRequestValidationError) GetReason() string { return e.Reason }
+
+// GetCause function returns Cause value.
+func (e UpdateProfileRequestValidationError) GetCause() error { return e.Cause }
+
+// GetKey function returns Key value.
+func (e UpdateProfileRequestValidationError) GetKey() bool { return e.Key }
+
+// GetErrorName returns Error Name value.
+func (e UpdateProfileRequestValidationError) GetErrorName() string {
+	return "UpdateProfileRequestValidationError"
+}
+
 // Error satisfies the builtin error interface
 func (e UpdateProfileRequestValidationError) Error() string {
 	cause := ""
@@ -394,6 +534,14 @@ func (e UpdateProfileRequestValidationError) Error() string {
 }
 
 var _ error = UpdateProfileRequestValidationError{}
+
+var _ interface {
+	GetField() string
+	GetReason() string
+	GetKey() bool
+	GetCause() error
+	GetErrorName() string
+} = UpdateProfileRequestValidationError{}
 
 // Validate checks the field values on UpdateProfileResponse with the rules
 // defined in the proto definition for this message. If any rules are
@@ -427,6 +575,23 @@ type UpdateProfileResponseValidationError struct {
 	Key    bool
 }
 
+// GetField function returns Field value.
+func (e UpdateProfileResponseValidationError) GetField() string { return e.Field }
+
+// GetReason function returns Reason value.
+func (e UpdateProfileResponseValidationError) GetReason() string { return e.Reason }
+
+// GetCause function returns Cause value.
+func (e UpdateProfileResponseValidationError) GetCause() error { return e.Cause }
+
+// GetKey function returns Key value.
+func (e UpdateProfileResponseValidationError) GetKey() bool { return e.Key }
+
+// GetErrorName returns Error Name value.
+func (e UpdateProfileResponseValidationError) GetErrorName() string {
+	return "UpdateProfileResponseValidationError"
+}
+
 // Error satisfies the builtin error interface
 func (e UpdateProfileResponseValidationError) Error() string {
 	cause := ""
@@ -448,6 +613,14 @@ func (e UpdateProfileResponseValidationError) Error() string {
 }
 
 var _ error = UpdateProfileResponseValidationError{}
+
+var _ interface {
+	GetField() string
+	GetReason() string
+	GetKey() bool
+	GetCause() error
+	GetErrorName() string
+} = UpdateProfileResponseValidationError{}
 
 // Validate checks the field values on DeleteProfileRequest with the rules
 // defined in the proto definition for this message. If any rules are
@@ -481,6 +654,23 @@ type DeleteProfileRequestValidationError struct {
 	Key    bool
 }
 
+// GetField function returns Field value.
+func (e DeleteProfileRequestValidationError) GetField() string { return e.Field }
+
+// GetReason function returns Reason value.
+func (e DeleteProfileRequestValidationError) GetReason() string { return e.Reason }
+
+// GetCause function returns Cause value.
+func (e DeleteProfileRequestValidationError) GetCause() error { return e.Cause }
+
+// GetKey function returns Key value.
+func (e DeleteProfileRequestValidationError) GetKey() bool { return e.Key }
+
+// GetErrorName returns Error Name value.
+func (e DeleteProfileRequestValidationError) GetErrorName() string {
+	return "DeleteProfileRequestValidationError"
+}
+
 // Error satisfies the builtin error interface
 func (e DeleteProfileRequestValidationError) Error() string {
 	cause := ""
@@ -502,6 +692,14 @@ func (e DeleteProfileRequestValidationError) Error() string {
 }
 
 var _ error = DeleteProfileRequestValidationError{}
+
+var _ interface {
+	GetField() string
+	GetReason() string
+	GetKey() bool
+	GetCause() error
+	GetErrorName() string
+} = DeleteProfileRequestValidationError{}
 
 // Validate checks the field values on ListProfilesResponse with the rules
 // defined in the proto definition for this message. If any rules are
@@ -540,6 +738,23 @@ type ListProfilesResponseValidationError struct {
 	Key    bool
 }
 
+// GetField function returns Field value.
+func (e ListProfilesResponseValidationError) GetField() string { return e.Field }
+
+// GetReason function returns Reason value.
+func (e ListProfilesResponseValidationError) GetReason() string { return e.Reason }
+
+// GetCause function returns Cause value.
+func (e ListProfilesResponseValidationError) GetCause() error { return e.Cause }
+
+// GetKey function returns Key value.
+func (e ListProfilesResponseValidationError) GetKey() bool { return e.Key }
+
+// GetErrorName returns Error Name value.
+func (e ListProfilesResponseValidationError) GetErrorName() string {
+	return "ListProfilesResponseValidationError"
+}
+
 // Error satisfies the builtin error interface
 func (e ListProfilesResponseValidationError) Error() string {
 	cause := ""
@@ -561,6 +776,14 @@ func (e ListProfilesResponseValidationError) Error() string {
 }
 
 var _ error = ListProfilesResponseValidationError{}
+
+var _ interface {
+	GetField() string
+	GetReason() string
+	GetKey() bool
+	GetCause() error
+	GetErrorName() string
+} = ListProfilesResponseValidationError{}
 
 // Validate checks the field values on Group with the rules defined in the
 // proto definition for this message. If any rules are violated, an error is returned.
@@ -638,6 +861,21 @@ type GroupValidationError struct {
 	Key    bool
 }
 
+// GetField function returns Field value.
+func (e GroupValidationError) GetField() string { return e.Field }
+
+// GetReason function returns Reason value.
+func (e GroupValidationError) GetReason() string { return e.Reason }
+
+// GetCause function returns Cause value.
+func (e GroupValidationError) GetCause() error { return e.Cause }
+
+// GetKey function returns Key value.
+func (e GroupValidationError) GetKey() bool { return e.Key }
+
+// GetErrorName returns Error Name value.
+func (e GroupValidationError) GetErrorName() string { return "GroupValidationError" }
+
 // Error satisfies the builtin error interface
 func (e GroupValidationError) Error() string {
 	cause := ""
@@ -659,6 +897,14 @@ func (e GroupValidationError) Error() string {
 }
 
 var _ error = GroupValidationError{}
+
+var _ interface {
+	GetField() string
+	GetReason() string
+	GetKey() bool
+	GetCause() error
+	GetErrorName() string
+} = GroupValidationError{}
 
 // Validate checks the field values on CreateGroupRequest with the rules
 // defined in the proto definition for this message. If any rules are
@@ -692,6 +938,23 @@ type CreateGroupRequestValidationError struct {
 	Key    bool
 }
 
+// GetField function returns Field value.
+func (e CreateGroupRequestValidationError) GetField() string { return e.Field }
+
+// GetReason function returns Reason value.
+func (e CreateGroupRequestValidationError) GetReason() string { return e.Reason }
+
+// GetCause function returns Cause value.
+func (e CreateGroupRequestValidationError) GetCause() error { return e.Cause }
+
+// GetKey function returns Key value.
+func (e CreateGroupRequestValidationError) GetKey() bool { return e.Key }
+
+// GetErrorName returns Error Name value.
+func (e CreateGroupRequestValidationError) GetErrorName() string {
+	return "CreateGroupRequestValidationError"
+}
+
 // Error satisfies the builtin error interface
 func (e CreateGroupRequestValidationError) Error() string {
 	cause := ""
@@ -713,6 +976,14 @@ func (e CreateGroupRequestValidationError) Error() string {
 }
 
 var _ error = CreateGroupRequestValidationError{}
+
+var _ interface {
+	GetField() string
+	GetReason() string
+	GetKey() bool
+	GetCause() error
+	GetErrorName() string
+} = CreateGroupRequestValidationError{}
 
 // Validate checks the field values on CreateGroupResponse with the rules
 // defined in the proto definition for this message. If any rules are
@@ -746,6 +1017,23 @@ type CreateGroupResponseValidationError struct {
 	Key    bool
 }
 
+// GetField function returns Field value.
+func (e CreateGroupResponseValidationError) GetField() string { return e.Field }
+
+// GetReason function returns Reason value.
+func (e CreateGroupResponseValidationError) GetReason() string { return e.Reason }
+
+// GetCause function returns Cause value.
+func (e CreateGroupResponseValidationError) GetCause() error { return e.Cause }
+
+// GetKey function returns Key value.
+func (e CreateGroupResponseValidationError) GetKey() bool { return e.Key }
+
+// GetErrorName returns Error Name value.
+func (e CreateGroupResponseValidationError) GetErrorName() string {
+	return "CreateGroupResponseValidationError"
+}
+
 // Error satisfies the builtin error interface
 func (e CreateGroupResponseValidationError) Error() string {
 	cause := ""
@@ -767,6 +1055,14 @@ func (e CreateGroupResponseValidationError) Error() string {
 }
 
 var _ error = CreateGroupResponseValidationError{}
+
+var _ interface {
+	GetField() string
+	GetReason() string
+	GetKey() bool
+	GetCause() error
+	GetErrorName() string
+} = CreateGroupResponseValidationError{}
 
 // Validate checks the field values on ReadGroupRequest with the rules defined
 // in the proto definition for this message. If any rules are violated, an
@@ -800,6 +1096,23 @@ type ReadGroupRequestValidationError struct {
 	Key    bool
 }
 
+// GetField function returns Field value.
+func (e ReadGroupRequestValidationError) GetField() string { return e.Field }
+
+// GetReason function returns Reason value.
+func (e ReadGroupRequestValidationError) GetReason() string { return e.Reason }
+
+// GetCause function returns Cause value.
+func (e ReadGroupRequestValidationError) GetCause() error { return e.Cause }
+
+// GetKey function returns Key value.
+func (e ReadGroupRequestValidationError) GetKey() bool { return e.Key }
+
+// GetErrorName returns Error Name value.
+func (e ReadGroupRequestValidationError) GetErrorName() string {
+	return "ReadGroupRequestValidationError"
+}
+
 // Error satisfies the builtin error interface
 func (e ReadGroupRequestValidationError) Error() string {
 	cause := ""
@@ -821,6 +1134,14 @@ func (e ReadGroupRequestValidationError) Error() string {
 }
 
 var _ error = ReadGroupRequestValidationError{}
+
+var _ interface {
+	GetField() string
+	GetReason() string
+	GetKey() bool
+	GetCause() error
+	GetErrorName() string
+} = ReadGroupRequestValidationError{}
 
 // Validate checks the field values on ReadGroupResponse with the rules defined
 // in the proto definition for this message. If any rules are violated, an
@@ -854,6 +1175,23 @@ type ReadGroupResponseValidationError struct {
 	Key    bool
 }
 
+// GetField function returns Field value.
+func (e ReadGroupResponseValidationError) GetField() string { return e.Field }
+
+// GetReason function returns Reason value.
+func (e ReadGroupResponseValidationError) GetReason() string { return e.Reason }
+
+// GetCause function returns Cause value.
+func (e ReadGroupResponseValidationError) GetCause() error { return e.Cause }
+
+// GetKey function returns Key value.
+func (e ReadGroupResponseValidationError) GetKey() bool { return e.Key }
+
+// GetErrorName returns Error Name value.
+func (e ReadGroupResponseValidationError) GetErrorName() string {
+	return "ReadGroupResponseValidationError"
+}
+
 // Error satisfies the builtin error interface
 func (e ReadGroupResponseValidationError) Error() string {
 	cause := ""
@@ -875,6 +1213,14 @@ func (e ReadGroupResponseValidationError) Error() string {
 }
 
 var _ error = ReadGroupResponseValidationError{}
+
+var _ interface {
+	GetField() string
+	GetReason() string
+	GetKey() bool
+	GetCause() error
+	GetErrorName() string
+} = ReadGroupResponseValidationError{}
 
 // Validate checks the field values on UpdateGroupRequest with the rules
 // defined in the proto definition for this message. If any rules are
@@ -908,6 +1254,23 @@ type UpdateGroupRequestValidationError struct {
 	Key    bool
 }
 
+// GetField function returns Field value.
+func (e UpdateGroupRequestValidationError) GetField() string { return e.Field }
+
+// GetReason function returns Reason value.
+func (e UpdateGroupRequestValidationError) GetReason() string { return e.Reason }
+
+// GetCause function returns Cause value.
+func (e UpdateGroupRequestValidationError) GetCause() error { return e.Cause }
+
+// GetKey function returns Key value.
+func (e UpdateGroupRequestValidationError) GetKey() bool { return e.Key }
+
+// GetErrorName returns Error Name value.
+func (e UpdateGroupRequestValidationError) GetErrorName() string {
+	return "UpdateGroupRequestValidationError"
+}
+
 // Error satisfies the builtin error interface
 func (e UpdateGroupRequestValidationError) Error() string {
 	cause := ""
@@ -929,6 +1292,14 @@ func (e UpdateGroupRequestValidationError) Error() string {
 }
 
 var _ error = UpdateGroupRequestValidationError{}
+
+var _ interface {
+	GetField() string
+	GetReason() string
+	GetKey() bool
+	GetCause() error
+	GetErrorName() string
+} = UpdateGroupRequestValidationError{}
 
 // Validate checks the field values on UpdateGroupResponse with the rules
 // defined in the proto definition for this message. If any rules are
@@ -962,6 +1333,23 @@ type UpdateGroupResponseValidationError struct {
 	Key    bool
 }
 
+// GetField function returns Field value.
+func (e UpdateGroupResponseValidationError) GetField() string { return e.Field }
+
+// GetReason function returns Reason value.
+func (e UpdateGroupResponseValidationError) GetReason() string { return e.Reason }
+
+// GetCause function returns Cause value.
+func (e UpdateGroupResponseValidationError) GetCause() error { return e.Cause }
+
+// GetKey function returns Key value.
+func (e UpdateGroupResponseValidationError) GetKey() bool { return e.Key }
+
+// GetErrorName returns Error Name value.
+func (e UpdateGroupResponseValidationError) GetErrorName() string {
+	return "UpdateGroupResponseValidationError"
+}
+
 // Error satisfies the builtin error interface
 func (e UpdateGroupResponseValidationError) Error() string {
 	cause := ""
@@ -983,6 +1371,14 @@ func (e UpdateGroupResponseValidationError) Error() string {
 }
 
 var _ error = UpdateGroupResponseValidationError{}
+
+var _ interface {
+	GetField() string
+	GetReason() string
+	GetKey() bool
+	GetCause() error
+	GetErrorName() string
+} = UpdateGroupResponseValidationError{}
 
 // Validate checks the field values on DeleteGroupRequest with the rules
 // defined in the proto definition for this message. If any rules are
@@ -1016,6 +1412,23 @@ type DeleteGroupRequestValidationError struct {
 	Key    bool
 }
 
+// GetField function returns Field value.
+func (e DeleteGroupRequestValidationError) GetField() string { return e.Field }
+
+// GetReason function returns Reason value.
+func (e DeleteGroupRequestValidationError) GetReason() string { return e.Reason }
+
+// GetCause function returns Cause value.
+func (e DeleteGroupRequestValidationError) GetCause() error { return e.Cause }
+
+// GetKey function returns Key value.
+func (e DeleteGroupRequestValidationError) GetKey() bool { return e.Key }
+
+// GetErrorName returns Error Name value.
+func (e DeleteGroupRequestValidationError) GetErrorName() string {
+	return "DeleteGroupRequestValidationError"
+}
+
 // Error satisfies the builtin error interface
 func (e DeleteGroupRequestValidationError) Error() string {
 	cause := ""
@@ -1037,6 +1450,14 @@ func (e DeleteGroupRequestValidationError) Error() string {
 }
 
 var _ error = DeleteGroupRequestValidationError{}
+
+var _ interface {
+	GetField() string
+	GetReason() string
+	GetKey() bool
+	GetCause() error
+	GetErrorName() string
+} = DeleteGroupRequestValidationError{}
 
 // Validate checks the field values on ListGroupsResponse with the rules
 // defined in the proto definition for this message. If any rules are
@@ -1075,6 +1496,23 @@ type ListGroupsResponseValidationError struct {
 	Key    bool
 }
 
+// GetField function returns Field value.
+func (e ListGroupsResponseValidationError) GetField() string { return e.Field }
+
+// GetReason function returns Reason value.
+func (e ListGroupsResponseValidationError) GetReason() string { return e.Reason }
+
+// GetCause function returns Cause value.
+func (e ListGroupsResponseValidationError) GetCause() error { return e.Cause }
+
+// GetKey function returns Key value.
+func (e ListGroupsResponseValidationError) GetKey() bool { return e.Key }
+
+// GetErrorName returns Error Name value.
+func (e ListGroupsResponseValidationError) GetErrorName() string {
+	return "ListGroupsResponseValidationError"
+}
+
 // Error satisfies the builtin error interface
 func (e ListGroupsResponseValidationError) Error() string {
 	cause := ""
@@ -1096,6 +1534,14 @@ func (e ListGroupsResponseValidationError) Error() string {
 }
 
 var _ error = ListGroupsResponseValidationError{}
+
+var _ interface {
+	GetField() string
+	GetReason() string
+	GetKey() bool
+	GetCause() error
+	GetErrorName() string
+} = ListGroupsResponseValidationError{}
 
 // Validate checks the field values on Contact with the rules defined in the
 // proto definition for this message. If any rules are violated, an error is returned.
@@ -1288,6 +1734,21 @@ type ContactValidationError struct {
 	Key    bool
 }
 
+// GetField function returns Field value.
+func (e ContactValidationError) GetField() string { return e.Field }
+
+// GetReason function returns Reason value.
+func (e ContactValidationError) GetReason() string { return e.Reason }
+
+// GetCause function returns Cause value.
+func (e ContactValidationError) GetCause() error { return e.Cause }
+
+// GetKey function returns Key value.
+func (e ContactValidationError) GetKey() bool { return e.Key }
+
+// GetErrorName returns Error Name value.
+func (e ContactValidationError) GetErrorName() string { return "ContactValidationError" }
+
 // Error satisfies the builtin error interface
 func (e ContactValidationError) Error() string {
 	cause := ""
@@ -1309,6 +1770,14 @@ func (e ContactValidationError) Error() string {
 }
 
 var _ error = ContactValidationError{}
+
+var _ interface {
+	GetField() string
+	GetReason() string
+	GetKey() bool
+	GetCause() error
+	GetErrorName() string
+} = ContactValidationError{}
 
 // Validate checks the field values on Email with the rules defined in the
 // proto definition for this message. If any rules are violated, an error is returned.
@@ -1389,6 +1858,21 @@ type EmailValidationError struct {
 	Key    bool
 }
 
+// GetField function returns Field value.
+func (e EmailValidationError) GetField() string { return e.Field }
+
+// GetReason function returns Reason value.
+func (e EmailValidationError) GetReason() string { return e.Reason }
+
+// GetCause function returns Cause value.
+func (e EmailValidationError) GetCause() error { return e.Cause }
+
+// GetKey function returns Key value.
+func (e EmailValidationError) GetKey() bool { return e.Key }
+
+// GetErrorName returns Error Name value.
+func (e EmailValidationError) GetErrorName() string { return "EmailValidationError" }
+
 // Error satisfies the builtin error interface
 func (e EmailValidationError) Error() string {
 	cause := ""
@@ -1410,6 +1894,14 @@ func (e EmailValidationError) Error() string {
 }
 
 var _ error = EmailValidationError{}
+
+var _ interface {
+	GetField() string
+	GetReason() string
+	GetKey() bool
+	GetCause() error
+	GetErrorName() string
+} = EmailValidationError{}
 
 // Validate checks the field values on Address with the rules defined in the
 // proto definition for this message. If any rules are violated, an error is returned.
@@ -1440,6 +1932,21 @@ type AddressValidationError struct {
 	Key    bool
 }
 
+// GetField function returns Field value.
+func (e AddressValidationError) GetField() string { return e.Field }
+
+// GetReason function returns Reason value.
+func (e AddressValidationError) GetReason() string { return e.Reason }
+
+// GetCause function returns Cause value.
+func (e AddressValidationError) GetCause() error { return e.Cause }
+
+// GetKey function returns Key value.
+func (e AddressValidationError) GetKey() bool { return e.Key }
+
+// GetErrorName returns Error Name value.
+func (e AddressValidationError) GetErrorName() string { return "AddressValidationError" }
+
 // Error satisfies the builtin error interface
 func (e AddressValidationError) Error() string {
 	cause := ""
@@ -1461,6 +1968,14 @@ func (e AddressValidationError) Error() string {
 }
 
 var _ error = AddressValidationError{}
+
+var _ interface {
+	GetField() string
+	GetReason() string
+	GetKey() bool
+	GetCause() error
+	GetErrorName() string
+} = AddressValidationError{}
 
 // Validate checks the field values on CreateContactRequest with the rules
 // defined in the proto definition for this message. If any rules are
@@ -1494,6 +2009,23 @@ type CreateContactRequestValidationError struct {
 	Key    bool
 }
 
+// GetField function returns Field value.
+func (e CreateContactRequestValidationError) GetField() string { return e.Field }
+
+// GetReason function returns Reason value.
+func (e CreateContactRequestValidationError) GetReason() string { return e.Reason }
+
+// GetCause function returns Cause value.
+func (e CreateContactRequestValidationError) GetCause() error { return e.Cause }
+
+// GetKey function returns Key value.
+func (e CreateContactRequestValidationError) GetKey() bool { return e.Key }
+
+// GetErrorName returns Error Name value.
+func (e CreateContactRequestValidationError) GetErrorName() string {
+	return "CreateContactRequestValidationError"
+}
+
 // Error satisfies the builtin error interface
 func (e CreateContactRequestValidationError) Error() string {
 	cause := ""
@@ -1515,6 +2047,14 @@ func (e CreateContactRequestValidationError) Error() string {
 }
 
 var _ error = CreateContactRequestValidationError{}
+
+var _ interface {
+	GetField() string
+	GetReason() string
+	GetKey() bool
+	GetCause() error
+	GetErrorName() string
+} = CreateContactRequestValidationError{}
 
 // Validate checks the field values on CreateContactResponse with the rules
 // defined in the proto definition for this message. If any rules are
@@ -1548,6 +2088,23 @@ type CreateContactResponseValidationError struct {
 	Key    bool
 }
 
+// GetField function returns Field value.
+func (e CreateContactResponseValidationError) GetField() string { return e.Field }
+
+// GetReason function returns Reason value.
+func (e CreateContactResponseValidationError) GetReason() string { return e.Reason }
+
+// GetCause function returns Cause value.
+func (e CreateContactResponseValidationError) GetCause() error { return e.Cause }
+
+// GetKey function returns Key value.
+func (e CreateContactResponseValidationError) GetKey() bool { return e.Key }
+
+// GetErrorName returns Error Name value.
+func (e CreateContactResponseValidationError) GetErrorName() string {
+	return "CreateContactResponseValidationError"
+}
+
 // Error satisfies the builtin error interface
 func (e CreateContactResponseValidationError) Error() string {
 	cause := ""
@@ -1569,6 +2126,14 @@ func (e CreateContactResponseValidationError) Error() string {
 }
 
 var _ error = CreateContactResponseValidationError{}
+
+var _ interface {
+	GetField() string
+	GetReason() string
+	GetKey() bool
+	GetCause() error
+	GetErrorName() string
+} = CreateContactResponseValidationError{}
 
 // Validate checks the field values on ReadContactRequest with the rules
 // defined in the proto definition for this message. If any rules are
@@ -1602,6 +2167,23 @@ type ReadContactRequestValidationError struct {
 	Key    bool
 }
 
+// GetField function returns Field value.
+func (e ReadContactRequestValidationError) GetField() string { return e.Field }
+
+// GetReason function returns Reason value.
+func (e ReadContactRequestValidationError) GetReason() string { return e.Reason }
+
+// GetCause function returns Cause value.
+func (e ReadContactRequestValidationError) GetCause() error { return e.Cause }
+
+// GetKey function returns Key value.
+func (e ReadContactRequestValidationError) GetKey() bool { return e.Key }
+
+// GetErrorName returns Error Name value.
+func (e ReadContactRequestValidationError) GetErrorName() string {
+	return "ReadContactRequestValidationError"
+}
+
 // Error satisfies the builtin error interface
 func (e ReadContactRequestValidationError) Error() string {
 	cause := ""
@@ -1623,6 +2205,14 @@ func (e ReadContactRequestValidationError) Error() string {
 }
 
 var _ error = ReadContactRequestValidationError{}
+
+var _ interface {
+	GetField() string
+	GetReason() string
+	GetKey() bool
+	GetCause() error
+	GetErrorName() string
+} = ReadContactRequestValidationError{}
 
 // Validate checks the field values on ReadContactResponse with the rules
 // defined in the proto definition for this message. If any rules are
@@ -1656,6 +2246,23 @@ type ReadContactResponseValidationError struct {
 	Key    bool
 }
 
+// GetField function returns Field value.
+func (e ReadContactResponseValidationError) GetField() string { return e.Field }
+
+// GetReason function returns Reason value.
+func (e ReadContactResponseValidationError) GetReason() string { return e.Reason }
+
+// GetCause function returns Cause value.
+func (e ReadContactResponseValidationError) GetCause() error { return e.Cause }
+
+// GetKey function returns Key value.
+func (e ReadContactResponseValidationError) GetKey() bool { return e.Key }
+
+// GetErrorName returns Error Name value.
+func (e ReadContactResponseValidationError) GetErrorName() string {
+	return "ReadContactResponseValidationError"
+}
+
 // Error satisfies the builtin error interface
 func (e ReadContactResponseValidationError) Error() string {
 	cause := ""
@@ -1678,6 +2285,14 @@ func (e ReadContactResponseValidationError) Error() string {
 
 var _ error = ReadContactResponseValidationError{}
 
+var _ interface {
+	GetField() string
+	GetReason() string
+	GetKey() bool
+	GetCause() error
+	GetErrorName() string
+} = ReadContactResponseValidationError{}
+
 // Validate checks the field values on UpdateContactRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, an error is returned.
@@ -1698,6 +2313,18 @@ func (m *UpdateContactRequest) Validate() error {
 		}
 	}
 
+	if v, ok := interface{}(m.GetUpdateMask()).(interface {
+		Validate() error
+	}); ok {
+		if err := v.Validate(); err != nil {
+			return UpdateContactRequestValidationError{
+				Field:  "UpdateMask",
+				Reason: "embedded message failed validation",
+				Cause:  err,
+			}
+		}
+	}
+
 	return nil
 }
 
@@ -1708,6 +2335,23 @@ type UpdateContactRequestValidationError struct {
 	Reason string
 	Cause  error
 	Key    bool
+}
+
+// GetField function returns Field value.
+func (e UpdateContactRequestValidationError) GetField() string { return e.Field }
+
+// GetReason function returns Reason value.
+func (e UpdateContactRequestValidationError) GetReason() string { return e.Reason }
+
+// GetCause function returns Cause value.
+func (e UpdateContactRequestValidationError) GetCause() error { return e.Cause }
+
+// GetKey function returns Key value.
+func (e UpdateContactRequestValidationError) GetKey() bool { return e.Key }
+
+// GetErrorName returns Error Name value.
+func (e UpdateContactRequestValidationError) GetErrorName() string {
+	return "UpdateContactRequestValidationError"
 }
 
 // Error satisfies the builtin error interface
@@ -1731,6 +2375,14 @@ func (e UpdateContactRequestValidationError) Error() string {
 }
 
 var _ error = UpdateContactRequestValidationError{}
+
+var _ interface {
+	GetField() string
+	GetReason() string
+	GetKey() bool
+	GetCause() error
+	GetErrorName() string
+} = UpdateContactRequestValidationError{}
 
 // Validate checks the field values on UpdateContactResponse with the rules
 // defined in the proto definition for this message. If any rules are
@@ -1764,6 +2416,23 @@ type UpdateContactResponseValidationError struct {
 	Key    bool
 }
 
+// GetField function returns Field value.
+func (e UpdateContactResponseValidationError) GetField() string { return e.Field }
+
+// GetReason function returns Reason value.
+func (e UpdateContactResponseValidationError) GetReason() string { return e.Reason }
+
+// GetCause function returns Cause value.
+func (e UpdateContactResponseValidationError) GetCause() error { return e.Cause }
+
+// GetKey function returns Key value.
+func (e UpdateContactResponseValidationError) GetKey() bool { return e.Key }
+
+// GetErrorName returns Error Name value.
+func (e UpdateContactResponseValidationError) GetErrorName() string {
+	return "UpdateContactResponseValidationError"
+}
+
 // Error satisfies the builtin error interface
 func (e UpdateContactResponseValidationError) Error() string {
 	cause := ""
@@ -1786,125 +2455,13 @@ func (e UpdateContactResponseValidationError) Error() string {
 
 var _ error = UpdateContactResponseValidationError{}
 
-// Validate checks the field values on PatchContactRequest with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, an error is returned.
-func (m *PatchContactRequest) Validate() error {
-	if m == nil {
-		return nil
-	}
-
-	if v, ok := interface{}(m.GetPayload()).(interface {
-		Validate() error
-	}); ok {
-		if err := v.Validate(); err != nil {
-			return PatchContactRequestValidationError{
-				Field:  "Payload",
-				Reason: "embedded message failed validation",
-				Cause:  err,
-			}
-		}
-	}
-
-	if v, ok := interface{}(m.GetUpdateMask()).(interface {
-		Validate() error
-	}); ok {
-		if err := v.Validate(); err != nil {
-			return PatchContactRequestValidationError{
-				Field:  "UpdateMask",
-				Reason: "embedded message failed validation",
-				Cause:  err,
-			}
-		}
-	}
-
-	return nil
-}
-
-// PatchContactRequestValidationError is the validation error returned by
-// PatchContactRequest.Validate if the designated constraints aren't met.
-type PatchContactRequestValidationError struct {
-	Field  string
-	Reason string
-	Cause  error
-	Key    bool
-}
-
-// Error satisfies the builtin error interface
-func (e PatchContactRequestValidationError) Error() string {
-	cause := ""
-	if e.Cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
-	}
-
-	key := ""
-	if e.Key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sPatchContactRequest.%s: %s%s",
-		key,
-		e.Field,
-		e.Reason,
-		cause)
-}
-
-var _ error = PatchContactRequestValidationError{}
-
-// Validate checks the field values on PatchContactResponse with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, an error is returned.
-func (m *PatchContactResponse) Validate() error {
-	if m == nil {
-		return nil
-	}
-
-	if v, ok := interface{}(m.GetResult()).(interface {
-		Validate() error
-	}); ok {
-		if err := v.Validate(); err != nil {
-			return PatchContactResponseValidationError{
-				Field:  "Result",
-				Reason: "embedded message failed validation",
-				Cause:  err,
-			}
-		}
-	}
-
-	return nil
-}
-
-// PatchContactResponseValidationError is the validation error returned by
-// PatchContactResponse.Validate if the designated constraints aren't met.
-type PatchContactResponseValidationError struct {
-	Field  string
-	Reason string
-	Cause  error
-	Key    bool
-}
-
-// Error satisfies the builtin error interface
-func (e PatchContactResponseValidationError) Error() string {
-	cause := ""
-	if e.Cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
-	}
-
-	key := ""
-	if e.Key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sPatchContactResponse.%s: %s%s",
-		key,
-		e.Field,
-		e.Reason,
-		cause)
-}
-
-var _ error = PatchContactResponseValidationError{}
+var _ interface {
+	GetField() string
+	GetReason() string
+	GetKey() bool
+	GetCause() error
+	GetErrorName() string
+} = UpdateContactResponseValidationError{}
 
 // Validate checks the field values on DeleteContactRequest with the rules
 // defined in the proto definition for this message. If any rules are
@@ -1938,6 +2495,23 @@ type DeleteContactRequestValidationError struct {
 	Key    bool
 }
 
+// GetField function returns Field value.
+func (e DeleteContactRequestValidationError) GetField() string { return e.Field }
+
+// GetReason function returns Reason value.
+func (e DeleteContactRequestValidationError) GetReason() string { return e.Reason }
+
+// GetCause function returns Cause value.
+func (e DeleteContactRequestValidationError) GetCause() error { return e.Cause }
+
+// GetKey function returns Key value.
+func (e DeleteContactRequestValidationError) GetKey() bool { return e.Key }
+
+// GetErrorName returns Error Name value.
+func (e DeleteContactRequestValidationError) GetErrorName() string {
+	return "DeleteContactRequestValidationError"
+}
+
 // Error satisfies the builtin error interface
 func (e DeleteContactRequestValidationError) Error() string {
 	cause := ""
@@ -1959,6 +2533,14 @@ func (e DeleteContactRequestValidationError) Error() string {
 }
 
 var _ error = DeleteContactRequestValidationError{}
+
+var _ interface {
+	GetField() string
+	GetReason() string
+	GetKey() bool
+	GetCause() error
+	GetErrorName() string
+} = DeleteContactRequestValidationError{}
 
 // Validate checks the field values on ListContactsResponse with the rules
 // defined in the proto definition for this message. If any rules are
@@ -1997,6 +2579,23 @@ type ListContactsResponseValidationError struct {
 	Key    bool
 }
 
+// GetField function returns Field value.
+func (e ListContactsResponseValidationError) GetField() string { return e.Field }
+
+// GetReason function returns Reason value.
+func (e ListContactsResponseValidationError) GetReason() string { return e.Reason }
+
+// GetCause function returns Cause value.
+func (e ListContactsResponseValidationError) GetCause() error { return e.Cause }
+
+// GetKey function returns Key value.
+func (e ListContactsResponseValidationError) GetKey() bool { return e.Key }
+
+// GetErrorName returns Error Name value.
+func (e ListContactsResponseValidationError) GetErrorName() string {
+	return "ListContactsResponseValidationError"
+}
+
 // Error satisfies the builtin error interface
 func (e ListContactsResponseValidationError) Error() string {
 	cause := ""
@@ -2018,6 +2617,14 @@ func (e ListContactsResponseValidationError) Error() string {
 }
 
 var _ error = ListContactsResponseValidationError{}
+
+var _ interface {
+	GetField() string
+	GetReason() string
+	GetKey() bool
+	GetCause() error
+	GetErrorName() string
+} = ListContactsResponseValidationError{}
 
 // Validate checks the field values on SMSRequest with the rules defined in the
 // proto definition for this message. If any rules are violated, an error is returned.
@@ -2042,6 +2649,21 @@ type SMSRequestValidationError struct {
 	Key    bool
 }
 
+// GetField function returns Field value.
+func (e SMSRequestValidationError) GetField() string { return e.Field }
+
+// GetReason function returns Reason value.
+func (e SMSRequestValidationError) GetReason() string { return e.Reason }
+
+// GetCause function returns Cause value.
+func (e SMSRequestValidationError) GetCause() error { return e.Cause }
+
+// GetKey function returns Key value.
+func (e SMSRequestValidationError) GetKey() bool { return e.Key }
+
+// GetErrorName returns Error Name value.
+func (e SMSRequestValidationError) GetErrorName() string { return "SMSRequestValidationError" }
+
 // Error satisfies the builtin error interface
 func (e SMSRequestValidationError) Error() string {
 	cause := ""
@@ -2063,3 +2685,11 @@ func (e SMSRequestValidationError) Error() string {
 }
 
 var _ error = SMSRequestValidationError{}
+
+var _ interface {
+	GetField() string
+	GetReason() string
+	GetKey() bool
+	GetCause() error
+	GetErrorName() string
+} = SMSRequestValidationError{}
