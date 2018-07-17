@@ -163,9 +163,9 @@ func supportSynteticFields() FilteringIteratorCallback {
 		case "primary_email":
 			sc, ok := f.(*query.StringCondition)
 			if ok {
-				sc.FieldPath = []string{"emails", "address"}
+				sc.FieldPath = []string{"synthetic_emails", "address"}
 				if !syntheticFound {
-					join = "join emails on contacts.id = emails.contact_id and emails.is_primary = true"
+					join = "join emails synthetic_emails on contacts.id = synthetic_emails.contact_id and synthetic_emails.is_primary = true"
 					syntheticFound = true
 				}
 				return sc, join
