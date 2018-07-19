@@ -863,42 +863,8 @@ func DefaultPatchProfile(ctx context.Context, in *Profile, updateMask *field_mas
 	if err != nil {
 		return nil, err
 	}
-	for _, f := range updateMask.GetPaths() {
-		if f == "Id" {
-			pbObj.Id = in.Id
-		}
-		if f == "Name" {
-			pbObj.Name = in.Name
-		}
-		if f == "Notes" {
-			pbObj.Notes = in.Notes
-		}
-		if f == "Contacts" {
-			pbObj.Contacts = in.Contacts
-			filterContacts := ContactORM{}
-			if ormObj.Id == 0 {
-				return nil, errors.New("Can't do overwriting update with no Id value for ProfileORM")
-			}
-			filterContacts.ProfileId = new(int64)
-			*filterContacts.ProfileId = ormObj.Id
-			filterContacts.AccountID = ormObj.AccountID
-			if err = db.Where(filterContacts).Delete(ContactORM{}).Error; err != nil {
-				return nil, err
-			}
-		}
-		if f == "Groups" {
-			pbObj.Groups = in.Groups
-			filterGroups := GroupORM{}
-			if ormObj.Id == 0 {
-				return nil, errors.New("Can't do overwriting update with no Id value for ProfileORM")
-			}
-			filterGroups.ProfileId = new(int64)
-			*filterGroups.ProfileId = ormObj.Id
-			filterGroups.AccountID = ormObj.AccountID
-			if err = db.Where(filterGroups).Delete(GroupORM{}).Error; err != nil {
-				return nil, err
-			}
-		}
+	if _, err := DefaultApplyFieldMaskProfile(ctx, &pbObj, &ormObj, in, updateMask, db); err != nil {
+		return nil, err
 	}
 	ormObj, err = pbObj.ToORM(ctx)
 	if err != nil {
@@ -913,6 +879,52 @@ func DefaultPatchProfile(ctx context.Context, in *Profile, updateMask *field_mas
 		return nil, err
 	}
 	return &pbObj, err
+}
+
+// DefaultApplyFieldMaskProfile patches an pbObject with patcher according to a field mask.
+func DefaultApplyFieldMaskProfile(ctx context.Context, patchee *Profile, ormObj *ProfileORM, patcher *Profile, updateMask *field_mask1.FieldMask, db *gorm1.DB) (*Profile, error) {
+	var err error
+	for _, f := range updateMask.GetPaths() {
+		if f == "Id" {
+			patchee.Id = patcher.Id
+		}
+		if f == "Name" {
+			patchee.Name = patcher.Name
+		}
+		if f == "Notes" {
+			patchee.Notes = patcher.Notes
+		}
+		if f == "Contacts" {
+			patchee.Contacts = patcher.Contacts
+			filterContacts := ContactORM{}
+			if ormObj.Id == 0 {
+				return nil, errors.New("Can't do overwriting update with no Id value for ProfileORM")
+			}
+			filterContacts.ProfileId = new(int64)
+			*filterContacts.ProfileId = ormObj.Id
+			filterContacts.AccountID = ormObj.AccountID
+			if err = db.Where(filterContacts).Delete(ContactORM{}).Error; err != nil {
+				return nil, err
+			}
+		}
+		if f == "Groups" {
+			patchee.Groups = patcher.Groups
+			filterGroups := GroupORM{}
+			if ormObj.Id == 0 {
+				return nil, errors.New("Can't do overwriting update with no Id value for ProfileORM")
+			}
+			filterGroups.ProfileId = new(int64)
+			*filterGroups.ProfileId = ormObj.Id
+			filterGroups.AccountID = ormObj.AccountID
+			if err = db.Where(filterGroups).Delete(GroupORM{}).Error; err != nil {
+				return nil, err
+			}
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	return patchee, nil
 }
 
 // getCollectionOperators takes collection operator values from corresponding message fields
@@ -1097,25 +1109,8 @@ func DefaultPatchGroup(ctx context.Context, in *Group, updateMask *field_mask1.F
 	if err != nil {
 		return nil, err
 	}
-	for _, f := range updateMask.GetPaths() {
-		if f == "Id" {
-			pbObj.Id = in.Id
-		}
-		if f == "Name" {
-			pbObj.Name = in.Name
-		}
-		if f == "Notes" {
-			pbObj.Notes = in.Notes
-		}
-		if f == "Profile" {
-			pbObj.Profile = in.Profile
-		}
-		if f == "ProfileId" {
-			pbObj.ProfileId = in.ProfileId
-		}
-		if f == "Contacts" {
-			pbObj.Contacts = in.Contacts
-		}
+	if _, err := DefaultApplyFieldMaskGroup(ctx, &pbObj, &ormObj, in, updateMask, db); err != nil {
+		return nil, err
 	}
 	ormObj, err = pbObj.ToORM(ctx)
 	if err != nil {
@@ -1130,6 +1125,35 @@ func DefaultPatchGroup(ctx context.Context, in *Group, updateMask *field_mask1.F
 		return nil, err
 	}
 	return &pbObj, err
+}
+
+// DefaultApplyFieldMaskGroup patches an pbObject with patcher according to a field mask.
+func DefaultApplyFieldMaskGroup(ctx context.Context, patchee *Group, ormObj *GroupORM, patcher *Group, updateMask *field_mask1.FieldMask, db *gorm1.DB) (*Group, error) {
+	var err error
+	for _, f := range updateMask.GetPaths() {
+		if f == "Id" {
+			patchee.Id = patcher.Id
+		}
+		if f == "Name" {
+			patchee.Name = patcher.Name
+		}
+		if f == "Notes" {
+			patchee.Notes = patcher.Notes
+		}
+		if f == "Profile" {
+			patchee.Profile = patcher.Profile
+		}
+		if f == "ProfileId" {
+			patchee.ProfileId = patcher.ProfileId
+		}
+		if f == "Contacts" {
+			patchee.Contacts = patcher.Contacts
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	return patchee, nil
 }
 
 // DefaultListGroup executes a gorm list call
@@ -1319,76 +1343,8 @@ func DefaultPatchContact(ctx context.Context, in *Contact, updateMask *field_mas
 	if err != nil {
 		return nil, err
 	}
-	for _, f := range updateMask.GetPaths() {
-		if f == "Id" {
-			pbObj.Id = in.Id
-		}
-		if f == "FirstName" {
-			pbObj.FirstName = in.FirstName
-		}
-		if f == "MiddleName" {
-			pbObj.MiddleName = in.MiddleName
-		}
-		if f == "LastName" {
-			pbObj.LastName = in.LastName
-		}
-		if f == "PrimaryEmail" {
-			pbObj.PrimaryEmail = in.PrimaryEmail
-		}
-		if f == "Notes" {
-			pbObj.Notes = in.Notes
-		}
-		if f == "Emails" {
-			pbObj.Emails = in.Emails
-			filterEmails := EmailORM{}
-			if ormObj.Id == 0 {
-				return nil, errors.New("Can't do overwriting update with no Id value for ContactORM")
-			}
-			filterEmails.ContactId = new(int64)
-			*filterEmails.ContactId = ormObj.Id
-			filterEmails.AccountID = ormObj.AccountID
-			if err = db.Where(filterEmails).Delete(EmailORM{}).Error; err != nil {
-				return nil, err
-			}
-		}
-		if f == "HomeAddress" {
-			pbObj.HomeAddress = in.HomeAddress
-			filterHomeAddress := AddressORM{}
-			if ormObj.Id == 0 {
-				return nil, errors.New("Can't do overwriting update with no Id value for ContactORM")
-			}
-			filterHomeAddress.HomeAddressContactId = new(int64)
-			*filterHomeAddress.HomeAddressContactId = ormObj.Id
-			filterHomeAddress.AccountID = ormObj.AccountID
-			if err = db.Where(filterHomeAddress).Delete(AddressORM{}).Error; err != nil {
-				return nil, err
-			}
-		}
-		if f == "WorkAddress" {
-			pbObj.WorkAddress = in.WorkAddress
-			filterWorkAddress := AddressORM{}
-			if ormObj.Id == 0 {
-				return nil, errors.New("Can't do overwriting update with no Id value for ContactORM")
-			}
-			filterWorkAddress.WorkAddressContactId = new(int64)
-			*filterWorkAddress.WorkAddressContactId = ormObj.Id
-			filterWorkAddress.AccountID = ormObj.AccountID
-			if err = db.Where(filterWorkAddress).Delete(AddressORM{}).Error; err != nil {
-				return nil, err
-			}
-		}
-		if f == "ProfileId" {
-			pbObj.ProfileId = in.ProfileId
-		}
-		if f == "Profile" {
-			pbObj.Profile = in.Profile
-		}
-		if f == "Groups" {
-			pbObj.Groups = in.Groups
-		}
-		if f == "Nicknames" {
-			pbObj.Nicknames = in.Nicknames
-		}
+	if _, err := DefaultApplyFieldMaskContact(ctx, &pbObj, &ormObj, in, updateMask, db); err != nil {
+		return nil, err
 	}
 	ormObj, err = pbObj.ToORM(ctx)
 	if err != nil {
@@ -1403,6 +1359,86 @@ func DefaultPatchContact(ctx context.Context, in *Contact, updateMask *field_mas
 		return nil, err
 	}
 	return &pbObj, err
+}
+
+// DefaultApplyFieldMaskContact patches an pbObject with patcher according to a field mask.
+func DefaultApplyFieldMaskContact(ctx context.Context, patchee *Contact, ormObj *ContactORM, patcher *Contact, updateMask *field_mask1.FieldMask, db *gorm1.DB) (*Contact, error) {
+	var err error
+	for _, f := range updateMask.GetPaths() {
+		if f == "Id" {
+			patchee.Id = patcher.Id
+		}
+		if f == "FirstName" {
+			patchee.FirstName = patcher.FirstName
+		}
+		if f == "MiddleName" {
+			patchee.MiddleName = patcher.MiddleName
+		}
+		if f == "LastName" {
+			patchee.LastName = patcher.LastName
+		}
+		if f == "PrimaryEmail" {
+			patchee.PrimaryEmail = patcher.PrimaryEmail
+		}
+		if f == "Notes" {
+			patchee.Notes = patcher.Notes
+		}
+		if f == "Emails" {
+			patchee.Emails = patcher.Emails
+			filterEmails := EmailORM{}
+			if ormObj.Id == 0 {
+				return nil, errors.New("Can't do overwriting update with no Id value for ContactORM")
+			}
+			filterEmails.ContactId = new(int64)
+			*filterEmails.ContactId = ormObj.Id
+			filterEmails.AccountID = ormObj.AccountID
+			if err = db.Where(filterEmails).Delete(EmailORM{}).Error; err != nil {
+				return nil, err
+			}
+		}
+		if f == "HomeAddress" {
+			patchee.HomeAddress = patcher.HomeAddress
+			filterHomeAddress := AddressORM{}
+			if ormObj.Id == 0 {
+				return nil, errors.New("Can't do overwriting update with no Id value for ContactORM")
+			}
+			filterHomeAddress.HomeAddressContactId = new(int64)
+			*filterHomeAddress.HomeAddressContactId = ormObj.Id
+			filterHomeAddress.AccountID = ormObj.AccountID
+			if err = db.Where(filterHomeAddress).Delete(AddressORM{}).Error; err != nil {
+				return nil, err
+			}
+		}
+		if f == "WorkAddress" {
+			patchee.WorkAddress = patcher.WorkAddress
+			filterWorkAddress := AddressORM{}
+			if ormObj.Id == 0 {
+				return nil, errors.New("Can't do overwriting update with no Id value for ContactORM")
+			}
+			filterWorkAddress.WorkAddressContactId = new(int64)
+			*filterWorkAddress.WorkAddressContactId = ormObj.Id
+			filterWorkAddress.AccountID = ormObj.AccountID
+			if err = db.Where(filterWorkAddress).Delete(AddressORM{}).Error; err != nil {
+				return nil, err
+			}
+		}
+		if f == "ProfileId" {
+			patchee.ProfileId = patcher.ProfileId
+		}
+		if f == "Profile" {
+			patchee.Profile = patcher.Profile
+		}
+		if f == "Groups" {
+			patchee.Groups = patcher.Groups
+		}
+		if f == "Nicknames" {
+			patchee.Nicknames = patcher.Nicknames
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	return patchee, nil
 }
 
 // DefaultListContact executes a gorm list call
@@ -1562,13 +1598,8 @@ func DefaultPatchEmail(ctx context.Context, in *Email, updateMask *field_mask1.F
 	if err != nil {
 		return nil, err
 	}
-	for _, f := range updateMask.GetPaths() {
-		if f == "Id" {
-			pbObj.Id = in.Id
-		}
-		if f == "Address" {
-			pbObj.Address = in.Address
-		}
+	if _, err := DefaultApplyFieldMaskEmail(ctx, &pbObj, &ormObj, in, updateMask, db); err != nil {
+		return nil, err
 	}
 	ormObj, err = pbObj.ToORM(ctx)
 	if err != nil {
@@ -1583,6 +1614,23 @@ func DefaultPatchEmail(ctx context.Context, in *Email, updateMask *field_mask1.F
 		return nil, err
 	}
 	return &pbObj, err
+}
+
+// DefaultApplyFieldMaskEmail patches an pbObject with patcher according to a field mask.
+func DefaultApplyFieldMaskEmail(ctx context.Context, patchee *Email, ormObj *EmailORM, patcher *Email, updateMask *field_mask1.FieldMask, db *gorm1.DB) (*Email, error) {
+	var err error
+	for _, f := range updateMask.GetPaths() {
+		if f == "Id" {
+			patchee.Id = patcher.Id
+		}
+		if f == "Address" {
+			patchee.Address = patcher.Address
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	return patchee, nil
 }
 
 // DefaultListEmail executes a gorm list call
@@ -1714,6 +1762,8 @@ type ProfilesProfileWithBeforeRead interface {
 
 // Update ...
 func (m *ProfilesDefaultServer) Update(ctx context.Context, in *UpdateProfileRequest) (*UpdateProfileResponse, error) {
+	var err error
+	var res *Profile
 	db := m.DB
 	if custom, ok := interface{}(in).(ProfilesProfileWithBeforeUpdate); ok {
 		var err error
@@ -1722,7 +1772,7 @@ func (m *ProfilesDefaultServer) Update(ctx context.Context, in *UpdateProfileReq
 			return nil, err
 		}
 	}
-	res, err := DefaultStrictUpdateProfile(ctx, in.GetPayload(), db)
+	res, err = DefaultStrictUpdateProfile(ctx, in.GetPayload(), db)
 	if err != nil {
 		return nil, err
 	}
@@ -1823,6 +1873,8 @@ type GroupsGroupWithBeforeRead interface {
 
 // Update ...
 func (m *GroupsDefaultServer) Update(ctx context.Context, in *UpdateGroupRequest) (*UpdateGroupResponse, error) {
+	var err error
+	var res *Group
 	db := m.DB
 	if custom, ok := interface{}(in).(GroupsGroupWithBeforeUpdate); ok {
 		var err error
@@ -1831,7 +1883,7 @@ func (m *GroupsDefaultServer) Update(ctx context.Context, in *UpdateGroupRequest
 			return nil, err
 		}
 	}
-	res, err := DefaultStrictUpdateGroup(ctx, in.GetPayload(), db)
+	res, err = DefaultStrictUpdateGroup(ctx, in.GetPayload(), db)
 	if err != nil {
 		return nil, err
 	}
@@ -1932,6 +1984,8 @@ type ContactsContactWithBeforeRead interface {
 
 // Update ...
 func (m *ContactsDefaultServer) Update(ctx context.Context, in *UpdateContactRequest) (*UpdateContactResponse, error) {
+	var err error
+	var res *Contact
 	db := m.DB
 	if custom, ok := interface{}(in).(ContactsContactWithBeforeUpdate); ok {
 		var err error
@@ -1940,7 +1994,11 @@ func (m *ContactsDefaultServer) Update(ctx context.Context, in *UpdateContactReq
 			return nil, err
 		}
 	}
-	res, err := DefaultPatchContact(ctx, in.GetPayload(), in.GetUpdateMask(), db)
+	if len(in.GetUpdateMask().GetPaths()) == 0 {
+		res, err = DefaultStrictUpdateContact(ctx, in.GetPayload(), db)
+	} else {
+		res, err = DefaultPatchContact(ctx, in.GetPayload(), in.GetUpdateMask(), db)
+	}
 	if err != nil {
 		return nil, err
 	}
