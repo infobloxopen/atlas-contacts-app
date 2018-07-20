@@ -23,7 +23,7 @@ metadata:
   annotations:
     ingress.kubernetes.io/auth-url: http://authn-stub.atlas-stubs.svc.cluster.local/auth
     ingress.kubernetes.io/auth-response-headers: Grpc-Metadata-Authorization
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
   - http:
