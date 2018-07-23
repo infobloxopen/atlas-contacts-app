@@ -253,7 +253,7 @@ message ReadContactResponse {
 
 message UpdateContactRequest {
     Contact payload = 1;
-    google.protobuf.FieldMask update_mask = 2;
+    google.protobuf.FieldMask fields = 2;
 }
 
 message UpdateContactResponse {

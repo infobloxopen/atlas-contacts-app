@@ -1994,10 +1994,10 @@ func (m *ContactsDefaultServer) Update(ctx context.Context, in *UpdateContactReq
 			return nil, err
 		}
 	}
-	if len(in.GetUpdateMask().GetPaths()) == 0 {
+	if len(in.GetFields().GetPaths()) == 0 {
 		res, err = DefaultStrictUpdateContact(ctx, in.GetPayload(), db)
 	} else {
-		res, err = DefaultPatchContact(ctx, in.GetPayload(), in.GetUpdateMask(), db)
+		res, err = DefaultPatchContact(ctx, in.GetPayload(), in.GetFields(), db)
 	}
 	if err != nil {
 		return nil, err

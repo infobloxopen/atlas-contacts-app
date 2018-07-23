@@ -2543,12 +2543,12 @@ func (m *UpdateContactRequest) Validate() error {
 		}
 	}
 
-	if v, ok := interface{}(m.GetUpdateMask()).(interface {
+	if v, ok := interface{}(m.GetFields()).(interface {
 		Validate() error
 	}); ok {
 		if err := v.Validate(); err != nil {
 			return UpdateContactRequestValidationError{
-				Field:  "UpdateMask",
+				Field:  "Fields",
 				Reason: "embedded message failed validation",
 				Cause:  err,
 			}
