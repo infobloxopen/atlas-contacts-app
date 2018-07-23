@@ -9,9 +9,7 @@ It translates gRPC into RESTful JSON APIs.
 package pb
 
 import (
-	"bytes"
 	"io"
-	"io/ioutil"
 	"net/http"
 
 	"github.com/golang/protobuf/proto"
@@ -34,11 +32,7 @@ func request_Profiles_Create_0(ctx context.Context, marshaler runtime.Marshaler,
 	var protoReq CreateProfileRequest
 	var metadata runtime.ServerMetadata
 
-	body, berr := ioutil.ReadAll(req.Body)
-	if berr != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
-	}
-	if err := marshaler.NewDecoder(bytes.NewReader(body)).Decode(&protoReq.Payload); err != nil && err != io.EOF {
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq.Payload); err != nil && err != io.EOF {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -86,11 +80,7 @@ func request_Profiles_Update_0(ctx context.Context, marshaler runtime.Marshaler,
 	var protoReq UpdateProfileRequest
 	var metadata runtime.ServerMetadata
 
-	body, berr := ioutil.ReadAll(req.Body)
-	if berr != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
-	}
-	if err := marshaler.NewDecoder(bytes.NewReader(body)).Decode(&protoReq.Payload); err != nil && err != io.EOF {
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq.Payload); err != nil && err != io.EOF {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -173,11 +163,7 @@ func request_Groups_Create_0(ctx context.Context, marshaler runtime.Marshaler, c
 	var protoReq CreateGroupRequest
 	var metadata runtime.ServerMetadata
 
-	body, berr := ioutil.ReadAll(req.Body)
-	if berr != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
-	}
-	if err := marshaler.NewDecoder(bytes.NewReader(body)).Decode(&protoReq.Payload); err != nil && err != io.EOF {
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq.Payload); err != nil && err != io.EOF {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -225,11 +211,7 @@ func request_Groups_Update_0(ctx context.Context, marshaler runtime.Marshaler, c
 	var protoReq UpdateGroupRequest
 	var metadata runtime.ServerMetadata
 
-	body, berr := ioutil.ReadAll(req.Body)
-	if berr != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
-	}
-	if err := marshaler.NewDecoder(bytes.NewReader(body)).Decode(&protoReq.Payload); err != nil && err != io.EOF {
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq.Payload); err != nil && err != io.EOF {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -312,11 +294,7 @@ func request_Contacts_Create_0(ctx context.Context, marshaler runtime.Marshaler,
 	var protoReq CreateContactRequest
 	var metadata runtime.ServerMetadata
 
-	body, berr := ioutil.ReadAll(req.Body)
-	if berr != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
-	}
-	if err := marshaler.NewDecoder(bytes.NewReader(body)).Decode(&protoReq.Payload); err != nil && err != io.EOF {
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq.Payload); err != nil && err != io.EOF {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -368,11 +346,7 @@ func request_Contacts_Update_0(ctx context.Context, marshaler runtime.Marshaler,
 	var protoReq UpdateContactRequest
 	var metadata runtime.ServerMetadata
 
-	body, berr := ioutil.ReadAll(req.Body)
-	if berr != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
-	}
-	if err := marshaler.NewDecoder(bytes.NewReader(body)).Decode(&protoReq.Payload); err != nil && err != io.EOF {
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq.Payload); err != nil && err != io.EOF {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -459,11 +433,7 @@ func request_Contacts_SendSMS_0(ctx context.Context, marshaler runtime.Marshaler
 	var protoReq SMSRequest
 	var metadata runtime.ServerMetadata
 
-	body, berr := ioutil.ReadAll(req.Body)
-	if berr != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
-	}
-	if err := marshaler.NewDecoder(bytes.NewReader(body)).Decode(&protoReq); err != nil && err != io.EOF {
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && err != io.EOF {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 

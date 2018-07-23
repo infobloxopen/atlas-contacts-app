@@ -31,6 +31,29 @@
             }
           }
         },
+        "parameters": [
+          {
+            "name": "filter",
+            "description": "This section describes filtering.",
+            "in": "query",
+            "required": false,
+            "format": "string"
+          },
+          {
+            "name": "order_by",
+            "description": "This section describes sorting.",
+            "in": "query",
+            "required": false,
+            "format": "string"
+          },
+          {
+            "name": "paging",
+            "description": "This section describes paging.",
+            "in": "query",
+            "required": false,
+            "format": "string"
+          }
+        ],
         "tags": [
           "Contacts"
         ]
@@ -79,18 +102,12 @@
             "type": "string"
           },
           {
-            "name": "id.application_name",
-            "description": "An application identifier that will be used among\nother infrastructure services to identify the application.",
+            "name": "id",
+            "description": "The resource identifier.",
             "in": "query",
             "required": false,
-            "type": "string"
-          },
-          {
-            "name": "id.resource_type",
-            "description": "An application specific type name of a resource.",
-            "in": "query",
-            "required": false,
-            "type": "string"
+            "type": "double",
+            "format": "number"
           }
         ],
         "tags": [
@@ -115,18 +132,12 @@
             "type": "string"
           },
           {
-            "name": "id.application_name",
-            "description": "An application identifier that will be used among\nother infrastructure services to identify the application.",
+            "name": "id",
+            "description": "The resource identifier.",
             "in": "query",
             "required": false,
-            "type": "string"
-          },
-          {
-            "name": "id.resource_type",
-            "description": "An application specific type name of a resource.",
-            "in": "query",
-            "required": false,
-            "type": "string"
+            "type": "double",
+            "format": "number"
           }
         ],
         "tags": [
@@ -210,6 +221,29 @@
             }
           }
         },
+        "parameters": [
+          {
+            "name": "filter",
+            "description": "This section describes filtering.",
+            "in": "query",
+            "required": false,
+            "format": "string"
+          },
+          {
+            "name": "order_by",
+            "description": "This section describes sorting.",
+            "in": "query",
+            "required": false,
+            "format": "string"
+          },
+          {
+            "name": "paging",
+            "description": "This section describes paging.",
+            "in": "query",
+            "required": false,
+            "format": "string"
+          }
+        ],
         "tags": [
           "Groups"
         ]
@@ -258,18 +292,12 @@
             "type": "string"
           },
           {
-            "name": "id.application_name",
-            "description": "An application identifier that will be used among\nother infrastructure services to identify the application.",
+            "name": "id",
+            "description": "The resource identifier.",
             "in": "query",
             "required": false,
-            "type": "string"
-          },
-          {
-            "name": "id.resource_type",
-            "description": "An application specific type name of a resource.",
-            "in": "query",
-            "required": false,
-            "type": "string"
+            "type": "double",
+            "format": "number"
           }
         ],
         "tags": [
@@ -294,18 +322,12 @@
             "type": "string"
           },
           {
-            "name": "id.application_name",
-            "description": "An application identifier that will be used among\nother infrastructure services to identify the application.",
+            "name": "id",
+            "description": "The resource identifier.",
             "in": "query",
             "required": false,
-            "type": "string"
-          },
-          {
-            "name": "id.resource_type",
-            "description": "An application specific type name of a resource.",
-            "in": "query",
-            "required": false,
-            "type": "string"
+            "type": "double",
+            "format": "number"
           }
         ],
         "tags": [
@@ -356,6 +378,29 @@
             }
           }
         },
+        "parameters": [
+          {
+            "name": "filter",
+            "description": "This section describes filtering.",
+            "in": "query",
+            "required": false,
+            "format": "string"
+          },
+          {
+            "name": "order_by",
+            "description": "This section describes sorting.",
+            "in": "query",
+            "required": false,
+            "format": "string"
+          },
+          {
+            "name": "paging",
+            "description": "This section describes paging.",
+            "in": "query",
+            "required": false,
+            "format": "string"
+          }
+        ],
         "tags": [
           "Profiles"
         ]
@@ -404,18 +449,12 @@
             "type": "string"
           },
           {
-            "name": "id.application_name",
-            "description": "An application identifier that will be used among\nother infrastructure services to identify the application.",
+            "name": "id",
+            "description": "The resource identifier.",
             "in": "query",
             "required": false,
-            "type": "string"
-          },
-          {
-            "name": "id.resource_type",
-            "description": "An application specific type name of a resource.",
-            "in": "query",
-            "required": false,
-            "type": "string"
+            "type": "double",
+            "format": "number"
           }
         ],
         "tags": [
@@ -440,18 +479,12 @@
             "type": "string"
           },
           {
-            "name": "id.application_name",
-            "description": "An application identifier that will be used among\nother infrastructure services to identify the application.",
+            "name": "id",
+            "description": "The resource identifier.",
             "in": "query",
             "required": false,
-            "type": "string"
-          },
-          {
-            "name": "id.resource_type",
-            "description": "An application specific type name of a resource.",
-            "in": "query",
-            "required": false,
-            "type": "string"
+            "type": "double",
+            "format": "number"
           }
         ],
         "tags": [
@@ -493,6 +526,45 @@
     }
   },
   "definitions": {
+    "apiField": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "subs": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/apiField"
+          }
+        }
+      },
+      "description": "Field represents a single field for an object.\nIt contains fields name and also may contain a group of sub-fields for cases\nwhen a fields represents some structure."
+    },
+    "apiFieldSelection": {
+      "type": "object",
+      "properties": {
+        "fields": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/apiField"
+          }
+        }
+      },
+      "title": "FieldSelection represents a group of fields for some object.\nMain use case for if is to store information about object fields that\nneed to be ratained prior to sending object as a response"
+    },
+    "apiFiltering": {
+      "type": "object",
+      "description": "This section describes filtering."
+    },
+    "apiPagination": {
+      "type": "object",
+      "description": "This section describes paging."
+    },
+    "apiSorting": {
+      "type": "object",
+      "description": "This section describes sorting."
+    },
     "apicontactsContact": {
       "type": "object",
       "properties": {
@@ -765,21 +837,9 @@
       "title": "`FieldMask` represents a set of symbolic field paths, for example:"
     },
     "rpcIdentifier": {
-      "type": "object",
-      "properties": {
-        "application_name": {
-          "type": "string",
-          "title": "An application identifier that will be used among\nother infrastructure services to identify the application"
-        },
-        "resource_type": {
-          "type": "string",
-          "title": "An application specific type name of a resource"
-        },
-        "resource_id": {
-          "type": "string",
-          "title": "An application specific resource identity of a resource"
-        }
-      },
+      "type": "double",
+      "format": "number",
+      "description": "The resource identifier.",
       "title": "A number of application services require a mechanism to\nencode the identity of a particular resource across applications.\nThe resource identifiers consist of the application ID,\nan application-defined resource type,\nand an application-defined ID for that resource"
     },
     "typesJSONValue": {
