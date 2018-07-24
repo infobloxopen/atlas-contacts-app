@@ -203,11 +203,10 @@ type ProfileWithAfterToPB interface {
 
 type GroupORM struct {
 	AccountID string
-	Contacts  []*ContactORM `gorm:"many2many:group_contacts;foreignkey:Id;association_foreignkey:Id;jointable_foreignkey:group_id;association_jointable_foreignkey:contact_id"`
+	Contacts  []*ContactORM `gorm:"foreignkey:Id;association_foreignkey:Id;many2many:group_contacts;jointable_foreignkey:group_id;association_jointable_foreignkey:contact_id"`
 	Id        int64         `gorm:"type:serial;primary_key"`
 	Name      string
 	Notes     string
-	Profile   *ProfileORM `gorm:"foreignkey:ProfileId;association_foreignkey:Id"`
 	ProfileId *int64
 }
 
@@ -233,13 +232,6 @@ func (m *Group) ToORM(ctx context.Context) (GroupORM, error) {
 	}
 	to.Name = m.Name
 	to.Notes = m.Notes
-	if m.Profile != nil {
-		tempProfile, err := m.Profile.ToORM(ctx)
-		if err != nil {
-			return to, err
-		}
-		to.Profile = &tempProfile
-	}
 	if v, err := resource1.DecodeInt64(&Profile{}, m.ProfileId); err != nil {
 		return to, err
 	} else {
@@ -284,13 +276,6 @@ func (m *GroupORM) ToPB(ctx context.Context) (Group, error) {
 	}
 	to.Name = m.Name
 	to.Notes = m.Notes
-	if m.Profile != nil {
-		tempProfile, err := m.Profile.ToPB(ctx)
-		if err != nil {
-			return to, err
-		}
-		to.Profile = &tempProfile
-	}
 	if m.ProfileId != nil {
 		if v, err := resource1.Encode(&Profile{}, *m.ProfileId); err != nil {
 			return to, err
@@ -348,14 +333,13 @@ type ContactORM struct {
 	AccountID   string
 	Emails      []*EmailORM `gorm:"foreignkey:ContactId;association_foreignkey:Id"`
 	FirstName   string
-	Groups      []*GroupORM `gorm:"many2many:group_contacts;foreignkey:Id;association_foreignkey:Id;jointable_foreignkey:contact_id;association_jointable_foreignkey:group_id"`
+	Groups      []*GroupORM `gorm:"foreignkey:Id;association_foreignkey:Id;many2many:group_contacts;jointable_foreignkey:contact_id;association_jointable_foreignkey:group_id"`
 	HomeAddress *AddressORM `gorm:"foreignkey:HomeAddressContactId;association_foreignkey:Id"`
 	Id          int64       `gorm:"type:serial;primary_key"`
 	LastName    string
 	MiddleName  string
 	Nicknames   *postgres1.Jsonb `gorm:"type:jsonb"`
 	Notes       string
-	Profile     *ProfileORM `gorm:"foreignkey:ProfileId;association_foreignkey:Id"`
 	ProfileId   *int64
 	WorkAddress *AddressORM `gorm:"foreignkey:WorkAddressContactId;association_foreignkey:Id"`
 }
@@ -413,13 +397,6 @@ func (m *Contact) ToORM(ctx context.Context) (ContactORM, error) {
 		return to, err
 	} else {
 		to.ProfileId = &v
-	}
-	if m.Profile != nil {
-		tempProfile, err := m.Profile.ToORM(ctx)
-		if err != nil {
-			return to, err
-		}
-		to.Profile = &tempProfile
 	}
 	for _, v := range m.Groups {
 		if v != nil {
@@ -502,13 +479,6 @@ func (m *ContactORM) ToPB(ctx context.Context) (Contact, error) {
 		} else {
 			to.ProfileId = v
 		}
-	}
-	if m.Profile != nil {
-		tempProfile, err := m.Profile.ToPB(ctx)
-		if err != nil {
-			return to, err
-		}
-		to.Profile = &tempProfile
 	}
 	for _, v := range m.Groups {
 		if v != nil {
@@ -737,6 +707,7 @@ func DefaultReadProfile(ctx context.Context, in *Profile, db *gorm1.DB) (*Profil
 	if in == nil {
 		return nil, errors.New("Nil argument to DefaultReadProfile")
 	}
+	db = db.Set("gorm:auto_preload", true)
 	ormParams, err := in.ToORM(ctx)
 	if err != nil {
 		return nil, err
@@ -794,7 +765,7 @@ func DefaultDeleteProfile(ctx context.Context, in *Profile, db *gorm1.DB) error 
 // DefaultStrictUpdateProfile clears first level 1:many children and then executes a gorm update call
 func DefaultStrictUpdateProfile(ctx context.Context, in *Profile, db *gorm1.DB) (*Profile, error) {
 	if in == nil {
-		return nil, fmt.Errorf("Nil argument to DefaultCascadedUpdateProfile")
+		return nil, fmt.Errorf("Nil argument to DefaultStrictUpdateProfile")
 	}
 	ormObj, err := in.ToORM(ctx)
 	if err != nil {
@@ -875,6 +846,9 @@ func DefaultListProfile(ctx context.Context, db *gorm1.DB, req interface{}) ([]*
 	if err != nil {
 		return nil, err
 	}
+	if fs.GetFields() == nil {
+		db = db.Set("gorm:auto_preload", true)
+	}
 	in := Profile{}
 	ormParams, err := in.ToORM(ctx)
 	if err != nil {
@@ -917,6 +891,7 @@ func DefaultReadGroup(ctx context.Context, in *Group, db *gorm1.DB) (*Group, err
 	if in == nil {
 		return nil, errors.New("Nil argument to DefaultReadGroup")
 	}
+	db = db.Set("gorm:auto_preload", true)
 	ormParams, err := in.ToORM(ctx)
 	if err != nil {
 		return nil, err
@@ -974,7 +949,7 @@ func DefaultDeleteGroup(ctx context.Context, in *Group, db *gorm1.DB) error {
 // DefaultStrictUpdateGroup clears first level 1:many children and then executes a gorm update call
 func DefaultStrictUpdateGroup(ctx context.Context, in *Group, db *gorm1.DB) (*Group, error) {
 	if in == nil {
-		return nil, fmt.Errorf("Nil argument to DefaultCascadedUpdateGroup")
+		return nil, fmt.Errorf("Nil argument to DefaultStrictUpdateGroup")
 	}
 	ormObj, err := in.ToORM(ctx)
 	if err != nil {
@@ -1009,6 +984,9 @@ func DefaultListGroup(ctx context.Context, db *gorm1.DB, req interface{}) ([]*Gr
 	db, err = gorm2.ApplyCollectionOperators(db, &GroupORM{}, f, s, p, fs)
 	if err != nil {
 		return nil, err
+	}
+	if fs.GetFields() == nil {
+		db = db.Set("gorm:auto_preload", true)
 	}
 	in := Group{}
 	ormParams, err := in.ToORM(ctx)
@@ -1052,6 +1030,7 @@ func DefaultReadContact(ctx context.Context, in *Contact, db *gorm1.DB) (*Contac
 	if in == nil {
 		return nil, errors.New("Nil argument to DefaultReadContact")
 	}
+	db = db.Set("gorm:auto_preload", true)
 	ormParams, err := in.ToORM(ctx)
 	if err != nil {
 		return nil, err
@@ -1109,7 +1088,7 @@ func DefaultDeleteContact(ctx context.Context, in *Contact, db *gorm1.DB) error 
 // DefaultStrictUpdateContact clears first level 1:many children and then executes a gorm update call
 func DefaultStrictUpdateContact(ctx context.Context, in *Contact, db *gorm1.DB) (*Contact, error) {
 	if in == nil {
-		return nil, fmt.Errorf("Nil argument to DefaultCascadedUpdateContact")
+		return nil, fmt.Errorf("Nil argument to DefaultStrictUpdateContact")
 	}
 	ormObj, err := in.ToORM(ctx)
 	if err != nil {
@@ -1175,6 +1154,9 @@ func DefaultListContact(ctx context.Context, db *gorm1.DB, req interface{}) ([]*
 	if err != nil {
 		return nil, err
 	}
+	if fs.GetFields() == nil {
+		db = db.Set("gorm:auto_preload", true)
+	}
 	in := Contact{}
 	ormParams, err := in.ToORM(ctx)
 	if err != nil {
@@ -1217,6 +1199,7 @@ func DefaultReadEmail(ctx context.Context, in *Email, db *gorm1.DB) (*Email, err
 	if in == nil {
 		return nil, errors.New("Nil argument to DefaultReadEmail")
 	}
+	db = db.Set("gorm:auto_preload", true)
 	ormParams, err := in.ToORM(ctx)
 	if err != nil {
 		return nil, err
@@ -1274,7 +1257,7 @@ func DefaultDeleteEmail(ctx context.Context, in *Email, db *gorm1.DB) error {
 // DefaultStrictUpdateEmail clears first level 1:many children and then executes a gorm update call
 func DefaultStrictUpdateEmail(ctx context.Context, in *Email, db *gorm1.DB) (*Email, error) {
 	if in == nil {
-		return nil, fmt.Errorf("Nil argument to DefaultCascadedUpdateEmail")
+		return nil, fmt.Errorf("Nil argument to DefaultStrictUpdateEmail")
 	}
 	ormObj, err := in.ToORM(ctx)
 	if err != nil {
@@ -1309,6 +1292,9 @@ func DefaultListEmail(ctx context.Context, db *gorm1.DB, req interface{}) ([]*Em
 	db, err = gorm2.ApplyCollectionOperators(db, &EmailORM{}, f, s, p, fs)
 	if err != nil {
 		return nil, err
+	}
+	if fs.GetFields() == nil {
+		db = db.Set("gorm:auto_preload", true)
 	}
 	in := Email{}
 	ormParams, err := in.ToORM(ctx)
@@ -1358,6 +1344,9 @@ func DefaultListAddress(ctx context.Context, db *gorm1.DB, req interface{}) ([]*
 	if err != nil {
 		return nil, err
 	}
+	if fs.GetFields() == nil {
+		db = db.Set("gorm:auto_preload", true)
+	}
 	in := Address{}
 	ormParams, err := in.ToORM(ctx)
 	if err != nil {
@@ -1381,16 +1370,17 @@ func DefaultListAddress(ctx context.Context, db *gorm1.DB, req interface{}) ([]*
 type ProfilesDefaultServer struct {
 	DB *gorm1.DB
 }
-type ProfilesCreateCustomHandler interface {
-	CustomCreate(context.Context, *CreateProfileRequest) (*CreateProfileResponse, error)
-}
 
 // Create ...
 func (m *ProfilesDefaultServer) Create(ctx context.Context, in *CreateProfileRequest) (*CreateProfileResponse, error) {
-	if custom, ok := interface{}(m).(ProfilesCreateCustomHandler); ok {
-		return custom.CustomCreate(ctx, in)
-	}
 	db := m.DB
+	if custom, ok := interface{}(in).(ProfilesProfileWithBeforeCreate); ok {
+		var err error
+		ctx, db, err = custom.BeforeCreate(ctx, in, db)
+		if err != nil {
+			return nil, err
+		}
+	}
 	res, err := DefaultCreateProfile(ctx, in.GetPayload(), db)
 	if err != nil {
 		return nil, err
@@ -1398,16 +1388,21 @@ func (m *ProfilesDefaultServer) Create(ctx context.Context, in *CreateProfileReq
 	return &CreateProfileResponse{Result: res}, nil
 }
 
-type ProfilesReadCustomHandler interface {
-	CustomRead(context.Context, *ReadProfileRequest) (*ReadProfileResponse, error)
+// ProfilesProfileWithBeforeCreate called before DefaultCreateProfile in the default Create handler
+type ProfilesProfileWithBeforeCreate interface {
+	BeforeCreate(context.Context, *CreateProfileRequest, *gorm1.DB) (context.Context, *gorm1.DB, error)
 }
 
 // Read ...
 func (m *ProfilesDefaultServer) Read(ctx context.Context, in *ReadProfileRequest) (*ReadProfileResponse, error) {
-	if custom, ok := interface{}(m).(ProfilesReadCustomHandler); ok {
-		return custom.CustomRead(ctx, in)
-	}
 	db := m.DB
+	if custom, ok := interface{}(in).(ProfilesProfileWithBeforeRead); ok {
+		var err error
+		ctx, db, err = custom.BeforeRead(ctx, in, db)
+		if err != nil {
+			return nil, err
+		}
+	}
 	res, err := DefaultReadProfile(ctx, &Profile{Id: in.GetId()}, db)
 	if err != nil {
 		return nil, err
@@ -1415,16 +1410,21 @@ func (m *ProfilesDefaultServer) Read(ctx context.Context, in *ReadProfileRequest
 	return &ReadProfileResponse{Result: res}, nil
 }
 
-type ProfilesUpdateCustomHandler interface {
-	CustomUpdate(context.Context, *UpdateProfileRequest) (*UpdateProfileResponse, error)
+// ProfilesProfileWithBeforeRead called before DefaultReadProfile in the default Read handler
+type ProfilesProfileWithBeforeRead interface {
+	BeforeRead(context.Context, *ReadProfileRequest, *gorm1.DB) (context.Context, *gorm1.DB, error)
 }
 
 // Update ...
 func (m *ProfilesDefaultServer) Update(ctx context.Context, in *UpdateProfileRequest) (*UpdateProfileResponse, error) {
-	if custom, ok := interface{}(m).(ProfilesUpdateCustomHandler); ok {
-		return custom.CustomUpdate(ctx, in)
-	}
 	db := m.DB
+	if custom, ok := interface{}(in).(ProfilesProfileWithBeforeUpdate); ok {
+		var err error
+		ctx, db, err = custom.BeforeUpdate(ctx, in, db)
+		if err != nil {
+			return nil, err
+		}
+	}
 	res, err := DefaultStrictUpdateProfile(ctx, in.GetPayload(), db)
 	if err != nil {
 		return nil, err
@@ -1432,29 +1432,39 @@ func (m *ProfilesDefaultServer) Update(ctx context.Context, in *UpdateProfileReq
 	return &UpdateProfileResponse{Result: res}, nil
 }
 
-type ProfilesDeleteCustomHandler interface {
-	CustomDelete(context.Context, *DeleteProfileRequest) (*google_protobuf.Empty, error)
+// ProfilesProfileWithBeforeUpdate called before DefaultUpdateProfile in the default Update handler
+type ProfilesProfileWithBeforeUpdate interface {
+	BeforeUpdate(context.Context, *UpdateProfileRequest, *gorm1.DB) (context.Context, *gorm1.DB, error)
 }
 
 // Delete ...
 func (m *ProfilesDefaultServer) Delete(ctx context.Context, in *DeleteProfileRequest) (*google_protobuf.Empty, error) {
-	if custom, ok := interface{}(m).(ProfilesDeleteCustomHandler); ok {
-		return custom.CustomDelete(ctx, in)
-	}
 	db := m.DB
+	if custom, ok := interface{}(in).(ProfilesProfileWithBeforeDelete); ok {
+		var err error
+		ctx, db, err = custom.BeforeDelete(ctx, in, db)
+		if err != nil {
+			return nil, err
+		}
+	}
 	return &google_protobuf.Empty{}, DefaultDeleteProfile(ctx, &Profile{Id: in.GetId()}, db)
 }
 
-type ProfilesListCustomHandler interface {
-	CustomList(context.Context, *ListProfileRequest) (*ListProfilesResponse, error)
+// ProfilesProfileWithBeforeDelete called before DefaultDeleteProfile in the default Delete handler
+type ProfilesProfileWithBeforeDelete interface {
+	BeforeDelete(context.Context, *DeleteProfileRequest, *gorm1.DB) (context.Context, *gorm1.DB, error)
 }
 
 // List ...
 func (m *ProfilesDefaultServer) List(ctx context.Context, in *ListProfileRequest) (*ListProfilesResponse, error) {
-	if custom, ok := interface{}(m).(ProfilesListCustomHandler); ok {
-		return custom.CustomList(ctx, in)
-	}
 	db := m.DB
+	if custom, ok := interface{}(in).(ProfilesProfileWithBeforeList); ok {
+		var err error
+		ctx, db, err = custom.BeforeList(ctx, in, db)
+		if err != nil {
+			return nil, err
+		}
+	}
 	res, err := DefaultListProfile(ctx, db, in)
 	if err != nil {
 		return nil, err
@@ -1462,19 +1472,24 @@ func (m *ProfilesDefaultServer) List(ctx context.Context, in *ListProfileRequest
 	return &ListProfilesResponse{Results: res}, nil
 }
 
+// ProfilesProfileWithBeforeList called before DefaultListProfile in the default List handler
+type ProfilesProfileWithBeforeList interface {
+	BeforeList(context.Context, *ListProfileRequest, *gorm1.DB) (context.Context, *gorm1.DB, error)
+}
 type GroupsDefaultServer struct {
 	DB *gorm1.DB
-}
-type GroupsCreateCustomHandler interface {
-	CustomCreate(context.Context, *CreateGroupRequest) (*CreateGroupResponse, error)
 }
 
 // Create ...
 func (m *GroupsDefaultServer) Create(ctx context.Context, in *CreateGroupRequest) (*CreateGroupResponse, error) {
-	if custom, ok := interface{}(m).(GroupsCreateCustomHandler); ok {
-		return custom.CustomCreate(ctx, in)
-	}
 	db := m.DB
+	if custom, ok := interface{}(in).(GroupsGroupWithBeforeCreate); ok {
+		var err error
+		ctx, db, err = custom.BeforeCreate(ctx, in, db)
+		if err != nil {
+			return nil, err
+		}
+	}
 	res, err := DefaultCreateGroup(ctx, in.GetPayload(), db)
 	if err != nil {
 		return nil, err
@@ -1482,16 +1497,21 @@ func (m *GroupsDefaultServer) Create(ctx context.Context, in *CreateGroupRequest
 	return &CreateGroupResponse{Result: res}, nil
 }
 
-type GroupsReadCustomHandler interface {
-	CustomRead(context.Context, *ReadGroupRequest) (*ReadGroupResponse, error)
+// GroupsGroupWithBeforeCreate called before DefaultCreateGroup in the default Create handler
+type GroupsGroupWithBeforeCreate interface {
+	BeforeCreate(context.Context, *CreateGroupRequest, *gorm1.DB) (context.Context, *gorm1.DB, error)
 }
 
 // Read ...
 func (m *GroupsDefaultServer) Read(ctx context.Context, in *ReadGroupRequest) (*ReadGroupResponse, error) {
-	if custom, ok := interface{}(m).(GroupsReadCustomHandler); ok {
-		return custom.CustomRead(ctx, in)
-	}
 	db := m.DB
+	if custom, ok := interface{}(in).(GroupsGroupWithBeforeRead); ok {
+		var err error
+		ctx, db, err = custom.BeforeRead(ctx, in, db)
+		if err != nil {
+			return nil, err
+		}
+	}
 	res, err := DefaultReadGroup(ctx, &Group{Id: in.GetId()}, db)
 	if err != nil {
 		return nil, err
@@ -1499,16 +1519,21 @@ func (m *GroupsDefaultServer) Read(ctx context.Context, in *ReadGroupRequest) (*
 	return &ReadGroupResponse{Result: res}, nil
 }
 
-type GroupsUpdateCustomHandler interface {
-	CustomUpdate(context.Context, *UpdateGroupRequest) (*UpdateGroupResponse, error)
+// GroupsGroupWithBeforeRead called before DefaultReadGroup in the default Read handler
+type GroupsGroupWithBeforeRead interface {
+	BeforeRead(context.Context, *ReadGroupRequest, *gorm1.DB) (context.Context, *gorm1.DB, error)
 }
 
 // Update ...
 func (m *GroupsDefaultServer) Update(ctx context.Context, in *UpdateGroupRequest) (*UpdateGroupResponse, error) {
-	if custom, ok := interface{}(m).(GroupsUpdateCustomHandler); ok {
-		return custom.CustomUpdate(ctx, in)
-	}
 	db := m.DB
+	if custom, ok := interface{}(in).(GroupsGroupWithBeforeUpdate); ok {
+		var err error
+		ctx, db, err = custom.BeforeUpdate(ctx, in, db)
+		if err != nil {
+			return nil, err
+		}
+	}
 	res, err := DefaultStrictUpdateGroup(ctx, in.GetPayload(), db)
 	if err != nil {
 		return nil, err
@@ -1516,29 +1541,39 @@ func (m *GroupsDefaultServer) Update(ctx context.Context, in *UpdateGroupRequest
 	return &UpdateGroupResponse{Result: res}, nil
 }
 
-type GroupsDeleteCustomHandler interface {
-	CustomDelete(context.Context, *DeleteGroupRequest) (*google_protobuf.Empty, error)
+// GroupsGroupWithBeforeUpdate called before DefaultUpdateGroup in the default Update handler
+type GroupsGroupWithBeforeUpdate interface {
+	BeforeUpdate(context.Context, *UpdateGroupRequest, *gorm1.DB) (context.Context, *gorm1.DB, error)
 }
 
 // Delete ...
 func (m *GroupsDefaultServer) Delete(ctx context.Context, in *DeleteGroupRequest) (*google_protobuf.Empty, error) {
-	if custom, ok := interface{}(m).(GroupsDeleteCustomHandler); ok {
-		return custom.CustomDelete(ctx, in)
-	}
 	db := m.DB
+	if custom, ok := interface{}(in).(GroupsGroupWithBeforeDelete); ok {
+		var err error
+		ctx, db, err = custom.BeforeDelete(ctx, in, db)
+		if err != nil {
+			return nil, err
+		}
+	}
 	return &google_protobuf.Empty{}, DefaultDeleteGroup(ctx, &Group{Id: in.GetId()}, db)
 }
 
-type GroupsListCustomHandler interface {
-	CustomList(context.Context, *ListGroupRequest) (*ListGroupsResponse, error)
+// GroupsGroupWithBeforeDelete called before DefaultDeleteGroup in the default Delete handler
+type GroupsGroupWithBeforeDelete interface {
+	BeforeDelete(context.Context, *DeleteGroupRequest, *gorm1.DB) (context.Context, *gorm1.DB, error)
 }
 
 // List ...
 func (m *GroupsDefaultServer) List(ctx context.Context, in *ListGroupRequest) (*ListGroupsResponse, error) {
-	if custom, ok := interface{}(m).(GroupsListCustomHandler); ok {
-		return custom.CustomList(ctx, in)
-	}
 	db := m.DB
+	if custom, ok := interface{}(in).(GroupsGroupWithBeforeList); ok {
+		var err error
+		ctx, db, err = custom.BeforeList(ctx, in, db)
+		if err != nil {
+			return nil, err
+		}
+	}
 	res, err := DefaultListGroup(ctx, db, in)
 	if err != nil {
 		return nil, err
@@ -1546,19 +1581,24 @@ func (m *GroupsDefaultServer) List(ctx context.Context, in *ListGroupRequest) (*
 	return &ListGroupsResponse{Results: res}, nil
 }
 
+// GroupsGroupWithBeforeList called before DefaultListGroup in the default List handler
+type GroupsGroupWithBeforeList interface {
+	BeforeList(context.Context, *ListGroupRequest, *gorm1.DB) (context.Context, *gorm1.DB, error)
+}
 type ContactsDefaultServer struct {
 	DB *gorm1.DB
-}
-type ContactsCreateCustomHandler interface {
-	CustomCreate(context.Context, *CreateContactRequest) (*CreateContactResponse, error)
 }
 
 // Create ...
 func (m *ContactsDefaultServer) Create(ctx context.Context, in *CreateContactRequest) (*CreateContactResponse, error) {
-	if custom, ok := interface{}(m).(ContactsCreateCustomHandler); ok {
-		return custom.CustomCreate(ctx, in)
-	}
 	db := m.DB
+	if custom, ok := interface{}(in).(ContactsContactWithBeforeCreate); ok {
+		var err error
+		ctx, db, err = custom.BeforeCreate(ctx, in, db)
+		if err != nil {
+			return nil, err
+		}
+	}
 	res, err := DefaultCreateContact(ctx, in.GetPayload(), db)
 	if err != nil {
 		return nil, err
@@ -1566,16 +1606,21 @@ func (m *ContactsDefaultServer) Create(ctx context.Context, in *CreateContactReq
 	return &CreateContactResponse{Result: res}, nil
 }
 
-type ContactsReadCustomHandler interface {
-	CustomRead(context.Context, *ReadContactRequest) (*ReadContactResponse, error)
+// ContactsContactWithBeforeCreate called before DefaultCreateContact in the default Create handler
+type ContactsContactWithBeforeCreate interface {
+	BeforeCreate(context.Context, *CreateContactRequest, *gorm1.DB) (context.Context, *gorm1.DB, error)
 }
 
 // Read ...
 func (m *ContactsDefaultServer) Read(ctx context.Context, in *ReadContactRequest) (*ReadContactResponse, error) {
-	if custom, ok := interface{}(m).(ContactsReadCustomHandler); ok {
-		return custom.CustomRead(ctx, in)
-	}
 	db := m.DB
+	if custom, ok := interface{}(in).(ContactsContactWithBeforeRead); ok {
+		var err error
+		ctx, db, err = custom.BeforeRead(ctx, in, db)
+		if err != nil {
+			return nil, err
+		}
+	}
 	res, err := DefaultReadContact(ctx, &Contact{Id: in.GetId()}, db)
 	if err != nil {
 		return nil, err
@@ -1583,16 +1628,21 @@ func (m *ContactsDefaultServer) Read(ctx context.Context, in *ReadContactRequest
 	return &ReadContactResponse{Result: res}, nil
 }
 
-type ContactsUpdateCustomHandler interface {
-	CustomUpdate(context.Context, *UpdateContactRequest) (*UpdateContactResponse, error)
+// ContactsContactWithBeforeRead called before DefaultReadContact in the default Read handler
+type ContactsContactWithBeforeRead interface {
+	BeforeRead(context.Context, *ReadContactRequest, *gorm1.DB) (context.Context, *gorm1.DB, error)
 }
 
 // Update ...
 func (m *ContactsDefaultServer) Update(ctx context.Context, in *UpdateContactRequest) (*UpdateContactResponse, error) {
-	if custom, ok := interface{}(m).(ContactsUpdateCustomHandler); ok {
-		return custom.CustomUpdate(ctx, in)
-	}
 	db := m.DB
+	if custom, ok := interface{}(in).(ContactsContactWithBeforeUpdate); ok {
+		var err error
+		ctx, db, err = custom.BeforeUpdate(ctx, in, db)
+		if err != nil {
+			return nil, err
+		}
+	}
 	res, err := DefaultStrictUpdateContact(ctx, in.GetPayload(), db)
 	if err != nil {
 		return nil, err
@@ -1600,29 +1650,39 @@ func (m *ContactsDefaultServer) Update(ctx context.Context, in *UpdateContactReq
 	return &UpdateContactResponse{Result: res}, nil
 }
 
-type ContactsDeleteCustomHandler interface {
-	CustomDelete(context.Context, *DeleteContactRequest) (*google_protobuf.Empty, error)
+// ContactsContactWithBeforeUpdate called before DefaultUpdateContact in the default Update handler
+type ContactsContactWithBeforeUpdate interface {
+	BeforeUpdate(context.Context, *UpdateContactRequest, *gorm1.DB) (context.Context, *gorm1.DB, error)
 }
 
 // Delete ...
 func (m *ContactsDefaultServer) Delete(ctx context.Context, in *DeleteContactRequest) (*google_protobuf.Empty, error) {
-	if custom, ok := interface{}(m).(ContactsDeleteCustomHandler); ok {
-		return custom.CustomDelete(ctx, in)
-	}
 	db := m.DB
+	if custom, ok := interface{}(in).(ContactsContactWithBeforeDelete); ok {
+		var err error
+		ctx, db, err = custom.BeforeDelete(ctx, in, db)
+		if err != nil {
+			return nil, err
+		}
+	}
 	return &google_protobuf.Empty{}, DefaultDeleteContact(ctx, &Contact{Id: in.GetId()}, db)
 }
 
-type ContactsListCustomHandler interface {
-	CustomList(context.Context, *ListContactRequest) (*ListContactsResponse, error)
+// ContactsContactWithBeforeDelete called before DefaultDeleteContact in the default Delete handler
+type ContactsContactWithBeforeDelete interface {
+	BeforeDelete(context.Context, *DeleteContactRequest, *gorm1.DB) (context.Context, *gorm1.DB, error)
 }
 
 // List ...
 func (m *ContactsDefaultServer) List(ctx context.Context, in *ListContactRequest) (*ListContactsResponse, error) {
-	if custom, ok := interface{}(m).(ContactsListCustomHandler); ok {
-		return custom.CustomList(ctx, in)
-	}
 	db := m.DB
+	if custom, ok := interface{}(in).(ContactsContactWithBeforeList); ok {
+		var err error
+		ctx, db, err = custom.BeforeList(ctx, in, db)
+		if err != nil {
+			return nil, err
+		}
+	}
 	res, err := DefaultListContact(ctx, db, in)
 	if err != nil {
 		return nil, err
@@ -1630,14 +1690,12 @@ func (m *ContactsDefaultServer) List(ctx context.Context, in *ListContactRequest
 	return &ListContactsResponse{Results: res}, nil
 }
 
-type ContactsSendSMSCustomHandler interface {
-	CustomSendSMS(context.Context, *SMSRequest) (*google_protobuf.Empty, error)
+// ContactsContactWithBeforeList called before DefaultListContact in the default List handler
+type ContactsContactWithBeforeList interface {
+	BeforeList(context.Context, *ListContactRequest, *gorm1.DB) (context.Context, *gorm1.DB, error)
 }
 
 // SendSMS ...
 func (m *ContactsDefaultServer) SendSMS(ctx context.Context, in *SMSRequest) (*google_protobuf.Empty, error) {
-	if custom, ok := interface{}(m).(ContactsSendSMSCustomHandler); ok {
-		return custom.CustomSendSMS(ctx, in)
-	}
 	return &google_protobuf.Empty{}, nil
 }

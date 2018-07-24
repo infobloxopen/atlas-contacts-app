@@ -47,8 +47,7 @@ func (m *ContactORM) AfterToPB(ctx context.Context, c *Contact) error {
 
 // CustomRead method overrides the default Read function and adds custom errors with multiple details.
 func (m *ContactsDefaultServer) CustomRead(ctx context.Context, req *ReadContactRequest) (*ReadContactResponse, error) {
-	db := m.DB.Preload("Emails")
-	res, err := DefaultReadContact(ctx, &Contact{Id: req.GetId()}, db)
+	res, err := DefaultReadContact(ctx, &Contact{Id: req.GetId()}, m.DB)
 	if err != nil {
 		code := codes.Internal
 		if err == gorm.ErrRecordNotFound {
@@ -146,7 +145,6 @@ func (m *ContactsDefaultServer) CustomList(ctx context.Context, in *ListContactR
 			db = db.Joins(join)
 		}
 	}
-	db = db.Preload("Emails")
 	res, err := DefaultListContact(ctx, db, in)
 	if err != nil {
 		return nil, err
