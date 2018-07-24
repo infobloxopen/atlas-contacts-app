@@ -32,7 +32,7 @@ GO_TEST_FLAGS  ?= -v -cover
 GO_PACKAGES    := $(shell go list ./... | grep -v vendor)
 
 .PHONY: all
-all: vendor protobuf docker
+all: vendor docker
 
 .PHONY: fmt
 fmt:
