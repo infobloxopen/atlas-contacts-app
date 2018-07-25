@@ -923,18 +923,6 @@ func (m *Group) Validate() error {
 
 	// no validation rules for Notes
 
-	if v, ok := interface{}(m.GetProfile()).(interface {
-		Validate() error
-	}); ok {
-		if err := v.Validate(); err != nil {
-			return GroupValidationError{
-				Field:  "Profile",
-				Reason: "embedded message failed validation",
-				Cause:  err,
-			}
-		}
-	}
-
 	if v, ok := interface{}(m.GetProfileId()).(interface {
 		Validate() error
 	}); ok {
@@ -1855,18 +1843,6 @@ func (m *Contact) Validate() error {
 		if err := v.Validate(); err != nil {
 			return ContactValidationError{
 				Field:  "ProfileId",
-				Reason: "embedded message failed validation",
-				Cause:  err,
-			}
-		}
-	}
-
-	if v, ok := interface{}(m.GetProfile()).(interface {
-		Validate() error
-	}); ok {
-		if err := v.Validate(); err != nil {
-			return ContactValidationError{
-				Field:  "Profile",
 				Reason: "embedded message failed validation",
 				Cause:  err,
 			}

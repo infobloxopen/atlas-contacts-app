@@ -209,7 +209,6 @@ type GroupORM struct {
 	Id        int64         `gorm:"type:serial;primary_key"`
 	Name      string
 	Notes     string
-	Profile   *ProfileORM `gorm:"foreignkey:ProfileId;association_foreignkey:Id"`
 	ProfileId *int64
 }
 
@@ -235,13 +234,6 @@ func (m *Group) ToORM(ctx context.Context) (GroupORM, error) {
 	}
 	to.Name = m.Name
 	to.Notes = m.Notes
-	if m.Profile != nil {
-		tempProfile, err := m.Profile.ToORM(ctx)
-		if err != nil {
-			return to, err
-		}
-		to.Profile = &tempProfile
-	}
 	if v, err := resource1.DecodeInt64(&Profile{}, m.ProfileId); err != nil {
 		return to, err
 	} else {
@@ -286,13 +278,6 @@ func (m *GroupORM) ToPB(ctx context.Context) (Group, error) {
 	}
 	to.Name = m.Name
 	to.Notes = m.Notes
-	if m.Profile != nil {
-		tempProfile, err := m.Profile.ToPB(ctx)
-		if err != nil {
-			return to, err
-		}
-		to.Profile = &tempProfile
-	}
 	if m.ProfileId != nil {
 		if v, err := resource1.Encode(&Profile{}, *m.ProfileId); err != nil {
 			return to, err
@@ -357,7 +342,6 @@ type ContactORM struct {
 	MiddleName  string
 	Nicknames   *postgres1.Jsonb `gorm:"type:jsonb"`
 	Notes       string
-	Profile     *ProfileORM `gorm:"foreignkey:ProfileId;association_foreignkey:Id"`
 	ProfileId   *int64
 	WorkAddress *AddressORM `gorm:"foreignkey:WorkAddressContactId;association_foreignkey:Id"`
 }
@@ -415,13 +399,6 @@ func (m *Contact) ToORM(ctx context.Context) (ContactORM, error) {
 		return to, err
 	} else {
 		to.ProfileId = &v
-	}
-	if m.Profile != nil {
-		tempProfile, err := m.Profile.ToORM(ctx)
-		if err != nil {
-			return to, err
-		}
-		to.Profile = &tempProfile
 	}
 	for _, v := range m.Groups {
 		if v != nil {
@@ -504,13 +481,6 @@ func (m *ContactORM) ToPB(ctx context.Context) (Contact, error) {
 		} else {
 			to.ProfileId = v
 		}
-	}
-	if m.Profile != nil {
-		tempProfile, err := m.Profile.ToPB(ctx)
-		if err != nil {
-			return to, err
-		}
-		to.Profile = &tempProfile
 	}
 	for _, v := range m.Groups {
 		if v != nil {
@@ -1145,9 +1115,6 @@ func DefaultApplyFieldMaskGroup(ctx context.Context, patchee *Group, ormObj *Gro
 		if f == "Notes" {
 			patchee.Notes = patcher.Notes
 		}
-		if f == "Profile" {
-			patchee.Profile = patcher.Profile
-		}
 		if f == "ProfileId" {
 			patchee.ProfileId = patcher.ProfileId
 		}
@@ -1433,9 +1400,6 @@ func DefaultApplyFieldMaskContact(ctx context.Context, patchee *Contact, ormObj 
 		}
 		if f == "ProfileId" {
 			patchee.ProfileId = patcher.ProfileId
-		}
-		if f == "Profile" {
-			patchee.Profile = patcher.Profile
 		}
 		if f == "Groups" {
 			patchee.Groups = patcher.Groups

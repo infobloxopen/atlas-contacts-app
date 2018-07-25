@@ -125,37 +125,37 @@ Try it out by executing following curl commands:
 ``` sh
 # Create some profiles
 curl -k -H "User-And-Pass: admin1:admin" \
-https://$(minikube ip)/v1/profiles -d '{"name": "personal", "notes": "Used for personal aims"}' | jq
+https://$(minikube ip)/atlas-contacts-app/v1/profiles -d '{"name": "personal", "notes": "Used for personal aims"}' | jq
 
 curl -k -H "User-And-Pass: admin1:admin" \
-https://$(minikube ip)/v1/profiles -d '{"name": "work", "notes": "Used for work aims"}' | jq
+https://$(minikube ip)/atlas-contacts-app/v1/profiles -d '{"name": "work", "notes": "Used for work aims"}' | jq
 
 # Create some groups assigned to profiles
 curl -k -H "User-And-Pass: admin1:admin" \
-https://$(minikube ip)/v1/groups -d '{"name": "schoolmates", "profile_id": 1}' | jq
+https://$(minikube ip)/atlas-contacts-app/v1/groups -d '{"name": "schoolmates", "profile_id": 1}' | jq
 
 curl -k -H "User-And-Pass: admin1:admin" \
-https://$(minikube ip)/v1/groups -d '{"name": "family", "profile_id": 1}' | jq
+https://$(minikube ip)/atlas-contacts-app/v1/groups -d '{"name": "family", "profile_id": 1}' | jq
 
 curl -k -H "User-And-Pass: admin1:admin" \
-https://$(minikube ip)/v1/groups -d '{"name": "accountants", "profile_id": 2}' | jq
+https://$(minikube ip)/atlas-contacts-app/v1/groups -d '{"name": "accountants", "profile_id": 2}' | jq
 
 # Add some contacts assigned to profiles and groups
 curl -k -H "User-And-Pass: admin1:admin" \
-https://$(minikube ip)/v1/contacts -d '{"first_name": "Mike", "primary_email": "mike@gmail.com", "profile_id": 1, "groups": [{"id": 1, "name": "schoolmates", "profile_id": 1}, {"id": 2, "name": "family", "profile_id": 1}], "home_address": {"city": "Minneapolis", "state": "Minnesota", "country": "US"}}' | jq
+https://$(minikube ip)/atlas-contacts-app/v1/contacts -d '{"first_name": "Mike", "primary_email": "mike@gmail.com", "profile_id": 1, "groups": [{"id": 1, "name": "schoolmates", "profile_id": 1}, {"id": 2, "name": "family", "profile_id": 1}], "home_address": {"city": "Minneapolis", "state": "Minnesota", "country": "US"}}' | jq
 
 curl -k -H "User-And-Pass: admin1:admin" \
-https://$(minikube ip)/v1/contacts -d '{"first_name": "John", "primary_email": "john@gmail.com", "profile_id": 2, "work_address": {"city": "St.Paul", "state": "Minnesota", "country": "US"}}' | jq
+https://$(minikube ip)/atlas-contacts-app/v1/contacts -d '{"first_name": "John", "primary_email": "john@gmail.com", "profile_id": 2, "work_address": {"city": "St.Paul", "state": "Minnesota", "country": "US"}}' | jq
 
 # Read created resources
 curl -k -H "User-And-Pass: admin1:admin" \
-https://$(minikube ip)/v1/profiles  | jq
+https://$(minikube ip)/atlas-contacts-app/v1/profiles  | jq
 
 curl -k -H "User-And-Pass: admin1:admin" \
-https://$(minikube ip)/v1/groups | jq
+https://$(minikube ip)/atlas-contacts-app/v1/groups | jq
 
 curl -k -H "User-And-Pass: admin1:admin" \
-https://$(minikube ip)/v1/contacts | jq
+https://$(minikube ip)/atlas-contacts-app/v1/contacts | jq
 ```
 
 ##### Pagination (page token)
