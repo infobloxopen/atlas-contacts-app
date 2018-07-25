@@ -739,6 +739,7 @@ func DefaultReadProfile(ctx context.Context, in *Profile, db *gorm1.DB) (*Profil
 	if in == nil {
 		return nil, errors.New("Nil argument to DefaultReadProfile")
 	}
+	db = db.Set("gorm:auto_preload", true)
 	ormParams, err := in.ToORM(ctx)
 	if err != nil {
 		return nil, err
@@ -963,6 +964,9 @@ func DefaultListProfile(ctx context.Context, db *gorm1.DB, req interface{}) ([]*
 	if err != nil {
 		return nil, err
 	}
+	if fs.GetFields() == nil {
+		db = db.Set("gorm:auto_preload", true)
+	}
 	in := Profile{}
 	ormParams, err := in.ToORM(ctx)
 	if err != nil {
@@ -1005,6 +1009,7 @@ func DefaultReadGroup(ctx context.Context, in *Group, db *gorm1.DB) (*Group, err
 	if in == nil {
 		return nil, errors.New("Nil argument to DefaultReadGroup")
 	}
+	db = db.Set("gorm:auto_preload", true)
 	ormParams, err := in.ToORM(ctx)
 	if err != nil {
 		return nil, err
@@ -1167,6 +1172,9 @@ func DefaultListGroup(ctx context.Context, db *gorm1.DB, req interface{}) ([]*Gr
 	if err != nil {
 		return nil, err
 	}
+	if fs.GetFields() == nil {
+		db = db.Set("gorm:auto_preload", true)
+	}
 	in := Group{}
 	ormParams, err := in.ToORM(ctx)
 	if err != nil {
@@ -1209,6 +1217,7 @@ func DefaultReadContact(ctx context.Context, in *Contact, db *gorm1.DB) (*Contac
 	if in == nil {
 		return nil, errors.New("Nil argument to DefaultReadContact")
 	}
+	db = db.Set("gorm:auto_preload", true)
 	ormParams, err := in.ToORM(ctx)
 	if err != nil {
 		return nil, err
@@ -1452,6 +1461,9 @@ func DefaultListContact(ctx context.Context, db *gorm1.DB, req interface{}) ([]*
 	if err != nil {
 		return nil, err
 	}
+	if fs.GetFields() == nil {
+		db = db.Set("gorm:auto_preload", true)
+	}
 	in := Contact{}
 	ormParams, err := in.ToORM(ctx)
 	if err != nil {
@@ -1494,6 +1506,7 @@ func DefaultReadEmail(ctx context.Context, in *Email, db *gorm1.DB) (*Email, err
 	if in == nil {
 		return nil, errors.New("Nil argument to DefaultReadEmail")
 	}
+	db = db.Set("gorm:auto_preload", true)
 	ormParams, err := in.ToORM(ctx)
 	if err != nil {
 		return nil, err
@@ -1644,6 +1657,9 @@ func DefaultListEmail(ctx context.Context, db *gorm1.DB, req interface{}) ([]*Em
 	if err != nil {
 		return nil, err
 	}
+	if fs.GetFields() == nil {
+		db = db.Set("gorm:auto_preload", true)
+	}
 	in := Email{}
 	ormParams, err := in.ToORM(ctx)
 	if err != nil {
@@ -1691,6 +1707,9 @@ func DefaultListAddress(ctx context.Context, db *gorm1.DB, req interface{}) ([]*
 	db, err = gorm2.ApplyCollectionOperators(db, &AddressORM{}, f, s, p, fs)
 	if err != nil {
 		return nil, err
+	}
+	if fs.GetFields() == nil {
+		db = db.Set("gorm:auto_preload", true)
 	}
 	in := Address{}
 	ormParams, err := in.ToORM(ctx)
@@ -1994,7 +2013,7 @@ func (m *ContactsDefaultServer) Update(ctx context.Context, in *UpdateContactReq
 			return nil, err
 		}
 	}
-	if len(in.GetFields().GetPaths()) == 0 {
+	if in.GetFields() == nil || len(in.GetFields().GetPaths()) == 0 {
 		res, err = DefaultStrictUpdateContact(ctx, in.GetPayload(), db)
 	} else {
 		res, err = DefaultPatchContact(ctx, in.GetPayload(), in.GetFields(), db)
