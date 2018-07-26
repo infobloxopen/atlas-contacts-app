@@ -10,6 +10,7 @@ import (
 
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus/ctxlogrus"
 	"github.com/infobloxopen/atlas-app-toolkit/errors"
+	"github.com/infobloxopen/atlas-app-toolkit/errors/mappers/pqerrors"
 	"github.com/infobloxopen/atlas-app-toolkit/requestid"
 	"github.com/jinzhu/gorm"
 	"github.com/sirupsen/logrus"
@@ -27,6 +28,8 @@ var ErrorMappings = []errors.MapFunc{
 		).WithField(
 			"path/id", "the specified object was not found."),
 	),
+
+	pqerrors.NewUniqueMapping("emails_address_key", "Contacts", "Primary Email Address"),
 
 	errors.NewMapping(
 		errors.CondHasPrefix("pq:"),
