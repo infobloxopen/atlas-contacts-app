@@ -20,6 +20,11 @@ import (
 	"github.com/infobloxopen/atlas-contacts-app/cmd"
 	migrate "github.com/infobloxopen/atlas-contacts-app/db"
 	"github.com/infobloxopen/atlas-contacts-app/pkg/pb"
+
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/grpc-ecosystem/go-grpc-middleware"
+
+	"google.golang.org/grpc"
 )
 
 var (
@@ -133,6 +138,16 @@ func ServeExternal(logger *logrus.Logger) error {
 		server.WithGrpcServer(grpcServer),
 		// register the gateway to proxy to the given server address with the service registration endpoints
 		server.WithGateway(
+			gateway.WithGatewayOptions(
+				runtime.WithMetadata(gateway.NewPresenceAnnotator("PUT")),
+			),
+			 gateway.WithDialOptions(
+				[]grpc.DialOption{grpc.WithInsecure(), grpc.WithUnaryInterceptor(
+					grpc_middleware.ChainUnaryClient(
+						[]grpc.UnaryClientInterceptor{gateway.ClientUnaryInterceptor, gateway.PresenceClientInterceptor()}...,
+					),
+				)}...,
+			),
 			gateway.WithServerAddress(ServerAddress),
 			gateway.WithEndpointRegistration("/v1/", pb.RegisterProfilesHandlerFromEndpoint, pb.RegisterGroupsHandlerFromEndpoint, pb.RegisterContactsHandlerFromEndpoint),
 		),

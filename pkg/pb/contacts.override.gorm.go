@@ -3,6 +3,7 @@ package pb
 import (
 	"strings"
 
+	"github.com/infobloxopen/atlas-app-toolkit/auth"
 	"github.com/infobloxopen/atlas-app-toolkit/query"
 	"github.com/infobloxopen/atlas-app-toolkit/rpc/errdetails"
 	"github.com/jinzhu/gorm"
@@ -14,13 +15,22 @@ import (
 // BeforeToORM will add the primary e-mail to the list of e-mails if it isn't
 // present already
 func (m *Contact) BeforeToORM(ctx context.Context, c *ContactORM) error {
+	emails := []*Email{}
 	if m.PrimaryEmail != "" {
 		for _, mail := range m.Emails {
-			if mail.Address == m.PrimaryEmail {
-				return nil
+			if mail.Address != m.PrimaryEmail {
+				emails = append(emails, mail)
 			}
 		}
-		c.Emails = append(c.Emails, &EmailORM{Address: m.PrimaryEmail, IsPrimary: true})
+
+		m.Emails = emails
+
+		accountID, err := auth.GetAccountID(ctx, nil)
+		if err != nil {
+			return err
+		}
+
+		c.Emails = []*EmailORM{&EmailORM{Address: m.PrimaryEmail, AccountID: accountID, IsPrimary: true}}
 	}
 	return nil
 }
@@ -38,6 +48,45 @@ func (m *ContactORM) AfterToPB(ctx context.Context, c *Contact) error {
 		}
 	}
 	return nil
+}
+
+// BeforeUpdate method deals with synthetic field primary_email. If primary_email is set and no emails given,
+// it reads all emails, filter out current primary email and appends to FieldMask emails address.
+func (m *UpdateContactRequest) BeforeUpdate(ctx context.Context, req *UpdateContactRequest, db *gorm.DB) (context.Context, *gorm.DB, error) {
+	var hasPrimaryEmail, hasEmails bool
+	for _, p := range req.GetFields().GetPaths() {
+		if p == "PrimaryEmail" {
+			hasPrimaryEmail = true
+		}
+		if p == "Emails" {
+			hasEmails = true
+		}
+	}
+
+	if hasPrimaryEmail && !hasEmails {
+		db := db.Preload("Emails")
+		res, err := DefaultReadContact(ctx, &Contact{Id: req.GetPayload().GetId()}, db)
+		if err != nil {
+			code := codes.Internal
+			if err == gorm.ErrRecordNotFound {
+				code = codes.NotFound
+			}
+			st := status.Newf(code, "Unable to read contact. Error %v", err)
+			return ctx, db, st.Err()
+		}
+
+		emails := []*Email{}
+		for _, e := range res.Emails {
+			if e.Address != res.PrimaryEmail {
+				emails = append(emails, e)
+			}
+		}
+		m.Payload.Emails = emails
+		m.Fields.Paths = append(m.Fields.Paths, "Emails")
+	}
+
+	return ctx, db, nil
+
 }
 
 // Overriding CRUD Methods:

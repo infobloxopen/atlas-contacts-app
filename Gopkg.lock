@@ -8,10 +8,10 @@
   version = "v0.5.0"
 
 [[projects]]
+  branch = "master"
   name = "github.com/dgrijalva/jwt-go"
   packages = ["."]
-  revision = "06ea1031745cb8b3dab3f6a236daf2b0aa468b7e"
-  version = "v3.2.0"
+  revision = "0b96aaa707760d6ab28d9b9d1913ff5993328bae"
 
 [[projects]]
   name = "github.com/gogo/protobuf"
@@ -19,8 +19,8 @@
     "proto",
     "protoc-gen-gogo/descriptor"
   ]
-  revision = "1adfc126b41513cc696b209667c8656ea7aac67c"
-  version = "v1.0.0"
+  revision = "636bf0302bc95575d69441b25a2603156ffdddf1"
+  version = "v1.1.1"
 
 [[projects]]
   branch = "master"
@@ -39,7 +39,7 @@
     "ptypes/struct",
     "ptypes/timestamp"
   ]
-  revision = "0cb4f732569330e7b40d8fcee91c41aafaaddc4f"
+  revision = "93b26e6a70e37abb14f2f88194949312b0592a84"
 
 [[projects]]
   name = "github.com/google/uuid"
@@ -86,6 +86,7 @@
   packages = [
     "auth",
     "errors",
+    "errors/mappers/pqerrors",
     "gateway",
     "gorm",
     "gorm/resource",
@@ -97,7 +98,7 @@
     "rpc/resource",
     "server"
   ]
-  revision = "d7c924e4971c40d33d89efb41f7773ce96e93db7"
+  revision = "eaaba2137cf000f845a3236f8ca3c4ed0174661e"
 
 [[projects]]
   branch = "master"
@@ -130,18 +131,17 @@
     "options",
     "types"
   ]
-  revision = "544b78ce45f9bb68a08054104002fcda2b49247c"
-
+  revision = "8c7a27a1b1ba3e86ba6f5865f75623d32bdd2bbe"
+  version = "v0.8.0"
 
 [[projects]]
-  branch = "master"
   name = "github.com/infobloxopen/themis"
   packages = [
     "pdp",
     "pdp-service",
     "pep"
   ]
-  revision = "1e83dfa8abb530682048ef4c21eb302c870ced10"
+  revision = "d62bb103665cf16dfcee5083f4557163fb7a68ff"
 
 [[projects]]
   name = "github.com/jinzhu/gorm"
@@ -187,14 +187,14 @@
 [[projects]]
   name = "github.com/sirupsen/logrus"
   packages = ["."]
-  revision = "c155da19408a8799da419ed3eeb0cb5db0ad5dbc"
-  version = "v1.0.5"
+  revision = "3e01752db0189b9157070a0e1668a620f9a85da2"
+  version = "v1.0.6"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
-  revision = "a49355c7e3f8fe157a85be2f77e6e269a0f89602"
+  revision = "c126467f60eb25f8f27e5a981f32a87e3965053f"
 
 [[projects]]
   branch = "master"
@@ -208,7 +208,7 @@
     "internal/timeseries",
     "trace"
   ]
-  revision = "039a4258aec0ad3c79b905677cceeab13b296a77"
+  revision = "3673e40ba22529d22c3fd7c93e97b0ce50fa7bdd"
 
 [[projects]]
   branch = "master"
@@ -217,7 +217,7 @@
     "unix",
     "windows"
   ]
-  revision = "1b2967e3c290b7c545b3db0deeda16e9be4f98a2"
+  revision = "e072cadbbdc8dd3d3ffa82b8b4b9304c261d9311"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -246,9 +246,10 @@
   packages = [
     "googleapis/api/annotations",
     "googleapis/rpc/code",
-    "googleapis/rpc/status"
+    "googleapis/rpc/status",
+    "protobuf/field_mask"
   ]
-  revision = "e92b116572682a5b432ddd840aeaba2a559eeff1"
+  revision = "02b4e95473316948020af0b7a4f0f22c73929b0e"
 
 [[projects]]
   name = "google.golang.org/grpc"
@@ -285,6 +286,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "c872ae64785eb62f7fc7ca976b4d715bd1c8b33da0bf3d3f0f11c767b7a6f8ba"
+  inputs-digest = "45efa6e78b4897c08c932ef89aa35b8a56dd55e2c278710b776f6952141a6710"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -3,6 +3,7 @@ syntax = "proto3";
 package api.contacts;
 
 import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
 import "google/api/annotations.proto";
 import "github.com/lyft/protoc-gen-validate/validate/validate.proto";
 import "protoc-gen-swagger/options/annotations.proto";
@@ -250,6 +251,7 @@ message ReadContactResponse {
 
 message UpdateContactRequest {
     Contact payload = 1;
+    google.protobuf.FieldMask fields = 2;
 }
 
 message UpdateContactResponse {

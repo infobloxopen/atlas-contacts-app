@@ -74,18 +74,18 @@ export JWT="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBY2NvdW50SUQiOjF9.GsXyFDDARj
 
 Request examples:
 ``` sh
-curl -H "Authorization: Token $JWT" \
+curl -H "Authorization: Bearer $JWT" \
 http://localhost:8080/v1/contacts -d '{"first_name": "Mike", "primary_email": "mike@example.com"}'
 ```
 
 ``` sh
-curl -H "Authorization: Token $JWT" \
+curl -H "Authorization: Bearer $JWT" \
 http://localhost:8080/v1/contacts -d \
 '{"first_name": "Robert", "primary_email": "robert@example.com", "nicknames": ["bob", "robbie"]}'
 ```
 
 ``` sh
-curl -H "Authorization: Token $JWT" \
+curl -H "Authorization: Bearer $JWT" \
 http://localhost:8080/v1/contacts?_filter='first_name=="Mike"'
 ```
 Note, that `JWT` should contain AccountID field.
