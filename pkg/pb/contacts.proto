@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package api.contacts;
 
-import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
 import "github.com/lyft/protoc-gen-validate/validate/validate.proto";
 import "protoc-gen-swagger/options/annotations.proto";
@@ -53,6 +52,8 @@ message DeleteProfileRequest {
     atlas.rpc.Identifier id = 1;
 }
 
+message DeleteProfileResponse{}
+
 message ListProfileRequest {
     infoblox.api.Filtering filter = 1;
     infoblox.api.Sorting order_by = 2;
@@ -86,7 +87,7 @@ service Profiles {
         };
     }
 
-    rpc Delete (DeleteProfileRequest) returns (google.protobuf.Empty) {
+    rpc Delete (DeleteProfileRequest) returns (DeleteProfileResponse) {
         option (google.api.http) = {
             delete: "/profiles/{id.resource_id}"
         };
@@ -141,6 +142,8 @@ message DeleteGroupRequest {
     atlas.rpc.Identifier id = 1;
 }
 
+message DeleteGroupResponse {}
+
 message ListGroupRequest {
     infoblox.api.Filtering filter = 1;
     infoblox.api.Sorting order_by = 2;
@@ -174,7 +177,7 @@ service Groups {
         };
     }
 
-    rpc Delete (DeleteGroupRequest) returns (google.protobuf.Empty) {
+    rpc Delete (DeleteGroupRequest) returns (DeleteGroupResponse) {
         option (google.api.http) = {
             delete: "/groups/{id.resource_id}"
         };
@@ -260,6 +263,8 @@ message DeleteContactRequest {
     atlas.rpc.Identifier id = 1;
 }
 
+message DeleteContactResponse {}
+
 message ListContactsResponse {
     repeated Contact results = 1;
 }
@@ -268,6 +273,8 @@ message SMSRequest {
     uint64 id = 1;
     string message = 2;
 }
+
+message SMSResponse {}
 
 message ListContactRequest {
     infoblox.api.Filtering filter = 1;
@@ -299,7 +306,7 @@ service Contacts {
         };
     }
 
-    rpc Delete (DeleteContactRequest) returns (google.protobuf.Empty) {
+    rpc Delete (DeleteContactRequest) returns (DeleteContactResponse) {
         option (google.api.http) = {
             delete: "/contacts/{id.resource_id}"
         };
@@ -312,7 +319,7 @@ service Contacts {
         };
     }
 
-    rpc SendSMS (SMSRequest) returns (google.protobuf.Empty) {
+    rpc SendSMS (SMSRequest) returns (SMSResponse) {
         option (google.api.http) = {
             post: "/contacts/{id}/sms"
             body: "*"
