@@ -54,7 +54,7 @@ go run ./cmd/server/*.go -db "host=localhost port=5432 user=postgres password=po
 
 #### Try atlas-contacts-app
 
-For Multi-Account environment, Authorization token is required. You can generate it using https://jwt.io/ with following Payload:
+For Multi-Account environment, Authorization token (Bearer) is required. You can generate it using https://jwt.io/ with following Payload:
 ```
 {
   "AccountID": YourAccountID
@@ -67,25 +67,25 @@ Example:
   "AccountID": 1
 }
 ```
-Token
+Bearer
 ``` sh
 export JWT="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBY2NvdW50SUQiOjF9.GsXyFDDARjXe1t9DPo2LIBKHEal3O7t3vLI3edA7dGU"
 ```
 
 Request examples:
 ``` sh
-curl -H "Authorization: Token $JWT" \
+curl -H "Authorization: Bearer $JWT" \
 http://localhost:8080/v1/contacts -d '{"first_name": "Mike", "primary_email": "mike@example.com"}'
 ```
 
 ``` sh
-curl -H "Authorization: Token $JWT" \
+curl -H "Authorization: Bearer $JWT" \
 http://localhost:8080/v1/contacts -d \
 '{"first_name": "Robert", "primary_email": "robert@example.com", "nicknames": ["bob", "robbie"]}'
 ```
 
 ``` sh
-curl -H "Authorization: Token $JWT" \
+curl -H "Authorization: Bearer $JWT" \
 http://localhost:8080/v1/contacts?_filter='first_name=="Mike"'
 ```
 Note, that `JWT` should contain AccountID field.

@@ -58,8 +58,7 @@
     "logging/logrus/ctxlogrus",
     "tags",
     "tags/logrus",
-    "util/metautils",
-    "validator"
+    "util/metautils"
   ]
   revision = "e9c5d9645c437ab1b204cff969a2c0fb16cd4276"
 
@@ -87,6 +86,7 @@
     "auth",
     "errors",
     "errors/mappers/pqerrors",
+    "errors/mappers/validationerrors",
     "gateway",
     "gorm",
     "gorm/resource",
@@ -98,7 +98,7 @@
     "rpc/resource",
     "server"
   ]
-  revision = "eaaba2137cf000f845a3236f8ca3c4ed0174661e"
+  revision = "3e0f9c774b1b2bff42e78aaf4fc03d9b21a7513e"
 
 [[projects]]
   branch = "master"
@@ -286,6 +286,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "b33e2b850d3759c9c3d767bbd9691d421cf47baf9a48ea7f4df087b9ce38fc15"
+  inputs-digest = "0795f7435063d3c1d827df0f6776cc8ab500c0284a6fed5c444bab06b7a13f38"
   solver-name = "gps-cdcl"
   solver-version = 1
