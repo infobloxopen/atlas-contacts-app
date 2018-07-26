@@ -503,6 +503,48 @@ func (e DeleteProfileRequestValidationError) Error() string {
 
 var _ error = DeleteProfileRequestValidationError{}
 
+// Validate checks the field values on DeleteProfileResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *DeleteProfileResponse) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	return nil
+}
+
+// DeleteProfileResponseValidationError is the validation error returned by
+// DeleteProfileResponse.Validate if the designated constraints aren't met.
+type DeleteProfileResponseValidationError struct {
+	Field  string
+	Reason string
+	Cause  error
+	Key    bool
+}
+
+// Error satisfies the builtin error interface
+func (e DeleteProfileResponseValidationError) Error() string {
+	cause := ""
+	if e.Cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
+	}
+
+	key := ""
+	if e.Key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDeleteProfileResponse.%s: %s%s",
+		key,
+		e.Field,
+		e.Reason,
+		cause)
+}
+
+var _ error = DeleteProfileResponseValidationError{}
+
 // Validate checks the field values on ListProfileRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, an error is returned.
@@ -1115,6 +1157,48 @@ func (e DeleteGroupRequestValidationError) Error() string {
 }
 
 var _ error = DeleteGroupRequestValidationError{}
+
+// Validate checks the field values on DeleteGroupResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *DeleteGroupResponse) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	return nil
+}
+
+// DeleteGroupResponseValidationError is the validation error returned by
+// DeleteGroupResponse.Validate if the designated constraints aren't met.
+type DeleteGroupResponseValidationError struct {
+	Field  string
+	Reason string
+	Cause  error
+	Key    bool
+}
+
+// Error satisfies the builtin error interface
+func (e DeleteGroupResponseValidationError) Error() string {
+	cause := ""
+	if e.Cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
+	}
+
+	key := ""
+	if e.Key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDeleteGroupResponse.%s: %s%s",
+		key,
+		e.Field,
+		e.Reason,
+		cause)
+}
+
+var _ error = DeleteGroupResponseValidationError{}
 
 // Validate checks the field values on ListGroupRequest with the rules defined
 // in the proto definition for this message. If any rules are violated, an
@@ -1996,6 +2080,48 @@ func (e DeleteContactRequestValidationError) Error() string {
 
 var _ error = DeleteContactRequestValidationError{}
 
+// Validate checks the field values on DeleteContactResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *DeleteContactResponse) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	return nil
+}
+
+// DeleteContactResponseValidationError is the validation error returned by
+// DeleteContactResponse.Validate if the designated constraints aren't met.
+type DeleteContactResponseValidationError struct {
+	Field  string
+	Reason string
+	Cause  error
+	Key    bool
+}
+
+// Error satisfies the builtin error interface
+func (e DeleteContactResponseValidationError) Error() string {
+	cause := ""
+	if e.Cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
+	}
+
+	key := ""
+	if e.Key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDeleteContactResponse.%s: %s%s",
+		key,
+		e.Field,
+		e.Reason,
+		cause)
+}
+
+var _ error = DeleteContactResponseValidationError{}
+
 // Validate checks the field values on ListContactsResponse with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, an error is returned.
@@ -2099,6 +2225,48 @@ func (e SMSRequestValidationError) Error() string {
 }
 
 var _ error = SMSRequestValidationError{}
+
+// Validate checks the field values on SMSResponse with the rules defined in
+// the proto definition for this message. If any rules are violated, an error
+// is returned.
+func (m *SMSResponse) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	return nil
+}
+
+// SMSResponseValidationError is the validation error returned by
+// SMSResponse.Validate if the designated constraints aren't met.
+type SMSResponseValidationError struct {
+	Field  string
+	Reason string
+	Cause  error
+	Key    bool
+}
+
+// Error satisfies the builtin error interface
+func (e SMSResponseValidationError) Error() string {
+	cause := ""
+	if e.Cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.Cause)
+	}
+
+	key := ""
+	if e.Key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sSMSResponse.%s: %s%s",
+		key,
+		e.Field,
+		e.Reason,
+		cause)
+}
+
+var _ error = SMSResponseValidationError{}
 
 // Validate checks the field values on ListContactRequest with the rules
 // defined in the proto definition for this message. If any rules are
