@@ -16,6 +16,18 @@ Install go dep
 go get -u github.com/golang/dep/cmd/dep
 ```
 
+Install atlas-db-controller for managing database resources:
+
+  * To create atlas-db custom resource and controller follow [link](https://github.com/infobloxopen/atlas-db/blob/master/README.md).
+  * To create database instance, database and schema/tables resources locally to be used by contacts app, modify `contacts-localdb.yaml` following specifications mentioned in [link](https://github.com/infobloxopen/atlas-db/blob/master/README.md) and run:
+  ```
+    make db-up
+  ```
+  * To use RDS database instance, database and schema/tables resources used by contacts app, modify `contacts-rds.yaml` and run"
+  ```sh
+    kubectl create -f ./deploy/contacts-rds.yaml
+  ```
+
 ### Local development setup
 
 Please note that you should have the following ports opened on you local workstation: `:8080 :8081 :9090 :5432`.
@@ -23,10 +35,11 @@ If they are busy - please change them via corresponding parameters of `gateway` 
 
 Run PostgresDB:
 
-``` sh
+```sh
 docker run --name contacts-db -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=contacts -p 5432:5432 -d postgres:9.4
 ```
-Table creation in this example is omitted as it will be done automatically by `gorm`.
+
+Table creation should be done manually by running the migrations scripts. Scripts can be found at `./db/migrations/`
 
 Create vendor directory with required golang packages
 ``` sh

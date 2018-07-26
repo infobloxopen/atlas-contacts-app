@@ -1,0 +1,34 @@
+apiVersion: atlasdb.infoblox.com/v1alpha1
+kind: DatabaseServer
+metadata:
+  name: contactsappdbserver
+spec:
+  servicePort: 5432
+  superUser: "postgres"
+  superUserPassword: "postgres"
+  postgres:
+    image: postgres
+---
+apiVersion: atlasdb.infoblox.com/v1alpha1
+kind: Database
+metadata:
+  name: contactsappdb
+spec:
+  users:
+  - name: atlasdbadmin
+    password: Inf@blox
+    role: admin
+  - name: contacts
+    password: contacts
+    role: read
+  serverType: postgres
+  server: contactsappdbserver
+---
+apiVersion: atlasdb.infoblox.com/v1alpha1
+kind: DatabaseSchema
+metadata:
+  name: contactsappschema
+spec:
+  database: contactsappdb
+  git: github://<USERNAME:<TOKEN>@infobloxopen/atlas-contacts-app/db/migrations
+  version: 0002
