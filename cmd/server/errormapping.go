@@ -4,13 +4,12 @@ import (
 	"context"
 	"regexp"
 
-	"github.com/infobloxopen/atlas-app-toolkit/errors/validationerrors"
-
 	"google.golang.org/grpc/codes"
 
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus/ctxlogrus"
 	"github.com/infobloxopen/atlas-app-toolkit/errors"
 	"github.com/infobloxopen/atlas-app-toolkit/errors/mappers/pqerrors"
+	"github.com/infobloxopen/atlas-app-toolkit/errors/mappers/validationerrors"
 	"github.com/infobloxopen/atlas-app-toolkit/requestid"
 	"github.com/jinzhu/gorm"
 	"github.com/sirupsen/logrus"

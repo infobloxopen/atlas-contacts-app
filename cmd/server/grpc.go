@@ -5,7 +5,7 @@ import (
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
 	toolkit_auth "github.com/infobloxopen/atlas-app-toolkit/auth"
 	"github.com/infobloxopen/atlas-app-toolkit/errors"
-	"github.com/infobloxopen/atlas-app-toolkit/errors/validationerrors"
+	"github.com/infobloxopen/atlas-app-toolkit/errors/mappers/validationerrors"
 	"github.com/infobloxopen/atlas-app-toolkit/gateway"
 	"github.com/infobloxopen/atlas-app-toolkit/requestid"
 	"github.com/infobloxopen/atlas-contacts-app/cmd"
