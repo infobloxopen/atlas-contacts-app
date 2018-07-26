@@ -75,14 +75,6 @@ vendor-update:
 clean:
 	@docker rmi -f $(shell docker images -q $(SERVER_IMAGE)) || true
 
-.PHONY: migrate-up
-migrate-up:
-	@migrate -database 'postgres://$(DATABASE_ADDRESS)/atlas_contacts_app?sslmode=disable' -path ./db/migrations up
-
-.PHONY: migrate-down
-migrate-down:
-	@migrate -database 'postgres://$(DATABASE_ADDRESS):5432/atlas_contacts_app?sslmode=disable' -path ./db/migrations down
-
 .PHONY: up
 up:
 	kubectl apply -f deploy/ns.yaml
@@ -99,3 +91,11 @@ nginx-up:
 .PHONY: nginx-down
 nginx-down:
 	kubectl delete -f deploy/nginx.yaml
+
+.PHONY: db-up
+db-up:
+	kubectl apply -f deploy/contacts-localdb.yaml
+
+.PHONY: db-down
+db-down:
+	kubectl delete -f deploy/contacts-localdb.yaml

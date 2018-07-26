@@ -7,7 +7,6 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/sirupsen/logrus"
 
-	"context"
 	"fmt"
 	"net/http"
 	"time"
@@ -130,15 +129,6 @@ func ServeExternal(logger *logrus.Logger) error {
 	}
 
 	s, err := server.NewServer(
-		// upon startup, migrate the database
-		server.WithInitializer(func(context.Context) error {
-			// NOTE: Using db.AutoMigrate is a temporary measure to structure the contacts
-			// database schema. The atlas-app-toolkit team will come up with a better
-			// solution that uses database migration files.
-			logger.Debug("migrating database...")
-			defer logger.Debug("finished migrating database")
-			return db.AutoMigrate(&pb.ProfileORM{}, &pb.GroupORM{}, &pb.ContactORM{}, &pb.AddressORM{}, &pb.EmailORM{}).Error
-		}),
 		// register our grpc server
 		server.WithGrpcServer(grpcServer),
 		// register the gateway to proxy to the given server address with the service registration endpoints
