@@ -9,12 +9,17 @@ import (
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus/ctxlogrus"
 	"github.com/infobloxopen/atlas-app-toolkit/errors"
 	"github.com/infobloxopen/atlas-app-toolkit/errors/mappers/pqerrors"
+	"github.com/infobloxopen/atlas-app-toolkit/errors/mappers/validationerrors"
 	"github.com/infobloxopen/atlas-app-toolkit/requestid"
 	"github.com/jinzhu/gorm"
 	"github.com/sirupsen/logrus"
 )
 
 var ErrorMappings = []errors.MapFunc{
+
+	// Default Validation Mapping
+	validationerrors.DefaultMapping(),
+
 	errors.NewMapping(
 		errors.CondEq("NOT_EXISTS"),
 		errors.NewContainer(
