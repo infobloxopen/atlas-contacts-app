@@ -23,7 +23,7 @@ metadata:
   annotations:
     ingress.kubernetes.io/auth-url: http://authn-stub.atlas-stubs.svc.cluster.local/auth
     ingress.kubernetes.io/auth-response-headers: Grpc-Metadata-Authorization
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
   - http:
@@ -89,73 +89,3 @@ spec:
           successThreshold: 1
           failureThreshold: 10
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: postgres
-  namespace: contacts
-  labels:
-    app: postgres
-spec:
-  ports:
-    - port: 5432
-  selector:
-    app: api-example
-    tier: postgres
----
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  name: postgres
-  namespace: contacts
-  labels:
-    app: api-example
-spec:
-  selector:
-    matchLabels:
-      app: api-example
-      tier: postgres
-  strategy:
-    type: Recreate
-  template:
-    metadata:
-      labels:
-        app: api-example
-        tier: postgres
-    spec:
-      containers:
-      - name: postgres
-        image: postgres:9.4
-        env:
-        - name: POSTGRES_USER
-          value: postgres
-        - name: POSTGRES_PASSWORD
-          value: postgres
-        - name: POSTGRES_DB
-          value: contacts
-        - name: PGDATA
-          value: /var/lib/postgresql/data/pgdata
-        ports:
-          - containerPort: 5432
-        livenessProbe:
-          exec:
-            command:
-            - "/bin/sh"
-            - "-i"
-            - "-c"
-            - "pg_isready -h 127.0.0.1 -p 5432 -U $POSTGRES_USER"
-          initialDelaySeconds: 20
-          timeoutSeconds: 1
-          successThreshold: 1
-          failureThreshold: 10
-        readinessProbe:
-          timeoutSeconds: 1
-          initialDelaySeconds: 5
-          successThreshold: 1
-          failureThreshold: 10
-          exec:
-            command:
-            - "/bin/sh"
-            - "-i"
-            - "-c"
-            - "psql -h 127.0.0.1 -U $POSTGRES_USER -q -d $POSTGRES_PASSWORD -c 'SELECT 1'"

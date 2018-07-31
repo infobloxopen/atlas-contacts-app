@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package api.contacts;
 
-import "google/protobuf/empty.proto";
 import "google/protobuf/field_mask.proto";
 import "google/api/annotations.proto";
 import "github.com/lyft/protoc-gen-validate/validate/validate.proto";
@@ -54,6 +53,8 @@ message DeleteProfileRequest {
     atlas.rpc.Identifier id = 1;
 }
 
+message DeleteProfileResponse{}
+
 message ListProfileRequest {
     infoblox.api.Filtering filter = 1;
     infoblox.api.Sorting order_by = 2;
@@ -87,7 +88,7 @@ service Profiles {
         };
     }
 
-    rpc Delete (DeleteProfileRequest) returns (google.protobuf.Empty) {
+    rpc Delete (DeleteProfileRequest) returns (DeleteProfileResponse) {
         option (google.api.http) = {
             delete: "/profiles/{id.resource_id}"
         };
@@ -110,9 +111,8 @@ message Group {
     atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "serial" primary_key: true}];
     string name = 2;
     string notes = 3;
-    Profile profile = 4 [(gorm.field).belongs_to = {}];
-    atlas.rpc.Identifier profile_id = 5;
-    repeated Contact contacts = 6 [(gorm.field).many_to_many = {}];
+    atlas.rpc.Identifier profile_id = 4;
+    repeated Contact contacts = 5 [(gorm.field).many_to_many = {}];
 }
 
 message CreateGroupRequest {
@@ -142,6 +142,8 @@ message UpdateGroupResponse {
 message DeleteGroupRequest {
     atlas.rpc.Identifier id = 1;
 }
+
+message DeleteGroupResponse {}
 
 message ListGroupRequest {
     infoblox.api.Filtering filter = 1;
@@ -176,7 +178,7 @@ service Groups {
         };
     }
 
-    rpc Delete (DeleteGroupRequest) returns (google.protobuf.Empty) {
+    rpc Delete (DeleteGroupRequest) returns (DeleteGroupResponse) {
         option (google.api.http) = {
             delete: "/groups/{id.resource_id}"
         };
@@ -200,16 +202,15 @@ message Contact {
     string first_name = 2;
     string middle_name = 3;
     string last_name = 4;
-    string primary_email = 6 [(gorm.field).drop = true, (validate.rules).string.email = true];
-    string notes = 7;
-    repeated Email emails = 8;
-    Address home_address = 9;
-    Address work_address = 10;
-    atlas.rpc.Identifier profile_id = 11;
-    Profile profile = 12 [(gorm.field).belongs_to = {}];
-    repeated Group groups = 13 [(gorm.field).many_to_many = {jointable: "group_contacts"}];
+    string primary_email = 5 [(gorm.field).drop = true, (validate.rules).string.email = true];
+    string notes = 6;
+    repeated Email emails = 7;
+    Address home_address = 8;
+    Address work_address = 9;
+    atlas.rpc.Identifier profile_id = 10;
+    repeated Group groups = 11 [(gorm.field).many_to_many = {jointable: "group_contacts"}];
     // nicknames is arbitrary json, but should be used for a list of strings
-    gorm.types.JSONValue nicknames = 14;
+    gorm.types.JSONValue nicknames = 12;
 }
 
 message Email {
@@ -217,7 +218,7 @@ message Email {
       ormable: true,
       multi_account: true,
       include: [
-      {type: "bool", name: "is_primary"}]
+      {type: "*bool", name: "is_primary"}]
     };
     uint64 id = 1;
     string address = 2 [(gorm.field).tag.unique = true, (validate.rules).string.email = true];
@@ -264,6 +265,8 @@ message DeleteContactRequest {
     atlas.rpc.Identifier id = 1;
 }
 
+message DeleteContactResponse {}
+
 message ListContactsResponse {
     repeated Contact results = 1;
 }
@@ -272,6 +275,8 @@ message SMSRequest {
     uint64 id = 1;
     string message = 2;
 }
+
+message SMSResponse {}
 
 message ListContactRequest {
     infoblox.api.Filtering filter = 1;
@@ -303,7 +308,7 @@ service Contacts {
         };
     }
 
-    rpc Delete (DeleteContactRequest) returns (google.protobuf.Empty) {
+    rpc Delete (DeleteContactRequest) returns (DeleteContactResponse) {
         option (google.api.http) = {
             delete: "/contacts/{id.resource_id}"
         };
@@ -316,7 +321,7 @@ service Contacts {
         };
     }
 
-    rpc SendSMS (SMSRequest) returns (google.protobuf.Empty) {
+    rpc SendSMS (SMSRequest) returns (SMSResponse) {
         option (google.api.http) = {
             post: "/contacts/{id}/sms"
             body: "*"

@@ -35,11 +35,10 @@
     "ptypes",
     "ptypes/any",
     "ptypes/duration",
-    "ptypes/empty",
     "ptypes/struct",
     "ptypes/timestamp"
   ]
-  revision = "427e165155e0a4ff5993a36657c1f733f5b0f782"
+  revision = "11bd559057bb9c65e24d1bd7f436d375323a8565"
 
 [[projects]]
   name = "github.com/google/uuid"
@@ -58,8 +57,7 @@
     "logging/logrus/ctxlogrus",
     "tags",
     "tags/logrus",
-    "util/metautils",
-    "validator"
+    "util/metautils"
   ]
   revision = "e9c5d9645c437ab1b204cff969a2c0fb16cd4276"
 
@@ -86,6 +84,8 @@
   packages = [
     "auth",
     "errors",
+    "errors/mappers/pqerrors",
+    "errors/mappers/validationerrors",
     "gateway",
     "gorm",
     "gorm/resource",
@@ -97,7 +97,7 @@
     "rpc/resource",
     "server"
   ]
-  revision = "a7bfea8f5fa7f7f33e50c53e45e6e2b7c0b52bc0"
+  revision = "1a2f7ec496d026937d1a5d24f9827088abbadc9d"
 
 [[projects]]
   branch = "master"
@@ -130,8 +130,8 @@
     "options",
     "types"
   ]
-  revision = "8c7a27a1b1ba3e86ba6f5865f75623d32bdd2bbe"
-  version = "v0.8.0"
+  revision = "e6bd77027471ac6251693f5813f5e4fc565fa15c"
+  version = "v0.9.0"
 
 [[projects]]
   name = "github.com/infobloxopen/themis"
@@ -193,7 +193,7 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
-  revision = "a2144134853fc9a27a7b1e3eb4f19f1a76df13c9"
+  revision = "c126467f60eb25f8f27e5a981f32a87e3965053f"
 
 [[projects]]
   branch = "master"
@@ -207,7 +207,7 @@
     "internal/timeseries",
     "trace"
   ]
-  revision = "a680a1efc54dd51c040b3b5ce4939ea3cf2ea0d1"
+  revision = "a0f8a16cb08c06df97cbdf9c47f4731ba548c33c"
 
 [[projects]]
   branch = "master"
@@ -216,7 +216,7 @@
     "unix",
     "windows"
   ]
-  revision = "ac767d655b305d4e9612f5f6e33120b9176c4ad4"
+  revision = "bd9dbc187b6e1dacfdd2722a87e83093c2d7bd6e"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -248,7 +248,7 @@
     "googleapis/rpc/status",
     "protobuf/field_mask"
   ]
-  revision = "02b4e95473316948020af0b7a4f0f22c73929b0e"
+  revision = "2a72893556e4d1f6c795a4c039314c9fa751eedb"
 
 [[projects]]
   name = "google.golang.org/grpc"
@@ -285,6 +285,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "1369b25eb55278c274186fe0efdd2780e11ff308b50f8eb4c03428d97be4476f"
+  inputs-digest = "9bc03c17f434ea3278a0cf370eea9a82ef177837d338d0f2e7093fb830b73e9c"
   solver-name = "gps-cdcl"
   solver-version = 1

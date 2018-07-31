@@ -16,6 +16,18 @@ Install go dep
 go get -u github.com/golang/dep/cmd/dep
 ```
 
+Install atlas-db-controller for managing database resources:
+
+  * To create atlas-db custom resource and controller follow [link](https://github.com/infobloxopen/atlas-db/blob/master/README.md).
+  * To create database instance, database and schema/tables resources locally to be used by contacts app, modify `contacts-localdb.yaml` following specifications mentioned in [link](https://github.com/infobloxopen/atlas-db/blob/master/README.md) and run:
+  ```
+    make db-up
+  ```
+  * To use RDS database instance, database and schema/tables resources used by contacts app, modify `contacts-rds.yaml` and run"
+  ```sh
+    kubectl create -f ./deploy/contacts-rds.yaml
+  ```
+
 ### Local development setup
 
 Please note that you should have the following ports opened on you local workstation: `:8080 :8081 :9090 :5432`.
@@ -23,10 +35,11 @@ If they are busy - please change them via corresponding parameters of `gateway` 
 
 Run PostgresDB:
 
-``` sh
+```sh
 docker run --name contacts-db -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=contacts -p 5432:5432 -d postgres:9.4
 ```
-Table creation in this example is omitted as it will be done automatically by `gorm`.
+
+Table creation should be done manually by running the migrations scripts. Scripts can be found at `./db/migrations/`
 
 Create vendor directory with required golang packages
 ``` sh
@@ -41,7 +54,7 @@ go run ./cmd/server/*.go -db "host=localhost port=5432 user=postgres password=po
 
 #### Try atlas-contacts-app
 
-For Multi-Account environment, Authorization token is required. You can generate it using https://jwt.io/ with following Payload:
+For Multi-Account environment, Authorization token (Bearer) is required. You can generate it using https://jwt.io/ with following Payload:
 ```
 {
   "AccountID": YourAccountID
@@ -54,25 +67,25 @@ Example:
   "AccountID": 1
 }
 ```
-Token
+Bearer
 ``` sh
 export JWT="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBY2NvdW50SUQiOjF9.GsXyFDDARjXe1t9DPo2LIBKHEal3O7t3vLI3edA7dGU"
 ```
 
 Request examples:
 ``` sh
-curl -H "Authorization: Token $JWT" \
+curl -H "Authorization: Bearer $JWT" \
 http://localhost:8080/v1/contacts -d '{"first_name": "Mike", "primary_email": "mike@example.com"}'
 ```
 
 ``` sh
-curl -H "Authorization: Token $JWT" \
+curl -H "Authorization: Bearer $JWT" \
 http://localhost:8080/v1/contacts -d \
 '{"first_name": "Robert", "primary_email": "robert@example.com", "nicknames": ["bob", "robbie"]}'
 ```
 
 ``` sh
-curl -H "Authorization: Token $JWT" \
+curl -H "Authorization: Bearer $JWT" \
 http://localhost:8080/v1/contacts?_filter='first_name=="Mike"'
 ```
 Note, that `JWT` should contain AccountID field.
@@ -125,37 +138,37 @@ Try it out by executing following curl commands:
 ``` sh
 # Create some profiles
 curl -k -H "User-And-Pass: admin1:admin" \
-https://$(minikube ip)/v1/profiles -d '{"name": "personal", "notes": "Used for personal aims"}' | jq
+https://$(minikube ip)/atlas-contacts-app/v1/profiles -d '{"name": "personal", "notes": "Used for personal aims"}' | jq
 
 curl -k -H "User-And-Pass: admin1:admin" \
-https://$(minikube ip)/v1/profiles -d '{"name": "work", "notes": "Used for work aims"}' | jq
+https://$(minikube ip)/atlas-contacts-app/v1/profiles -d '{"name": "work", "notes": "Used for work aims"}' | jq
 
 # Create some groups assigned to profiles
 curl -k -H "User-And-Pass: admin1:admin" \
-https://$(minikube ip)/v1/groups -d '{"name": "schoolmates", "profile_id": 1}' | jq
+https://$(minikube ip)/atlas-contacts-app/v1/groups -d '{"name": "schoolmates", "profile_id": 1}' | jq
 
 curl -k -H "User-And-Pass: admin1:admin" \
-https://$(minikube ip)/v1/groups -d '{"name": "family", "profile_id": 1}' | jq
+https://$(minikube ip)/atlas-contacts-app/v1/groups -d '{"name": "family", "profile_id": 1}' | jq
 
 curl -k -H "User-And-Pass: admin1:admin" \
-https://$(minikube ip)/v1/groups -d '{"name": "accountants", "profile_id": 2}' | jq
+https://$(minikube ip)/atlas-contacts-app/v1/groups -d '{"name": "accountants", "profile_id": 2}' | jq
 
 # Add some contacts assigned to profiles and groups
 curl -k -H "User-And-Pass: admin1:admin" \
-https://$(minikube ip)/v1/contacts -d '{"first_name": "Mike", "primary_email": "mike@gmail.com", "profile_id": 1, "groups": [{"id": 1, "name": "schoolmates", "profile_id": 1}, {"id": 2, "name": "family", "profile_id": 1}], "home_address": {"city": "Minneapolis", "state": "Minnesota", "country": "US"}}' | jq
+https://$(minikube ip)/atlas-contacts-app/v1/contacts -d '{"first_name": "Mike", "primary_email": "mike@gmail.com", "profile_id": 1, "groups": [{"id": 1, "name": "schoolmates", "profile_id": 1}, {"id": 2, "name": "family", "profile_id": 1}], "home_address": {"city": "Minneapolis", "state": "Minnesota", "country": "US"}}' | jq
 
 curl -k -H "User-And-Pass: admin1:admin" \
-https://$(minikube ip)/v1/contacts -d '{"first_name": "John", "primary_email": "john@gmail.com", "profile_id": 2, "work_address": {"city": "St.Paul", "state": "Minnesota", "country": "US"}}' | jq
+https://$(minikube ip)/atlas-contacts-app/v1/contacts -d '{"first_name": "John", "primary_email": "john@gmail.com", "profile_id": 2, "work_address": {"city": "St.Paul", "state": "Minnesota", "country": "US"}}' | jq
 
 # Read created resources
 curl -k -H "User-And-Pass: admin1:admin" \
-https://$(minikube ip)/v1/profiles  | jq
+https://$(minikube ip)/atlas-contacts-app/v1/profiles  | jq
 
 curl -k -H "User-And-Pass: admin1:admin" \
-https://$(minikube ip)/v1/groups | jq
+https://$(minikube ip)/atlas-contacts-app/v1/groups | jq
 
 curl -k -H "User-And-Pass: admin1:admin" \
-https://$(minikube ip)/v1/contacts | jq
+https://$(minikube ip)/atlas-contacts-app/v1/contacts | jq
 ```
 
 ##### Pagination (page token)

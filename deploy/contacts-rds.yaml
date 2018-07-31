@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: contactssecret
+  namespace: $KUBERNETES_NAMESPACE
+type: Opaque
+data:
+  rdsDsn: # encoded RDS creds
+  dsn: # encoded db creds
+  githubUrl: # encoded github url to migration scripts
+---
+apiVersion: atlasdb.infoblox.com/v1alpha1
+kind: Database
+metadata:
+  name: contactsappdb
+  namespace: $KUBERNETES_NAMESPACE
+spec:
+  dsnFrom:
+    secretKeyRef:
+      name: contactssecret
+      key: rdsDsn
+  serverType: postgres
+---
+apiVersion: atlasdb.infoblox.com/v1alpha1
+kind: DatabaseSchema
+metadata:
+  name: contactsappschema
+  namespace: $KUBERNETES_NAMESPACE
+spec:
+  database: contactsappdb
+  dsnFrom:
+   secretKeyRef:
+      name: contactssecret
+      key: dsn
+  gitFrom:
+      secretKeyRef:
+        name: contactssecret
+        key: githubUrl
+  version: 0002
