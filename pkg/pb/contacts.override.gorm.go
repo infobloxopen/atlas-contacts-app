@@ -3,37 +3,57 @@ package pb
 import (
 	"strings"
 
+	"github.com/infobloxopen/atlas-app-toolkit/auth"
 	"github.com/infobloxopen/atlas-app-toolkit/query"
 	"github.com/infobloxopen/atlas-app-toolkit/rpc/errdetails"
-	"github.com/infobloxopen/atlas-app-toolkit/auth"
 	"github.com/jinzhu/gorm"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-
-	//log "github.com/sirupsen/logrus"
 )
 
-// BeforeToORM will add the primary e-mail to the list of e-mails if it isn't
+// AfterToORM will add the primary e-mail to the list of e-mails if it isn't
 // present already
-func (m *Contact) BeforeToORM(ctx context.Context, c *ContactORM) error {
-	emails := []*Email{}
-	if m.PrimaryEmail != "" {
-		for _, mail := range m.Emails {
-			if mail.Address != m.PrimaryEmail {
-				emails = append(emails, mail)
+func (m *Contact) AfterToORM(ctx context.Context, c *ContactORM) error {
+	if m.PrimaryEmail == "" {
+		return nil
+	}
+
+	var primary *EmailORM
+
+	emails := []*EmailORM{}
+	for _, e := range c.Emails {
+		if e != nil {
+			if e.Address != m.PrimaryEmail {
+				e.IsPrimary = new(bool)
+				*e.IsPrimary = false
+				emails = append(emails, e)
+			} else {
+				e.IsPrimary = new(bool)
+				*e.IsPrimary = true
+
+				primary = e
 			}
+		} else {
+			emails = append(emails, e)
 		}
+	}
 
-		m.Emails = emails
-
+	if primary == nil {
 		accountID, err := auth.GetAccountID(ctx, nil)
 		if err != nil {
 			return err
 		}
 
-		c.Emails = []*EmailORM{&EmailORM{Address: m.PrimaryEmail, AccountID: accountID, IsPrimary: true}}
+		primary = &EmailORM{Address: m.PrimaryEmail, AccountID: accountID}
+		primary.IsPrimary = new(bool)
+		*primary.IsPrimary = true
 	}
+
+	emails = append(emails, primary)
+
+	c.Emails = emails
+
 	return nil
 }
 
@@ -44,7 +64,7 @@ func (m *ContactORM) AfterToPB(ctx context.Context, c *Contact) error {
 	}
 	// find the primary e-mail in list of e-mails from DB
 	for _, addr := range m.Emails {
-		if addr != nil && addr.IsPrimary {
+		if addr != nil && addr.IsPrimary != nil && *addr.IsPrimary {
 			c.PrimaryEmail = addr.Address
 			break
 		}

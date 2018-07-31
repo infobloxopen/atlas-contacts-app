@@ -237,10 +237,12 @@ func (m *Group) ToORM(ctx context.Context) (GroupORM, error) {
 	}
 	to.Name = m.Name
 	to.Notes = m.Notes
-	if v, err := resource1.DecodeInt64(&Profile{}, m.ProfileId); err != nil {
-		return to, err
-	} else {
-		to.ProfileId = &v
+	if m.ProfileId != nil {
+		if v, err := resource1.DecodeInt64(&Profile{}, m.ProfileId); err != nil {
+			return to, err
+		} else {
+			to.ProfileId = &v
+		}
 	}
 	for _, v := range m.Contacts {
 		if v != nil {
@@ -283,12 +285,6 @@ func (m *GroupORM) ToPB(ctx context.Context) (Group, error) {
 	to.Notes = m.Notes
 	if m.ProfileId != nil {
 		if v, err := resource1.Encode(&Profile{}, *m.ProfileId); err != nil {
-			return to, err
-		} else {
-			to.ProfileId = v
-		}
-	} else {
-		if v, err := resource1.Encode(&Profile{}, nil); err != nil {
 			return to, err
 		} else {
 			to.ProfileId = v
@@ -398,10 +394,12 @@ func (m *Contact) ToORM(ctx context.Context) (ContactORM, error) {
 		}
 		to.WorkAddress = &tempWorkAddress
 	}
-	if v, err := resource1.DecodeInt64(&Profile{}, m.ProfileId); err != nil {
-		return to, err
-	} else {
-		to.ProfileId = &v
+	if m.ProfileId != nil {
+		if v, err := resource1.DecodeInt64(&Profile{}, m.ProfileId); err != nil {
+			return to, err
+		} else {
+			to.ProfileId = &v
+		}
 	}
 	for _, v := range m.Groups {
 		if v != nil {
@@ -474,12 +472,6 @@ func (m *ContactORM) ToPB(ctx context.Context) (Contact, error) {
 	}
 	if m.ProfileId != nil {
 		if v, err := resource1.Encode(&Profile{}, *m.ProfileId); err != nil {
-			return to, err
-		} else {
-			to.ProfileId = v
-		}
-	} else {
-		if v, err := resource1.Encode(&Profile{}, nil); err != nil {
 			return to, err
 		} else {
 			to.ProfileId = v
@@ -712,6 +704,7 @@ func DefaultReadProfile(ctx context.Context, in *Profile, db *gorm1.DB) (*Profil
 	if in == nil {
 		return nil, errors.New("Nil argument to DefaultReadProfile")
 	}
+	db = db.Set("gorm:auto_preload", true)
 	ormParams, err := in.ToORM(ctx)
 	if err != nil {
 		return nil, err
@@ -819,6 +812,7 @@ func DefaultPatchProfile(ctx context.Context, in *Profile, updateMask *field_mas
 	if in == nil {
 		return nil, errors.New("Nil argument to DefaultPatchProfile")
 	}
+	db = db.Set("gorm:auto_preload", true)
 	accountID, err := auth1.GetAccountID(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -839,6 +833,11 @@ func DefaultPatchProfile(ctx context.Context, in *Profile, updateMask *field_mas
 	if _, err := DefaultApplyFieldMaskProfile(ctx, &pbObj, &ormObj, in, updateMask, db); err != nil {
 		return nil, err
 	}
+	if hook, ok := interface{}(&pbObj).(ProfileWithBeforePatchSave); ok {
+		if ctx, db, err = hook.BeforePatchSave(ctx, in, updateMask, db); err != nil {
+			return nil, err
+		}
+	}
 	ormObj, err = pbObj.ToORM(ctx)
 	if err != nil {
 		return nil, err
@@ -852,6 +851,10 @@ func DefaultPatchProfile(ctx context.Context, in *Profile, updateMask *field_mas
 		return nil, err
 	}
 	return &pbObj, err
+}
+
+type ProfileWithBeforePatchSave interface {
+	BeforePatchSave(context.Context, *Profile, *field_mask1.FieldMask, *gorm1.DB) (context.Context, *gorm1.DB, error)
 }
 
 // DefaultApplyFieldMaskProfile patches an pbObject with patcher according to a field mask.
@@ -936,6 +939,9 @@ func DefaultListProfile(ctx context.Context, db *gorm1.DB, req interface{}) ([]*
 	if err != nil {
 		return nil, err
 	}
+	if fs.GetFields() == nil {
+		db = db.Set("gorm:auto_preload", true)
+	}
 	in := Profile{}
 	ormParams, err := in.ToORM(ctx)
 	if err != nil {
@@ -978,6 +984,7 @@ func DefaultReadGroup(ctx context.Context, in *Group, db *gorm1.DB) (*Group, err
 	if in == nil {
 		return nil, errors.New("Nil argument to DefaultReadGroup")
 	}
+	db = db.Set("gorm:auto_preload", true)
 	ormParams, err := in.ToORM(ctx)
 	if err != nil {
 		return nil, err
@@ -1065,6 +1072,7 @@ func DefaultPatchGroup(ctx context.Context, in *Group, updateMask *field_mask1.F
 	if in == nil {
 		return nil, errors.New("Nil argument to DefaultPatchGroup")
 	}
+	db = db.Set("gorm:auto_preload", true)
 	accountID, err := auth1.GetAccountID(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -1085,6 +1093,11 @@ func DefaultPatchGroup(ctx context.Context, in *Group, updateMask *field_mask1.F
 	if _, err := DefaultApplyFieldMaskGroup(ctx, &pbObj, &ormObj, in, updateMask, db); err != nil {
 		return nil, err
 	}
+	if hook, ok := interface{}(&pbObj).(GroupWithBeforePatchSave); ok {
+		if ctx, db, err = hook.BeforePatchSave(ctx, in, updateMask, db); err != nil {
+			return nil, err
+		}
+	}
 	ormObj, err = pbObj.ToORM(ctx)
 	if err != nil {
 		return nil, err
@@ -1098,6 +1111,10 @@ func DefaultPatchGroup(ctx context.Context, in *Group, updateMask *field_mask1.F
 		return nil, err
 	}
 	return &pbObj, err
+}
+
+type GroupWithBeforePatchSave interface {
+	BeforePatchSave(context.Context, *Group, *field_mask1.FieldMask, *gorm1.DB) (context.Context, *gorm1.DB, error)
 }
 
 // DefaultApplyFieldMaskGroup patches an pbObject with patcher according to a field mask.
@@ -1136,6 +1153,9 @@ func DefaultListGroup(ctx context.Context, db *gorm1.DB, req interface{}) ([]*Gr
 	db, err = gorm2.ApplyCollectionOperators(db, &GroupORM{}, f, s, p, fs)
 	if err != nil {
 		return nil, err
+	}
+	if fs.GetFields() == nil {
+		db = db.Set("gorm:auto_preload", true)
 	}
 	in := Group{}
 	ormParams, err := in.ToORM(ctx)
@@ -1179,6 +1199,7 @@ func DefaultReadContact(ctx context.Context, in *Contact, db *gorm1.DB) (*Contac
 	if in == nil {
 		return nil, errors.New("Nil argument to DefaultReadContact")
 	}
+	db = db.Set("gorm:auto_preload", true)
 	ormParams, err := in.ToORM(ctx)
 	if err != nil {
 		return nil, err
@@ -1296,6 +1317,7 @@ func DefaultPatchContact(ctx context.Context, in *Contact, updateMask *field_mas
 	if in == nil {
 		return nil, errors.New("Nil argument to DefaultPatchContact")
 	}
+	db = db.Set("gorm:auto_preload", true)
 	accountID, err := auth1.GetAccountID(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -1316,6 +1338,11 @@ func DefaultPatchContact(ctx context.Context, in *Contact, updateMask *field_mas
 	if _, err := DefaultApplyFieldMaskContact(ctx, &pbObj, &ormObj, in, updateMask, db); err != nil {
 		return nil, err
 	}
+	if hook, ok := interface{}(&pbObj).(ContactWithBeforePatchSave); ok {
+		if ctx, db, err = hook.BeforePatchSave(ctx, in, updateMask, db); err != nil {
+			return nil, err
+		}
+	}
 	ormObj, err = pbObj.ToORM(ctx)
 	if err != nil {
 		return nil, err
@@ -1329,6 +1356,10 @@ func DefaultPatchContact(ctx context.Context, in *Contact, updateMask *field_mas
 		return nil, err
 	}
 	return &pbObj, err
+}
+
+type ContactWithBeforePatchSave interface {
+	BeforePatchSave(context.Context, *Contact, *field_mask1.FieldMask, *gorm1.DB) (context.Context, *gorm1.DB, error)
 }
 
 // DefaultApplyFieldMaskContact patches an pbObject with patcher according to a field mask.
@@ -1419,6 +1450,9 @@ func DefaultListContact(ctx context.Context, db *gorm1.DB, req interface{}) ([]*
 	if err != nil {
 		return nil, err
 	}
+	if fs.GetFields() == nil {
+		db = db.Set("gorm:auto_preload", true)
+	}
 	in := Contact{}
 	ormParams, err := in.ToORM(ctx)
 	if err != nil {
@@ -1461,6 +1495,7 @@ func DefaultReadEmail(ctx context.Context, in *Email, db *gorm1.DB) (*Email, err
 	if in == nil {
 		return nil, errors.New("Nil argument to DefaultReadEmail")
 	}
+	db = db.Set("gorm:auto_preload", true)
 	ormParams, err := in.ToORM(ctx)
 	if err != nil {
 		return nil, err
@@ -1548,6 +1583,7 @@ func DefaultPatchEmail(ctx context.Context, in *Email, updateMask *field_mask1.F
 	if in == nil {
 		return nil, errors.New("Nil argument to DefaultPatchEmail")
 	}
+	db = db.Set("gorm:auto_preload", true)
 	accountID, err := auth1.GetAccountID(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -1568,6 +1604,11 @@ func DefaultPatchEmail(ctx context.Context, in *Email, updateMask *field_mask1.F
 	if _, err := DefaultApplyFieldMaskEmail(ctx, &pbObj, &ormObj, in, updateMask, db); err != nil {
 		return nil, err
 	}
+	if hook, ok := interface{}(&pbObj).(EmailWithBeforePatchSave); ok {
+		if ctx, db, err = hook.BeforePatchSave(ctx, in, updateMask, db); err != nil {
+			return nil, err
+		}
+	}
 	ormObj, err = pbObj.ToORM(ctx)
 	if err != nil {
 		return nil, err
@@ -1581,6 +1622,10 @@ func DefaultPatchEmail(ctx context.Context, in *Email, updateMask *field_mask1.F
 		return nil, err
 	}
 	return &pbObj, err
+}
+
+type EmailWithBeforePatchSave interface {
+	BeforePatchSave(context.Context, *Email, *field_mask1.FieldMask, *gorm1.DB) (context.Context, *gorm1.DB, error)
 }
 
 // DefaultApplyFieldMaskEmail patches an pbObject with patcher according to a field mask.
@@ -1610,6 +1655,9 @@ func DefaultListEmail(ctx context.Context, db *gorm1.DB, req interface{}) ([]*Em
 	db, err = gorm2.ApplyCollectionOperators(db, &EmailORM{}, f, s, p, fs)
 	if err != nil {
 		return nil, err
+	}
+	if fs.GetFields() == nil {
+		db = db.Set("gorm:auto_preload", true)
 	}
 	in := Email{}
 	ormParams, err := in.ToORM(ctx)
@@ -1658,6 +1706,9 @@ func DefaultListAddress(ctx context.Context, db *gorm1.DB, req interface{}) ([]*
 	db, err = gorm2.ApplyCollectionOperators(db, &AddressORM{}, f, s, p, fs)
 	if err != nil {
 		return nil, err
+	}
+	if fs.GetFields() == nil {
+		db = db.Set("gorm:auto_preload", true)
 	}
 	in := Address{}
 	ormParams, err := in.ToORM(ctx)
@@ -1961,7 +2012,7 @@ func (m *ContactsDefaultServer) Update(ctx context.Context, in *UpdateContactReq
 			return nil, err
 		}
 	}
-	if len(in.GetFields().GetPaths()) == 0 {
+	if in.GetFields() == nil {
 		res, err = DefaultStrictUpdateContact(ctx, in.GetPayload(), db)
 	} else {
 		res, err = DefaultPatchContact(ctx, in.GetPayload(), in.GetFields(), db)
