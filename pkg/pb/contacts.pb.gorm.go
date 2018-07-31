@@ -812,21 +812,16 @@ func DefaultPatchProfile(ctx context.Context, in *Profile, updateMask *field_mas
 	if in == nil {
 		return nil, errors.New("Nil argument to DefaultPatchProfile")
 	}
-	db = db.Set("gorm:auto_preload", true)
 	accountID, err := auth1.GetAccountID(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
-	ormParams, err := (&Profile{Id: in.GetId()}).ToORM(ctx)
+	pbReadRes, err := DefaultReadProfile(ctx, &Profile{Id: in.GetId()}, db)
 	if err != nil {
 		return nil, err
 	}
-	db = db.Where(&ProfileORM{AccountID: accountID})
-	ormObj := ProfileORM{}
-	if err := db.Where(&ormParams).First(&ormObj).Error; err != nil {
-		return nil, err
-	}
-	pbObj, err := ormObj.ToPB(ctx)
+	pbObj := *pbReadRes
+	ormObj, err := pbObj.ToORM(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -1072,21 +1067,16 @@ func DefaultPatchGroup(ctx context.Context, in *Group, updateMask *field_mask1.F
 	if in == nil {
 		return nil, errors.New("Nil argument to DefaultPatchGroup")
 	}
-	db = db.Set("gorm:auto_preload", true)
 	accountID, err := auth1.GetAccountID(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
-	ormParams, err := (&Group{Id: in.GetId()}).ToORM(ctx)
+	pbReadRes, err := DefaultReadGroup(ctx, &Group{Id: in.GetId()}, db)
 	if err != nil {
 		return nil, err
 	}
-	db = db.Where(&GroupORM{AccountID: accountID})
-	ormObj := GroupORM{}
-	if err := db.Where(&ormParams).First(&ormObj).Error; err != nil {
-		return nil, err
-	}
-	pbObj, err := ormObj.ToPB(ctx)
+	pbObj := *pbReadRes
+	ormObj, err := pbObj.ToORM(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -1317,21 +1307,16 @@ func DefaultPatchContact(ctx context.Context, in *Contact, updateMask *field_mas
 	if in == nil {
 		return nil, errors.New("Nil argument to DefaultPatchContact")
 	}
-	db = db.Set("gorm:auto_preload", true)
 	accountID, err := auth1.GetAccountID(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
-	ormParams, err := (&Contact{Id: in.GetId()}).ToORM(ctx)
+	pbReadRes, err := DefaultReadContact(ctx, &Contact{Id: in.GetId()}, db)
 	if err != nil {
 		return nil, err
 	}
-	db = db.Where(&ContactORM{AccountID: accountID})
-	ormObj := ContactORM{}
-	if err := db.Where(&ormParams).First(&ormObj).Error; err != nil {
-		return nil, err
-	}
-	pbObj, err := ormObj.ToPB(ctx)
+	pbObj := *pbReadRes
+	ormObj, err := pbObj.ToORM(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -1583,21 +1568,16 @@ func DefaultPatchEmail(ctx context.Context, in *Email, updateMask *field_mask1.F
 	if in == nil {
 		return nil, errors.New("Nil argument to DefaultPatchEmail")
 	}
-	db = db.Set("gorm:auto_preload", true)
 	accountID, err := auth1.GetAccountID(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
-	ormParams, err := (&Email{Id: in.GetId()}).ToORM(ctx)
+	pbReadRes, err := DefaultReadEmail(ctx, &Email{Id: in.GetId()}, db)
 	if err != nil {
 		return nil, err
 	}
-	db = db.Where(&EmailORM{AccountID: accountID})
-	ormObj := EmailORM{}
-	if err := db.Where(&ormParams).First(&ormObj).Error; err != nil {
-		return nil, err
-	}
-	pbObj, err := ormObj.ToPB(ctx)
+	pbObj := *pbReadRes
+	ormObj, err := pbObj.ToORM(ctx)
 	if err != nil {
 		return nil, err
 	}
