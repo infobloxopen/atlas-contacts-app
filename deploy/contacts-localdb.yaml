@@ -2,6 +2,7 @@ apiVersion: atlasdb.infoblox.com/v1alpha1
 kind: DatabaseServer
 metadata:
   name: contactsappdbserver
+  namespace: contacts
 spec:
   servicePort: 5432
   superUser: "postgres"
@@ -13,6 +14,7 @@ apiVersion: atlasdb.infoblox.com/v1alpha1
 kind: Database
 metadata:
   name: contactsappdb
+  namespace: contacts
 spec:
   users:
   - name: atlasdbadmin
@@ -28,7 +30,8 @@ apiVersion: atlasdb.infoblox.com/v1alpha1
 kind: DatabaseSchema
 metadata:
   name: contactsappschema
+  namespace: contacts
 spec:
   database: contactsappdb
-  git: github://<USERNAME:<TOKEN>@infobloxopen/atlas-contacts-app/db/migrations
+  git: github://$GIT_USER:$GIT_TOKEN@infobloxopen/atlas-contacts-app/db/migrations
   version: 0002
