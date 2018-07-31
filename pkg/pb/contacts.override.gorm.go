@@ -23,19 +23,14 @@ func (m *Contact) AfterToORM(ctx context.Context, c *ContactORM) error {
 
 	emails := []*EmailORM{}
 	for _, e := range c.Emails {
-		if e != nil {
-			if e.Address != m.PrimaryEmail {
-				e.IsPrimary = new(bool)
-				*e.IsPrimary = false
-				emails = append(emails, e)
-			} else {
-				e.IsPrimary = new(bool)
-				*e.IsPrimary = true
-
-				primary = e
-			}
-		} else {
+		if e.Address != m.PrimaryEmail {
+			e.IsPrimary = new(bool)
+			*e.IsPrimary = false
 			emails = append(emails, e)
+		} else {
+			e.IsPrimary = new(bool)
+			*e.IsPrimary = true
+			primary = e
 		}
 	}
 
@@ -51,7 +46,6 @@ func (m *Contact) AfterToORM(ctx context.Context, c *ContactORM) error {
 	}
 
 	emails = append(emails, primary)
-
 	c.Emails = emails
 
 	return nil
