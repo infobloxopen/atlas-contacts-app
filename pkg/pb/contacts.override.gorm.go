@@ -3,7 +3,6 @@ package pb
 import (
 	"strings"
 
-	"github.com/infobloxopen/atlas-app-toolkit/auth"
 	"github.com/infobloxopen/atlas-app-toolkit/query"
 	"github.com/infobloxopen/atlas-app-toolkit/rpc/errdetails"
 	"github.com/jinzhu/gorm"
@@ -35,12 +34,12 @@ func (m *Contact) AfterToORM(ctx context.Context, c *ContactORM) error {
 	}
 
 	if primary == nil {
-		accountID, err := auth.GetAccountID(ctx, nil)
-		if err != nil {
+		if e, err := (&Email{Address: m.PrimaryEmail}).ToORM(ctx); err != nil {
 			return err
+		} else {
+			primary = &e
 		}
 
-		primary = &EmailORM{Address: m.PrimaryEmail, AccountID: accountID}
 		primary.IsPrimary = new(bool)
 		*primary.IsPrimary = true
 	}
