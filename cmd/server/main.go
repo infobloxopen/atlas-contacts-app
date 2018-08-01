@@ -18,7 +18,6 @@ import (
 	"github.com/infobloxopen/atlas-app-toolkit/health"
 	"github.com/infobloxopen/atlas-app-toolkit/server"
 	"github.com/infobloxopen/atlas-contacts-app/cmd"
-	migrate "github.com/infobloxopen/atlas-contacts-app/db"
 	"github.com/infobloxopen/atlas-contacts-app/pkg/pb"
 
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
@@ -119,9 +118,6 @@ func ServeExternal(logger *logrus.Logger) error {
 		return err
 	}
 	defer dbSQL.Close()
-	if err := migrate.MigrateDB(*dbSQL); err != nil {
-		return err
-	}
 	db, err := gorm.Open("postgres", dbSQL)
 	if err != nil {
 		return err
