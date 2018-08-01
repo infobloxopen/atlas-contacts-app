@@ -11,17 +11,42 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// BeforeToORM will add the primary e-mail to the list of e-mails if it isn't
+// AfterToORM will add the primary e-mail to the list of e-mails if it isn't
 // present already
-func (m *Contact) BeforeToORM(ctx context.Context, c *ContactORM) error {
-	if m.PrimaryEmail != "" {
-		for _, mail := range m.Emails {
-			if mail.Address == m.PrimaryEmail {
-				return nil
-			}
-		}
-		c.Emails = append(c.Emails, &EmailORM{Address: m.PrimaryEmail, IsPrimary: true})
+func (m *Contact) AfterToORM(ctx context.Context, c *ContactORM) error {
+	if m.PrimaryEmail == "" {
+		return nil
 	}
+
+	var primary *EmailORM
+
+	emails := []*EmailORM{}
+	for _, e := range c.Emails {
+		if e.Address != m.PrimaryEmail {
+			e.IsPrimary = new(bool)
+			*e.IsPrimary = false
+			emails = append(emails, e)
+		} else {
+			e.IsPrimary = new(bool)
+			*e.IsPrimary = true
+			primary = e
+		}
+	}
+
+	if primary == nil {
+		if e, err := (&Email{Address: m.PrimaryEmail}).ToORM(ctx); err != nil {
+			return err
+		} else {
+			primary = &e
+		}
+
+		primary.IsPrimary = new(bool)
+		*primary.IsPrimary = true
+	}
+
+	emails = append(emails, primary)
+	c.Emails = emails
+
 	return nil
 }
 
@@ -32,7 +57,7 @@ func (m *ContactORM) AfterToPB(ctx context.Context, c *Contact) error {
 	}
 	// find the primary e-mail in list of e-mails from DB
 	for _, addr := range m.Emails {
-		if addr != nil && addr.IsPrimary {
+		if addr != nil && addr.IsPrimary != nil && *addr.IsPrimary {
 			c.PrimaryEmail = addr.Address
 			break
 		}

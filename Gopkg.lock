@@ -35,11 +35,10 @@
     "ptypes",
     "ptypes/any",
     "ptypes/duration",
-    "ptypes/empty",
     "ptypes/struct",
     "ptypes/timestamp"
   ]
-  revision = "93b26e6a70e37abb14f2f88194949312b0592a84"
+  revision = "11bd559057bb9c65e24d1bd7f436d375323a8565"
 
 [[projects]]
   name = "github.com/google/uuid"
@@ -98,7 +97,7 @@
     "rpc/resource",
     "server"
   ]
-  revision = "3e0f9c774b1b2bff42e78aaf4fc03d9b21a7513e"
+  revision = "1a2f7ec496d026937d1a5d24f9827088abbadc9d"
 
 [[projects]]
   branch = "master"
@@ -131,8 +130,8 @@
     "options",
     "types"
   ]
-  revision = "8c7a27a1b1ba3e86ba6f5865f75623d32bdd2bbe"
-  version = "v0.8.0"
+  revision = "e6bd77027471ac6251693f5813f5e4fc565fa15c"
+  version = "v0.9.0"
 
 [[projects]]
   name = "github.com/infobloxopen/themis"
@@ -208,7 +207,7 @@
     "internal/timeseries",
     "trace"
   ]
-  revision = "3673e40ba22529d22c3fd7c93e97b0ce50fa7bdd"
+  revision = "a0f8a16cb08c06df97cbdf9c47f4731ba548c33c"
 
 [[projects]]
   branch = "master"
@@ -217,7 +216,7 @@
     "unix",
     "windows"
   ]
-  revision = "e072cadbbdc8dd3d3ffa82b8b4b9304c261d9311"
+  revision = "bd9dbc187b6e1dacfdd2722a87e83093c2d7bd6e"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -249,7 +248,7 @@
     "googleapis/rpc/status",
     "protobuf/field_mask"
   ]
-  revision = "02b4e95473316948020af0b7a4f0f22c73929b0e"
+  revision = "2a72893556e4d1f6c795a4c039314c9fa751eedb"
 
 [[projects]]
   name = "google.golang.org/grpc"
@@ -286,6 +285,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "0795f7435063d3c1d827df0f6776cc8ab500c0284a6fed5c444bab06b7a13f38"
+  inputs-digest = "9bc03c17f434ea3278a0cf370eea9a82ef177837d338d0f2e7093fb830b73e9c"
   solver-name = "gps-cdcl"
   solver-version = 1
