@@ -10,21 +10,25 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-Install go dep
+**Install go dep**
 
 ``` sh
 go get -u github.com/golang/dep/cmd/dep
 ```
 
-Install atlas-db-controller for managing database resources:
+**Install atlas-db-controller for managing database resources**
 
-  * To create atlas-db custom resource and controller follow [link](https://github.com/infobloxopen/atlas-db/blob/master/README.md).
-  * To create database instance, database and schema/tables resources locally to be used by contacts app, modify `contacts-localdb.yaml` following specifications mentioned in [link](https://github.com/infobloxopen/atlas-db/blob/master/README.md) and run:
+  * To create atlas-db custom resource and controller follow [link](https://github.com/infobloxopen/atlas-db/blob/master/README.md). **Make sure to create one if not already exists**.
+  * To create database server instance, database and schema/tables resources locally to be used by contacts app, follow
   ```
-    make db-up
+    export GIT_USER=<YOUR_GIT_USER_NAME>
+    export GIT_TOKEN=<YOUR_GIT_USER_TOKEN>
+    cat deploy/contacts-localdb.yaml | envsubst '$GIT_USER$GIT_TOKEN' | kubectl apply -f -
   ```
+  To create GIT_TOKEN if not exists follow [link](https://github.com/settings/tokens)
+
   * To use RDS database instance, database and schema/tables resources used by contacts app, modify `contacts-rds.yaml` and run"
-  ```sh
+  ```
     kubectl create -f ./deploy/contacts-rds.yaml
   ```
 
