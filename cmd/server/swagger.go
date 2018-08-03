@@ -10,3 +10,4 @@ func NewSwaggerHandler(swaggerDir string) http.Handler {
 
 	return mux
 }
+

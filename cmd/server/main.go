@@ -4,6 +4,10 @@ import (
 	"flag"
 	"net"
 
+	"text/template"
+	"strings"
+	//"github.com/gorilla/mux"
+
 	"github.com/jinzhu/gorm"
 	"github.com/sirupsen/logrus"
 
@@ -155,6 +159,18 @@ func ServeExternal(logger *logrus.Logger) error {
 		server.WithHandler("/swagger", http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 			http.ServeFile(writer, request, SwaggerDir)
 		})),
+
+		server.WithHandler("/apidoc/", http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+			filenames := strings.Split(request.URL.Path, "/")
+			http.ServeFile(writer, request, "./apidoc-poc/dist/" + filenames[len(filenames)-1])
+		})),
+
+		server.WithHandler("/apidoc", http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+			host := strings.TrimSuffix(request.Host, ".")
+			t, _ := template.ParseFiles("./apidoc-poc/dist/index.html.tt")
+			t.Execute(writer, struct{ HRef, SchemaRef string }{HRef: "http://" + host + "/apidoc", SchemaRef: "http://" + host + "/swagger" })
+		})),
+
 	)
 	if err != nil {
 		return err

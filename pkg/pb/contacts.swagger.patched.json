@@ -1,0 +1,956 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "title": "Contacts",
+    "contact": {
+      "name": "John Belamaric",
+      "url": "https://github.com/infobloxopen/atlas-contacts-app",
+      "email": "jbelamaric@infoblox.com"
+    },
+    "version": "1.0"
+  },
+  "basePath": "/v1/",
+  "paths": {
+    "/contacts": {
+      "get": {
+        "tags": [
+          "Contacts"
+        ],
+        "operationId": "List",
+        "parameters": [
+          {
+            "description": "A collection of response resources can be filtered by a logical expression string that includes JSON tag references to values in each resource, literal values, and logical operators. If a resource does not have the specified tag, its value is assumed to be null.\nLiteral values include numbers (integer and floating-point), and quoted (both single- or double-quoted) literal strings, and “null”. The following operators are commonly used in filter expressions:\n | Op | Description |\n | -- | ----------- |\n | == | Equal |\n | != | Not Equal |\n | \u003e | Greater Than |\n |  \u003e= | Greater Than or Equal To |\n | \u003c | Less Than |\n | \u003c= | Less Than or Equal To |\n | and | Logical AND |\n | ~ | Matches Regex |\n | !~ | Does Not Match Regex |\n | or | Logical OR |\n | not | Logical NOT |\n | () | Groupping Operators |\n",
+            "name": "_filter",
+            "in": "query"
+          },
+          {
+            "description": "A collection of response resources can be sorted by their JSON tags. For a “flat” resource, the tag name is straightforward. If sorting is allowed on non-flat hierarchical resources, the service should implement a qualified naming scheme such as dot-qualification to reference data down the hierarchy. If a resource does not have the specified tag, its value is assumed to be null.)\n\nSpecify this parameter as a comma-separated list of JSON tag names. The sort direction can be specified by a suffix separated by whitespace before the tag name. The suffix “asc” sorts the data in ascending order. The suffix “desc” sorts the data in descending order. If no suffix is specified the data is sorted in ascending order.",
+            "name": "_order_by",
+            "in": "query"
+          },
+          {
+            "description": "A collection of response resources can be transformed by specifying a set of JSON tags to be returned. For a “flat” resource, the tag name is straightforward. If field selection is allowed on non-flat hierarchical resources, the service should implement a qualified naming scheme such as dot-qualification to reference data down the hierarchy. If a resource does not have the specified tag, the tag does not appear in the output resource.\n\nSpecify this parameter as a comma-separated list of JSON tag names.",
+            "name": "_fields",
+            "in": "query"
+          },
+          {
+            "description": "The integer index (zero-origin) of the offset into a collection of resources. If omitted or null the value is assumed to be “0”.",
+            "name": "_offset",
+            "in": "query"
+          },
+          {
+            "description": "The integer number of resources to be returned in the response. The service may impose maximum value. If omitted the service may impose a default value.",
+            "name": "_limit",
+            "in": "query"
+          },
+          {
+            "description": "The service-defined string used to identify a page of resources. A null value indicates the first page.",
+            "name": "_page_token",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "properties": {
+                "results": {
+                  "$ref": "#/definitions/contactsListContactsResponse"
+                },
+                "success": {
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "format": "int32",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "\u003cresponse message\u003e"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "OK"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Contacts"
+        ],
+        "summary": "Use this method to create a user profile.",
+        "operationId": "Create",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apicontactsContact"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "schema": {
+              "properties": {
+                "results": {
+                  "$ref": "#/definitions/contactsCreateContactResponse"
+                },
+                "success": {
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "format": "int32",
+                      "example": 201
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "\u003cresponse message\u003e"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "CREATED"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/contacts/{id}": {
+      "put": {
+        "tags": [
+          "Contacts"
+        ],
+        "summary": "Use this method to update user profile.",
+        "operationId": "Update",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "An application specific resource identity of a resource",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apicontactsContact"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "schema": {
+              "properties": {
+                "results": {
+                  "$ref": "#/definitions/contactsUpdateContactResponse"
+                },
+                "success": {
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "format": "int32",
+                      "example": 202
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "\u003cresponse message\u003e"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "UPDATED"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/contacts/{id}/sms": {
+      "post": {
+        "tags": [
+          "Contacts"
+        ],
+        "summary": "Use this method to Send an SMS to a given contact.",
+        "operationId": "SendSMS",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uint64",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/contactsSMSRequest"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "schema": {
+              "properties": {
+                "results": {
+                  "$ref": "#/definitions/contactsSMSResponse"
+                },
+                "success": {
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "format": "int32",
+                      "example": 201
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "\u003cresponse message\u003e"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "CREATED"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/groups": {
+      "get": {
+        "tags": [
+          "Groups"
+        ],
+        "operationId": "List",
+        "parameters": [
+          {
+            "description": "A collection of response resources can be filtered by a logical expression string that includes JSON tag references to values in each resource, literal values, and logical operators. If a resource does not have the specified tag, its value is assumed to be null.\nLiteral values include numbers (integer and floating-point), and quoted (both single- or double-quoted) literal strings, and “null”. The following operators are commonly used in filter expressions:\n | Op | Description |\n | -- | ----------- |\n | == | Equal |\n | != | Not Equal |\n | \u003e | Greater Than |\n |  \u003e= | Greater Than or Equal To |\n | \u003c | Less Than |\n | \u003c= | Less Than or Equal To |\n | and | Logical AND |\n | ~ | Matches Regex |\n | !~ | Does Not Match Regex |\n | or | Logical OR |\n | not | Logical NOT |\n | () | Groupping Operators |\n",
+            "name": "_filter",
+            "in": "query"
+          },
+          {
+            "description": "A collection of response resources can be sorted by their JSON tags. For a “flat” resource, the tag name is straightforward. If sorting is allowed on non-flat hierarchical resources, the service should implement a qualified naming scheme such as dot-qualification to reference data down the hierarchy. If a resource does not have the specified tag, its value is assumed to be null.)\n\nSpecify this parameter as a comma-separated list of JSON tag names. The sort direction can be specified by a suffix separated by whitespace before the tag name. The suffix “asc” sorts the data in ascending order. The suffix “desc” sorts the data in descending order. If no suffix is specified the data is sorted in ascending order.",
+            "name": "_order_by",
+            "in": "query"
+          },
+          {
+            "description": "A collection of response resources can be transformed by specifying a set of JSON tags to be returned. For a “flat” resource, the tag name is straightforward. If field selection is allowed on non-flat hierarchical resources, the service should implement a qualified naming scheme such as dot-qualification to reference data down the hierarchy. If a resource does not have the specified tag, the tag does not appear in the output resource.\n\nSpecify this parameter as a comma-separated list of JSON tag names.",
+            "name": "_fields",
+            "in": "query"
+          },
+          {
+            "description": "The integer index (zero-origin) of the offset into a collection of resources. If omitted or null the value is assumed to be “0”.",
+            "name": "_offset",
+            "in": "query"
+          },
+          {
+            "description": "The integer number of resources to be returned in the response. The service may impose maximum value. If omitted the service may impose a default value.",
+            "name": "_limit",
+            "in": "query"
+          },
+          {
+            "description": "The service-defined string used to identify a page of resources. A null value indicates the first page.",
+            "name": "_page_token",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "properties": {
+                "results": {
+                  "$ref": "#/definitions/contactsListGroupsResponse"
+                },
+                "success": {
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "format": "int32",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "\u003cresponse message\u003e"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "OK"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Groups"
+        ],
+        "summary": "Use this method to create a user profile.",
+        "operationId": "Create",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/contactsGroup"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "schema": {
+              "properties": {
+                "results": {
+                  "$ref": "#/definitions/contactsCreateGroupResponse"
+                },
+                "success": {
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "format": "int32",
+                      "example": 201
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "\u003cresponse message\u003e"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "CREATED"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/groups/{id}": {
+      "put": {
+        "tags": [
+          "Groups"
+        ],
+        "summary": "Use this method to update user profile.",
+        "operationId": "Update",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "An application specific resource identity of a resource",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/contactsGroup"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "schema": {
+              "properties": {
+                "results": {
+                  "$ref": "#/definitions/contactsUpdateGroupResponse"
+                },
+                "success": {
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "format": "int32",
+                      "example": 202
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "\u003cresponse message\u003e"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "UPDATED"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/profiles": {
+      "get": {
+        "tags": [
+          "Profiles"
+        ],
+        "operationId": "List",
+        "parameters": [
+          {
+            "description": "A collection of response resources can be filtered by a logical expression string that includes JSON tag references to values in each resource, literal values, and logical operators. If a resource does not have the specified tag, its value is assumed to be null.\nLiteral values include numbers (integer and floating-point), and quoted (both single- or double-quoted) literal strings, and “null”. The following operators are commonly used in filter expressions:\n | Op | Description |\n | -- | ----------- |\n | == | Equal |\n | != | Not Equal |\n | \u003e | Greater Than |\n |  \u003e= | Greater Than or Equal To |\n | \u003c | Less Than |\n | \u003c= | Less Than or Equal To |\n | and | Logical AND |\n | ~ | Matches Regex |\n | !~ | Does Not Match Regex |\n | or | Logical OR |\n | not | Logical NOT |\n | () | Groupping Operators |\n",
+            "name": "_filter",
+            "in": "query"
+          },
+          {
+            "description": "A collection of response resources can be sorted by their JSON tags. For a “flat” resource, the tag name is straightforward. If sorting is allowed on non-flat hierarchical resources, the service should implement a qualified naming scheme such as dot-qualification to reference data down the hierarchy. If a resource does not have the specified tag, its value is assumed to be null.)\n\nSpecify this parameter as a comma-separated list of JSON tag names. The sort direction can be specified by a suffix separated by whitespace before the tag name. The suffix “asc” sorts the data in ascending order. The suffix “desc” sorts the data in descending order. If no suffix is specified the data is sorted in ascending order.",
+            "name": "_order_by",
+            "in": "query"
+          },
+          {
+            "description": "A collection of response resources can be transformed by specifying a set of JSON tags to be returned. For a “flat” resource, the tag name is straightforward. If field selection is allowed on non-flat hierarchical resources, the service should implement a qualified naming scheme such as dot-qualification to reference data down the hierarchy. If a resource does not have the specified tag, the tag does not appear in the output resource.\n\nSpecify this parameter as a comma-separated list of JSON tag names.",
+            "name": "_fields",
+            "in": "query"
+          },
+          {
+            "description": "The integer index (zero-origin) of the offset into a collection of resources. If omitted or null the value is assumed to be “0”.",
+            "name": "_offset",
+            "in": "query"
+          },
+          {
+            "description": "The integer number of resources to be returned in the response. The service may impose maximum value. If omitted the service may impose a default value.",
+            "name": "_limit",
+            "in": "query"
+          },
+          {
+            "description": "The service-defined string used to identify a page of resources. A null value indicates the first page.",
+            "name": "_page_token",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "properties": {
+                "results": {
+                  "$ref": "#/definitions/contactsListProfilesResponse"
+                },
+                "success": {
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "format": "int32",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "\u003cresponse message\u003e"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "OK"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Profiles"
+        ],
+        "summary": "Use this method to create a user profile.",
+        "operationId": "Create",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/contactsProfile"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "schema": {
+              "properties": {
+                "results": {
+                  "$ref": "#/definitions/contactsCreateProfileResponse"
+                },
+                "success": {
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "format": "int32",
+                      "example": 201
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "\u003cresponse message\u003e"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "CREATED"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/profiles/{id}": {
+      "get": {
+        "tags": [
+          "Profiles"
+        ],
+        "summary": "Use this method to retrieve the list of user profiles.",
+        "operationId": "Read",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "An application specific resource identity of a resource",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "properties": {
+                "results": {
+                  "$ref": "#/definitions/contactsReadProfileResponse"
+                },
+                "success": {
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "format": "int32",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "\u003cresponse message\u003e"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "OK"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Profiles"
+        ],
+        "summary": "Use this method to delete a profile.",
+        "operationId": "Delete",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "An application specific resource identity of a resource",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "203": {
+            "schema": {
+              "properties": {
+                "results": {
+                  "$ref": "#/definitions/contactsDeleteProfileResponse"
+                },
+                "success": {
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "format": "int32",
+                      "example": 203
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "\u003cresponse message\u003e"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "DELETED"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "apicontactsContact": {
+      "description": "Contact represents a particular person in an contacts list.",
+      "type": "object",
+      "properties": {
+        "emails": {
+          "description": "The list of emails associated with person.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/contactsEmail"
+          }
+        },
+        "first_name": {
+          "description": "The first name of the person.",
+          "type": "string"
+        },
+        "groups": {
+          "description": "The list of groups contact is attached to.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/contactsGroupInapicontactsContact"
+          }
+        },
+        "home_address": {
+          "description": "The home address of the person.",
+          "$ref": "#/definitions/contactsAddress"
+        },
+        "id": {
+          "description": "The resource identifier.",
+          "type": "string",
+          "readOnly": true
+        },
+        "last_name": {
+          "description": "The last name of the person.",
+          "type": "string"
+        },
+        "middle_name": {
+          "description": "The middle name of the person.",
+          "type": "string"
+        },
+        "nicknames": {
+          "description": "nicknames is arbitrary json, but should be used for a list of strings.",
+          "$ref": "#/definitions/typesJSONValue"
+        },
+        "notes": {
+          "description": "Brief description associated with contact.",
+          "type": "string"
+        },
+        "primary_email": {
+          "description": "The person's primary email.",
+          "type": "string"
+        },
+        "profile_id": {
+          "description": "The resource identifier.",
+          "type": "string",
+          "readOnly": true
+        },
+        "work_address": {
+          "title": "The work address of the person",
+          "$ref": "#/definitions/contactsAddress"
+        }
+      }
+    },
+    "contactsAddress": {
+      "description": "Address represents information about contact location.",
+      "type": "object",
+      "properties": {
+        "address": {
+          "description": "The address value.",
+          "type": "string"
+        },
+        "city": {
+          "description": "The city name.",
+          "type": "string"
+        },
+        "country": {
+          "description": "Country name.",
+          "type": "string"
+        },
+        "state": {
+          "description": "State name abbrivated to two letters.",
+          "type": "string"
+        },
+        "zip": {
+          "description": "ZIP code.",
+          "type": "string"
+        }
+      }
+    },
+    "contactsCreateContactResponse": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/definitions/apicontactsContact"
+        }
+      }
+    },
+    "contactsCreateGroupResponse": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/definitions/contactsGroup"
+        }
+      }
+    },
+    "contactsCreateProfileResponse": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/definitions/contactsProfile"
+        }
+      }
+    },
+    "contactsDeleteContactResponse": {
+      "type": "object"
+    },
+    "contactsDeleteGroupResponse": {
+      "type": "object"
+    },
+    "contactsDeleteProfileResponse": {
+      "type": "object"
+    },
+    "contactsEmail": {
+      "description": "Email respresents the e-mail address.",
+      "type": "object",
+      "properties": {
+        "address": {
+          "description": "The value of the e-mail address.",
+          "type": "string"
+        },
+        "id": {
+          "description": "The e-mail address identifier.",
+          "type": "string",
+          "format": "uint64"
+        }
+      }
+    },
+    "contactsGroup": {
+      "description": "Group is used to group the contacts, e. g. 'Friends', 'Family'.",
+      "type": "object",
+      "properties": {
+        "contacts": {
+          "description": "List of contacts associated with this group.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apicontactsContact"
+          }
+        },
+        "id": {
+          "description": "The resource identifier.",
+          "type": "string",
+          "readOnly": true
+        },
+        "name": {
+          "description": "The contacts group name.",
+          "type": "string"
+        },
+        "notes": {
+          "description": "Brief description of group.",
+          "type": "string"
+        },
+        "profile_id": {
+          "description": "The resource identifier.",
+          "type": "string",
+          "readOnly": true
+        }
+      }
+    },
+    "contactsGroupInapicontactsContact": {
+      "properties": {
+        "id": {
+          "description": "The resource identifier.",
+          "type": "string",
+          "readOnly": true
+        },
+        "name": {
+          "description": "The contacts group name.",
+          "type": "string"
+        },
+        "notes": {
+          "description": "Brief description of group.",
+          "type": "string"
+        },
+        "profile_id": {
+          "description": "The resource identifier.",
+          "type": "string",
+          "readOnly": true
+        }
+      }
+    },
+    "contactsListContactsResponse": {
+      "type": "object",
+      "properties": {
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apicontactsContact"
+          }
+        }
+      }
+    },
+    "contactsListGroupsResponse": {
+      "type": "object",
+      "properties": {
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/contactsGroup"
+          }
+        }
+      }
+    },
+    "contactsListProfilesResponse": {
+      "type": "object",
+      "properties": {
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/contactsProfile"
+          }
+        }
+      }
+    },
+    "contactsProfile": {
+      "description": "Profile represents a summary of details regarding user contacts and groups.",
+      "type": "object",
+      "properties": {
+        "contacts": {
+          "description": "List of contacts associated with profile.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apicontactsContact"
+          }
+        },
+        "groups": {
+          "description": "List of groups associated with profile.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/contactsGroup"
+          }
+        },
+        "id": {
+          "description": "The resource identifier.",
+          "type": "string",
+          "readOnly": true
+        },
+        "name": {
+          "description": "Contacts profile name.",
+          "type": "string"
+        },
+        "notes": {
+          "description": "Contacts profile notes.",
+          "type": "string"
+        }
+      }
+    },
+    "contactsReadContactResponse": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/definitions/apicontactsContact"
+        }
+      }
+    },
+    "contactsReadGroupResponse": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/definitions/contactsGroup"
+        }
+      }
+    },
+    "contactsReadProfileResponse": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/definitions/contactsProfile"
+        }
+      }
+    },
+    "contactsSMSRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "contactsSMSResponse": {
+      "type": "object"
+    },
+    "contactsUpdateContactResponse": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/definitions/apicontactsContact"
+        }
+      }
+    },
+    "contactsUpdateGroupResponse": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/definitions/contactsGroup"
+        }
+      }
+    },
+    "contactsUpdateProfileResponse": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/definitions/contactsProfile"
+        }
+      }
+    },
+    "typesJSONValue": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "ApiKeyAuth": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "security": [
+    {
+      "ApiKeyAuth": []
+    }
+  ]
+}
