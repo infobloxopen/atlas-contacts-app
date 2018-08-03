@@ -96,6 +96,7 @@ nginx-down:
 
 .PHONY: db-up
 db-up:
+	kubectl apply -f deploy/ns.yaml
 	kubectl apply -f deploy/contacts-localdb.yaml
 
 .PHONY: db-down
