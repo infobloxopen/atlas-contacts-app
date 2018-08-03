@@ -34,4 +34,4 @@ metadata:
 spec:
   database: contactsappdb
   git: github://$GIT_USER:$GIT_TOKEN@infobloxopen/atlas-contacts-app/db/migrations
-  version: 0002
+  version: 0003
