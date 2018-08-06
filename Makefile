@@ -61,9 +61,8 @@ protobuf:
 	--go_out=plugins=grpc:. \
 	--grpc-gateway_out=logtostderr=true:. \
 	--gorm_out="engine=postgres:." \
+	--swagger_out=. \
 	--validate_out="lang=go:." 	$(PROJECT_ROOT)/pkg/pb/contacts.proto
-schema:
-	go run apidoc-poc/util/patch.go --input pkg/pb/contacts.swagger.json > pkg/pb/contacts.swagger.patched.json
 
 .PHONY: vendor
 vendor:
