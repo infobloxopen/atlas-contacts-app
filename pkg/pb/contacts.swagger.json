@@ -1,82 +1,78 @@
 {
-  "swagger": "2.0",
-  "info": {
-    "title": "Contacts",
-    "version": "1.0",
-    "contact": {
-      "name": "John Belamaric",
-      "url": "https://github.com/infobloxopen/atlas-contacts-app",
-      "email": "jbelamaric@infoblox.com"
-    }
-  },
-  "basePath": "/v1/",
-  "schemes": [
-    "http",
-    "https"
-  ],
   "consumes": [
     "application/json"
   ],
   "produces": [
     "application/json"
   ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "title": "Contacts",
+    "contact": {
+      "name": "John Belamaric",
+      "url": "https://github.com/infobloxopen/atlas-contacts-app",
+      "email": "jbelamaric@infoblox.com"
+    },
+    "version": "1.0"
+  },
+  "basePath": "/v1/",
   "paths": {
     "/contacts": {
       "get": {
+        "tags": [
+          "Contacts"
+        ],
         "operationId": "List",
+        "parameters": [
+          {
+            "description": "A collection of response resources can be filtered by a logical expression string that includes JSON tag references to values in each resource, literal values, and logical operators. If a resource does not have the specified tag, its value is assumed to be null.\nLiteral values include numbers (integer and floating-point), and quoted (both single- or double-quoted) literal strings, and “null”. The following operators are commonly used in filter expressions:\n | Op | Description |\n | -- | ----------- |\n | == | Equal |\n | != | Not Equal |\n | \u003e | Greater Than |\n |  \u003e= | Greater Than or Equal To |\n | \u003c | Less Than |\n | \u003c= | Less Than or Equal To |\n | and | Logical AND |\n | ~ | Matches Regex |\n | !~ | Does Not Match Regex |\n | or | Logical OR |\n | not | Logical NOT |\n | () | Groupping Operators |\n",
+            "name": "_filter",
+            "in": "query"
+          },
+          {
+            "description": "A collection of response resources can be sorted by their JSON tags. For a “flat” resource, the tag name is straightforward. If sorting is allowed on non-flat hierarchical resources, the service should implement a qualified naming scheme such as dot-qualification to reference data down the hierarchy. If a resource does not have the specified tag, its value is assumed to be null.)\n\nSpecify this parameter as a comma-separated list of JSON tag names. The sort direction can be specified by a suffix separated by whitespace before the tag name. The suffix “asc” sorts the data in ascending order. The suffix “desc” sorts the data in descending order. If no suffix is specified the data is sorted in ascending order.",
+            "name": "_order_by",
+            "in": "query"
+          },
+          {
+            "description": "A collection of response resources can be transformed by specifying a set of JSON tags to be returned. For a “flat” resource, the tag name is straightforward. If field selection is allowed on non-flat hierarchical resources, the service should implement a qualified naming scheme such as dot-qualification to reference data down the hierarchy. If a resource does not have the specified tag, the tag does not appear in the output resource.\n\nSpecify this parameter as a comma-separated list of JSON tag names.",
+            "name": "_fields",
+            "in": "query"
+          },
+          {
+            "description": "The integer index (zero-origin) of the offset into a collection of resources. If omitted or null the value is assumed to be “0”.",
+            "name": "_offset",
+            "in": "query"
+          },
+          {
+            "description": "The integer number of resources to be returned in the response. The service may impose maximum value. If omitted the service may impose a default value.",
+            "name": "_limit",
+            "in": "query"
+          },
+          {
+            "description": "The service-defined string used to identify a page of resources. A null value indicates the first page.",
+            "name": "_page_token",
+            "in": "query"
+          }
+        ],
         "responses": {
           "200": {
-            "description": "",
             "schema": {
               "$ref": "#/definitions/contactsListContactsResponse"
             }
           }
-        },
-        "parameters": [
-          {
-            "name": "filter",
-            "description": "atlas.api.filtering",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "order_by",
-            "description": "atlas.api.sorting",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "fields",
-            "description": "atlas.api.field_selection",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "paging",
-            "description": "atlas.api.paging",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "Contacts"
-        ]
+        }
       },
       "post": {
+        "tags": [
+          "Contacts"
+        ],
         "summary": "Use this method to create a user profile.",
         "operationId": "Create",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/contactsCreateContactResponse"
-            }
-          }
-        },
         "parameters": [
           {
             "name": "body",
@@ -87,94 +83,77 @@
             }
           }
         ],
-        "tags": [
-          "Contacts"
-        ]
+        "responses": {
+          "201": {
+            "schema": {
+              "$ref": "#/definitions/contactsCreateContactResponse"
+            }
+          }
+        }
       }
     },
-    "/contacts/{id.resource_id}": {
+    "/contacts/{id}": {
       "get": {
+        "tags": [
+          "Contacts"
+        ],
         "summary": "Use this method to retrieve the list of user profiles.",
         "operationId": "Read",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "An application specific resource identity of a resource",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
         "responses": {
           "200": {
-            "description": "",
             "schema": {
               "$ref": "#/definitions/contactsReadContactResponse"
             }
           }
-        },
-        "parameters": [
-          {
-            "name": "id.resource_id",
-            "description": "An application specific resource identity of a resource",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "id",
-            "description": "atlas.api.identifier",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "Contacts"
-        ]
+        }
       },
       "delete": {
+        "tags": [
+          "Contacts"
+        ],
         "summary": "Use this method to delete a profile.",
         "operationId": "Delete",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "An application specific resource identity of a resource",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
         "responses": {
-          "200": {
-            "description": "",
+          "203": {
             "schema": {
               "$ref": "#/definitions/contactsDeleteContactResponse"
             }
           }
-        },
-        "parameters": [
-          {
-            "name": "id.resource_id",
-            "description": "An application specific resource identity of a resource",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "id",
-            "description": "atlas.api.identifier",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "Contacts"
-        ]
+        }
       }
     },
     "/contacts/{id}/sms": {
       "post": {
+        "tags": [
+          "Contacts"
+        ],
         "summary": "Use this method to Send an SMS to a given contact.",
         "operationId": "SendSMS",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/contactsSMSResponse"
-            }
-          }
-        },
         "parameters": [
           {
+            "type": "string",
+            "format": "uint64",
             "name": "id",
             "in": "path",
-            "required": true,
-            "type": "string",
-            "format": "uint64"
+            "required": true
           },
           {
             "name": "body",
@@ -185,271 +164,220 @@
             }
           }
         ],
-        "tags": [
-          "Contacts"
-        ]
-      }
-    },
-    "/contacts/{payload.id.resource_id}": {
-      "put": {
-        "summary": "Use this method to update user profile.",
-        "operationId": "Update",
         "responses": {
-          "200": {
-            "description": "",
+          "201": {
             "schema": {
-              "$ref": "#/definitions/contactsUpdateContactResponse"
+              "$ref": "#/definitions/contactsSMSResponse"
             }
           }
-        },
-        "parameters": [
-          {
-            "name": "payload.id.resource_id",
-            "description": "An application specific resource identity of a resource",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/apicontactsContact"
-            }
-          }
-        ],
-        "tags": [
-          "Contacts"
-        ]
+        }
       }
     },
     "/groups": {
       "get": {
+        "tags": [
+          "Groups"
+        ],
         "operationId": "List",
+        "parameters": [
+          {
+            "description": "A collection of response resources can be filtered by a logical expression string that includes JSON tag references to values in each resource, literal values, and logical operators. If a resource does not have the specified tag, its value is assumed to be null.\nLiteral values include numbers (integer and floating-point), and quoted (both single- or double-quoted) literal strings, and “null”. The following operators are commonly used in filter expressions:\n | Op | Description |\n | -- | ----------- |\n | == | Equal |\n | != | Not Equal |\n | \u003e | Greater Than |\n |  \u003e= | Greater Than or Equal To |\n | \u003c | Less Than |\n | \u003c= | Less Than or Equal To |\n | and | Logical AND |\n | ~ | Matches Regex |\n | !~ | Does Not Match Regex |\n | or | Logical OR |\n | not | Logical NOT |\n | () | Groupping Operators |\n",
+            "name": "_filter",
+            "in": "query"
+          },
+          {
+            "description": "A collection of response resources can be sorted by their JSON tags. For a “flat” resource, the tag name is straightforward. If sorting is allowed on non-flat hierarchical resources, the service should implement a qualified naming scheme such as dot-qualification to reference data down the hierarchy. If a resource does not have the specified tag, its value is assumed to be null.)\n\nSpecify this parameter as a comma-separated list of JSON tag names. The sort direction can be specified by a suffix separated by whitespace before the tag name. The suffix “asc” sorts the data in ascending order. The suffix “desc” sorts the data in descending order. If no suffix is specified the data is sorted in ascending order.",
+            "name": "_order_by",
+            "in": "query"
+          },
+          {
+            "description": "A collection of response resources can be transformed by specifying a set of JSON tags to be returned. For a “flat” resource, the tag name is straightforward. If field selection is allowed on non-flat hierarchical resources, the service should implement a qualified naming scheme such as dot-qualification to reference data down the hierarchy. If a resource does not have the specified tag, the tag does not appear in the output resource.\n\nSpecify this parameter as a comma-separated list of JSON tag names.",
+            "name": "_fields",
+            "in": "query"
+          },
+          {
+            "description": "The integer index (zero-origin) of the offset into a collection of resources. If omitted or null the value is assumed to be “0”.",
+            "name": "_offset",
+            "in": "query"
+          },
+          {
+            "description": "The integer number of resources to be returned in the response. The service may impose maximum value. If omitted the service may impose a default value.",
+            "name": "_limit",
+            "in": "query"
+          },
+          {
+            "description": "The service-defined string used to identify a page of resources. A null value indicates the first page.",
+            "name": "_page_token",
+            "in": "query"
+          }
+        ],
         "responses": {
           "200": {
-            "description": "",
             "schema": {
               "$ref": "#/definitions/contactsListGroupsResponse"
             }
           }
-        },
-        "parameters": [
-          {
-            "name": "filter",
-            "description": "atlas.api.filtering",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "order_by",
-            "description": "atlas.api.sorting",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "fields",
-            "description": "atlas.api.field_selection",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "paging",
-            "description": "atlas.api.paging",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "Groups"
-        ]
+        }
       },
       "post": {
+        "tags": [
+          "Groups"
+        ],
         "summary": "Use this method to create a user profile.",
         "operationId": "Create",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/contactsGroup"
+            }
+          }
+        ],
         "responses": {
-          "200": {
-            "description": "",
+          "201": {
             "schema": {
               "$ref": "#/definitions/contactsCreateGroupResponse"
             }
           }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/contactsGroup"
-            }
-          }
-        ],
-        "tags": [
-          "Groups"
-        ]
+        }
       }
     },
-    "/groups/{id.resource_id}": {
+    "/groups/{id}": {
       "get": {
+        "tags": [
+          "Groups"
+        ],
         "summary": "Use this method to retrieve the list of user profiles.",
         "operationId": "Read",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "An application specific resource identity of a resource",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
         "responses": {
           "200": {
-            "description": "",
             "schema": {
               "$ref": "#/definitions/contactsReadGroupResponse"
             }
           }
-        },
-        "parameters": [
-          {
-            "name": "id.resource_id",
-            "description": "An application specific resource identity of a resource",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "id",
-            "description": "atlas.api.identifier",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "Groups"
-        ]
+        }
       },
       "delete": {
+        "tags": [
+          "Groups"
+        ],
         "summary": "Use this method to delete a profile.",
         "operationId": "Delete",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "An application specific resource identity of a resource",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
         "responses": {
-          "200": {
-            "description": "",
+          "203": {
             "schema": {
               "$ref": "#/definitions/contactsDeleteGroupResponse"
             }
           }
-        },
-        "parameters": [
-          {
-            "name": "id.resource_id",
-            "description": "An application specific resource identity of a resource",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "id",
-            "description": "atlas.api.identifier",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "Groups"
-        ]
-      }
-    },
-    "/groups/{payload.id.resource_id}": {
-      "put": {
-        "summary": "Use this method to update user profile.",
-        "operationId": "Update",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/contactsUpdateGroupResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "payload.id.resource_id",
-            "description": "An application specific resource identity of a resource",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/contactsGroup"
-            }
-          }
-        ],
-        "tags": [
-          "Groups"
-        ]
+        }
       }
     },
     "/profiles": {
       "get": {
+        "tags": [
+          "Profiles"
+        ],
         "operationId": "List",
+        "parameters": [
+          {
+            "description": "A collection of response resources can be filtered by a logical expression string that includes JSON tag references to values in each resource, literal values, and logical operators. If a resource does not have the specified tag, its value is assumed to be null.\nLiteral values include numbers (integer and floating-point), and quoted (both single- or double-quoted) literal strings, and “null”. The following operators are commonly used in filter expressions:\n | Op | Description |\n | -- | ----------- |\n | == | Equal |\n | != | Not Equal |\n | \u003e | Greater Than |\n |  \u003e= | Greater Than or Equal To |\n | \u003c | Less Than |\n | \u003c= | Less Than or Equal To |\n | and | Logical AND |\n | ~ | Matches Regex |\n | !~ | Does Not Match Regex |\n | or | Logical OR |\n | not | Logical NOT |\n | () | Groupping Operators |\n",
+            "name": "_filter",
+            "in": "query"
+          },
+          {
+            "description": "A collection of response resources can be sorted by their JSON tags. For a “flat” resource, the tag name is straightforward. If sorting is allowed on non-flat hierarchical resources, the service should implement a qualified naming scheme such as dot-qualification to reference data down the hierarchy. If a resource does not have the specified tag, its value is assumed to be null.)\n\nSpecify this parameter as a comma-separated list of JSON tag names. The sort direction can be specified by a suffix separated by whitespace before the tag name. The suffix “asc” sorts the data in ascending order. The suffix “desc” sorts the data in descending order. If no suffix is specified the data is sorted in ascending order.",
+            "name": "_order_by",
+            "in": "query"
+          },
+          {
+            "description": "A collection of response resources can be transformed by specifying a set of JSON tags to be returned. For a “flat” resource, the tag name is straightforward. If field selection is allowed on non-flat hierarchical resources, the service should implement a qualified naming scheme such as dot-qualification to reference data down the hierarchy. If a resource does not have the specified tag, the tag does not appear in the output resource.\n\nSpecify this parameter as a comma-separated list of JSON tag names.",
+            "name": "_fields",
+            "in": "query"
+          },
+          {
+            "description": "The integer index (zero-origin) of the offset into a collection of resources. If omitted or null the value is assumed to be “0”.",
+            "name": "_offset",
+            "in": "query"
+          },
+          {
+            "description": "The integer number of resources to be returned in the response. The service may impose maximum value. If omitted the service may impose a default value.",
+            "name": "_limit",
+            "in": "query"
+          },
+          {
+            "description": "The service-defined string used to identify a page of resources. A null value indicates the first page.",
+            "name": "_page_token",
+            "in": "query"
+          }
+        ],
         "responses": {
           "200": {
-            "description": "",
             "schema": {
               "$ref": "#/definitions/contactsListProfilesResponse"
             }
           }
-        },
-        "parameters": [
-          {
-            "name": "filter",
-            "description": "atlas.api.filtering",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "order_by",
-            "description": "atlas.api.sorting",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "fields",
-            "description": "atlas.api.field_selection",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "paging",
-            "description": "atlas.api.paging",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "Profiles"
-        ]
+        }
       },
       "post": {
+        "tags": [
+          "Profiles"
+        ],
         "summary": "Use this method to create a user profile.",
         "operationId": "Create",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/contactsProfile"
+            }
+          }
+        ],
         "responses": {
-          "200": {
-            "description": "",
+          "201": {
             "schema": {
               "$ref": "#/definitions/contactsCreateProfileResponse"
             }
           }
-        },
+        }
+      }
+    },
+    "/profiles/{id}": {
+      "put": {
+        "tags": [
+          "Profiles"
+        ],
+        "summary": "Use this method to update user profile.",
+        "operationId": "Update",
         "parameters": [
+          {
+            "type": "string",
+            "description": "An application specific resource identity of a resource",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
           {
             "name": "body",
             "in": "body",
@@ -459,202 +387,175 @@
             }
           }
         ],
-        "tags": [
-          "Profiles"
-        ]
-      }
-    },
-    "/profiles/{id.resource_id}": {
-      "get": {
-        "summary": "Use this method to retrieve the list of user profiles.",
-        "operationId": "Read",
         "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/contactsReadProfileResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "id.resource_id",
-            "description": "An application specific resource identity of a resource",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "id",
-            "description": "atlas.api.identifier",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "Profiles"
-        ]
-      },
-      "delete": {
-        "summary": "Use this method to delete a profile.",
-        "operationId": "Delete",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/contactsDeleteProfileResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "id.resource_id",
-            "description": "An application specific resource identity of a resource",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "id",
-            "description": "atlas.api.identifier",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "Profiles"
-        ]
-      }
-    },
-    "/profiles/{payload.id.resource_id}": {
-      "put": {
-        "summary": "Use this method to update user profile.",
-        "operationId": "Update",
-        "responses": {
-          "200": {
-            "description": "",
+          "202": {
             "schema": {
               "$ref": "#/definitions/contactsUpdateProfileResponse"
             }
           }
-        },
-        "parameters": [
-          {
-            "name": "payload.id.resource_id",
-            "description": "An application specific resource identity of a resource",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/contactsProfile"
-            }
-          }
-        ],
-        "tags": [
-          "Profiles"
-        ]
+        }
       }
     }
   },
   "definitions": {
     "apicontactsContact": {
-      "type": "object",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "atlas.api.identifier"
-        },
-        "first_name": {
-          "type": "string",
-          "description": "The first name of the person."
-        },
-        "middle_name": {
-          "type": "string",
-          "description": "The middle name of the person."
-        },
-        "last_name": {
-          "type": "string",
-          "description": "The last name of the person."
-        },
-        "primary_email": {
-          "type": "string",
-          "description": "The person's primary email."
-        },
-        "notes": {
-          "type": "string",
-          "description": "Brief description associated with contact."
-        },
         "emails": {
+          "description": "The list of emails associated with person.",
           "type": "array",
           "items": {
             "$ref": "#/definitions/contactsEmail"
-          },
-          "description": "The list of emails associated with person."
+          }
         },
-        "home_address": {
-          "$ref": "#/definitions/contactsAddress",
-          "description": "The home address of the person."
-        },
-        "work_address": {
-          "$ref": "#/definitions/contactsAddress",
-          "title": "The work address of the person"
-        },
-        "profile_id": {
-          "type": "string",
-          "description": "atlas.api.identifier"
+        "first_name": {
+          "description": "The first name of the person.",
+          "type": "string"
         },
         "groups": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/contactsGroup"
-          },
-          "description": "The list of groups contact is attached to."
+            "$ref": "#/definitions/contactsGroup_In_apicontactsContact"
+          }
+        },
+        "home_address": {
+          "description": "The home address of the person.",
+          "$ref": "#/definitions/contactsAddress"
+        },
+        "id": {
+          "description": "The resource identifier.",
+          "type": "string",
+          "readOnly": true
+        },
+        "last_name": {
+          "description": "The last name of the person.",
+          "type": "string"
+        },
+        "middle_name": {
+          "description": "The middle name of the person.",
+          "type": "string"
         },
         "nicknames": {
-          "$ref": "#/definitions/typesJSONValue",
-          "description": "nicknames is arbitrary json, but should be used for a list of strings."
+          "description": "nicknames is arbitrary json, but should be used for a list of strings.",
+          "$ref": "#/definitions/typesJSONValue"
+        },
+        "notes": {
+          "description": "Brief description associated with contact.",
+          "type": "string"
+        },
+        "primary_email": {
+          "description": "The person's primary email.",
+          "type": "string"
+        },
+        "profile_id": {
+          "description": "The resource identifier.",
+          "type": "string"
+        },
+        "work_address": {
+          "title": "The work address of the person",
+          "$ref": "#/definitions/contactsAddress"
         }
-      },
-      "description": "Contact represents a particular person in an contacts list."
+      }
+    },
+    "apicontactsContact_In_contactsGroup": {
+      "properties": {
+        "emails": {
+          "description": "The list of emails associated with person.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/contactsEmail"
+          }
+        },
+        "first_name": {
+          "description": "The first name of the person.",
+          "type": "string"
+        },
+        "home_address": {
+          "description": "The home address of the person.",
+          "$ref": "#/definitions/contactsAddress"
+        },
+        "id": {
+          "description": "The resource identifier.",
+          "type": "string",
+          "readOnly": true
+        },
+        "last_name": {
+          "description": "The last name of the person.",
+          "type": "string"
+        },
+        "middle_name": {
+          "description": "The middle name of the person.",
+          "type": "string"
+        },
+        "nicknames": {
+          "description": "nicknames is arbitrary json, but should be used for a list of strings.",
+          "$ref": "#/definitions/typesJSONValue"
+        },
+        "notes": {
+          "description": "Brief description associated with contact.",
+          "type": "string"
+        },
+        "primary_email": {
+          "description": "The person's primary email.",
+          "type": "string"
+        },
+        "profile_id": {
+          "description": "The resource identifier.",
+          "type": "string"
+        },
+        "work_address": {
+          "title": "The work address of the person",
+          "$ref": "#/definitions/contactsAddress"
+        }
+      }
     },
     "contactsAddress": {
+      "description": "Address represents information about contact location.",
       "type": "object",
       "properties": {
         "address": {
-          "type": "string",
-          "description": "The address value."
+          "description": "The address value.",
+          "type": "string"
         },
         "city": {
-          "type": "string",
-          "description": "The city name."
-        },
-        "state": {
-          "type": "string",
-          "description": "State name abbrivated to two letters."
-        },
-        "zip": {
-          "type": "string",
-          "description": "ZIP code."
+          "description": "The city name.",
+          "type": "string"
         },
         "country": {
-          "type": "string",
-          "description": "Country name."
+          "description": "Country name.",
+          "type": "string"
+        },
+        "state": {
+          "description": "State name abbrivated to two letters.",
+          "type": "string"
+        },
+        "zip": {
+          "description": "ZIP code.",
+          "type": "string"
         }
-      },
-      "description": "Address represents information about contact location."
+      }
     },
     "contactsCreateContactResponse": {
       "type": "object",
       "properties": {
         "result": {
           "$ref": "#/definitions/apicontactsContact"
+        },
+        "success": {
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 201
+            },
+            "message": {
+              "type": "string",
+              "example": "\u003cresponse message\u003e"
+            },
+            "status": {
+              "type": "string",
+              "example": "CREATED"
+            }
+          }
         }
       }
     },
@@ -663,6 +564,23 @@
       "properties": {
         "result": {
           "$ref": "#/definitions/contactsGroup"
+        },
+        "success": {
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 201
+            },
+            "message": {
+              "type": "string",
+              "example": "\u003cresponse message\u003e"
+            },
+            "status": {
+              "type": "string",
+              "example": "CREATED"
+            }
+          }
         }
       }
     },
@@ -671,61 +589,154 @@
       "properties": {
         "result": {
           "$ref": "#/definitions/contactsProfile"
+        },
+        "success": {
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 201
+            },
+            "message": {
+              "type": "string",
+              "example": "\u003cresponse message\u003e"
+            },
+            "status": {
+              "type": "string",
+              "example": "CREATED"
+            }
+          }
         }
       }
     },
     "contactsDeleteContactResponse": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "success": {
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 203
+            },
+            "message": {
+              "type": "string",
+              "example": "\u003cresponse message\u003e"
+            },
+            "status": {
+              "type": "string",
+              "example": "DELETED"
+            }
+          }
+        }
+      }
     },
     "contactsDeleteGroupResponse": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "success": {
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 203
+            },
+            "message": {
+              "type": "string",
+              "example": "\u003cresponse message\u003e"
+            },
+            "status": {
+              "type": "string",
+              "example": "DELETED"
+            }
+          }
+        }
+      }
     },
     "contactsDeleteProfileResponse": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "success": {
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 203
+            },
+            "message": {
+              "type": "string",
+              "example": "\u003cresponse message\u003e"
+            },
+            "status": {
+              "type": "string",
+              "example": "DELETED"
+            }
+          }
+        }
+      }
     },
     "contactsEmail": {
+      "description": "Email respresents the e-mail address.",
       "type": "object",
       "properties": {
-        "id": {
-          "type": "string",
-          "format": "uint64",
-          "description": "The e-mail address identifier."
-        },
         "address": {
+          "description": "The value of the e-mail address.",
+          "type": "string"
+        },
+        "id": {
+          "description": "The e-mail address identifier.",
           "type": "string",
-          "description": "The value of the e-mail address."
+          "format": "uint64"
         }
-      },
-      "description": "Email respresents the e-mail address."
+      }
     },
     "contactsGroup": {
-      "type": "object",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "atlas.api.identifier"
-        },
-        "name": {
-          "type": "string",
-          "description": "The contacts group name."
-        },
-        "notes": {
-          "type": "string",
-          "description": "Brief description of group."
-        },
-        "profile_id": {
-          "type": "string",
-          "description": "atlas.api.identifier"
-        },
         "contacts": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/apicontactsContact"
-          },
-          "description": "List of contacts associated with this group."
+            "$ref": "#/definitions/apicontactsContact_In_contactsGroup"
+          }
+        },
+        "id": {
+          "description": "The resource identifier.",
+          "type": "string",
+          "readOnly": true
+        },
+        "name": {
+          "description": "The contacts group name.",
+          "type": "string"
+        },
+        "notes": {
+          "description": "Brief description of group.",
+          "type": "string"
+        },
+        "profile_id": {
+          "description": "The resource identifier.",
+          "type": "string"
         }
-      },
-      "description": "Group is used to group the contacts, e. g. 'Friends', 'Family'."
+      }
+    },
+    "contactsGroup_In_apicontactsContact": {
+      "properties": {
+        "id": {
+          "description": "The resource identifier.",
+          "type": "string",
+          "readOnly": true
+        },
+        "name": {
+          "description": "The contacts group name.",
+          "type": "string"
+        },
+        "notes": {
+          "description": "Brief description of group.",
+          "type": "string"
+        },
+        "profile_id": {
+          "description": "The resource identifier.",
+          "type": "string"
+        }
+      }
     },
     "contactsListContactsResponse": {
       "type": "object",
@@ -734,6 +745,23 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/apicontactsContact"
+          }
+        },
+        "success": {
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 200
+            },
+            "message": {
+              "type": "string",
+              "example": "\u003cresponse message\u003e"
+            },
+            "status": {
+              "type": "string",
+              "example": "OK"
+            }
           }
         }
       }
@@ -746,6 +774,23 @@
           "items": {
             "$ref": "#/definitions/contactsGroup"
           }
+        },
+        "success": {
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 200
+            },
+            "message": {
+              "type": "string",
+              "example": "\u003cresponse message\u003e"
+            },
+            "status": {
+              "type": "string",
+              "example": "OK"
+            }
+          }
         }
       }
     },
@@ -757,46 +802,81 @@
           "items": {
             "$ref": "#/definitions/contactsProfile"
           }
+        },
+        "success": {
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 200
+            },
+            "message": {
+              "type": "string",
+              "example": "\u003cresponse message\u003e"
+            },
+            "status": {
+              "type": "string",
+              "example": "OK"
+            }
+          }
         }
       }
     },
     "contactsProfile": {
+      "description": "Profile represents a summary of details regarding user contacts and groups.",
       "type": "object",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "atlas.api.identifier"
-        },
-        "name": {
-          "type": "string",
-          "description": "Contacts profile name."
-        },
-        "notes": {
-          "type": "string",
-          "description": "Contacts profile notes."
-        },
         "contacts": {
+          "description": "List of contacts associated with profile.",
           "type": "array",
           "items": {
             "$ref": "#/definitions/apicontactsContact"
-          },
-          "description": "List of contacts associated with profile."
+          }
         },
         "groups": {
+          "description": "List of groups associated with profile.",
           "type": "array",
           "items": {
             "$ref": "#/definitions/contactsGroup"
-          },
-          "description": "List of groups associated with profile."
+          }
+        },
+        "id": {
+          "description": "The resource identifier.",
+          "type": "string",
+          "readOnly": true
+        },
+        "name": {
+          "description": "Contacts profile name.",
+          "type": "string"
+        },
+        "notes": {
+          "description": "Contacts profile notes.",
+          "type": "string"
         }
-      },
-      "description": "Profile represents a summary of details regarding user contacts and groups."
+      }
     },
     "contactsReadContactResponse": {
       "type": "object",
       "properties": {
         "result": {
           "$ref": "#/definitions/apicontactsContact"
+        },
+        "success": {
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 200
+            },
+            "message": {
+              "type": "string",
+              "example": "\u003cresponse message\u003e"
+            },
+            "status": {
+              "type": "string",
+              "example": "OK"
+            }
+          }
         }
       }
     },
@@ -805,6 +885,23 @@
       "properties": {
         "result": {
           "$ref": "#/definitions/contactsGroup"
+        },
+        "success": {
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 200
+            },
+            "message": {
+              "type": "string",
+              "example": "\u003cresponse message\u003e"
+            },
+            "status": {
+              "type": "string",
+              "example": "OK"
+            }
+          }
         }
       }
     },
@@ -813,6 +910,23 @@
       "properties": {
         "result": {
           "$ref": "#/definitions/contactsProfile"
+        },
+        "success": {
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 200
+            },
+            "message": {
+              "type": "string",
+              "example": "\u003cresponse message\u003e"
+            },
+            "status": {
+              "type": "string",
+              "example": "OK"
+            }
+          }
         }
       }
     },
@@ -829,13 +943,49 @@
       }
     },
     "contactsSMSResponse": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "success": {
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 201
+            },
+            "message": {
+              "type": "string",
+              "example": "\u003cresponse message\u003e"
+            },
+            "status": {
+              "type": "string",
+              "example": "CREATED"
+            }
+          }
+        }
+      }
     },
     "contactsUpdateContactResponse": {
       "type": "object",
       "properties": {
         "result": {
           "$ref": "#/definitions/apicontactsContact"
+        },
+        "success": {
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 202
+            },
+            "message": {
+              "type": "string",
+              "example": "\u003cresponse message\u003e"
+            },
+            "status": {
+              "type": "string",
+              "example": "UPDATED"
+            }
+          }
         }
       }
     },
@@ -844,6 +994,23 @@
       "properties": {
         "result": {
           "$ref": "#/definitions/contactsGroup"
+        },
+        "success": {
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 202
+            },
+            "message": {
+              "type": "string",
+              "example": "\u003cresponse message\u003e"
+            },
+            "status": {
+              "type": "string",
+              "example": "UPDATED"
+            }
+          }
         }
       }
     },
@@ -852,22 +1019,25 @@
       "properties": {
         "result": {
           "$ref": "#/definitions/contactsProfile"
+        },
+        "success": {
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 202
+            },
+            "message": {
+              "type": "string",
+              "example": "\u003cresponse message\u003e"
+            },
+            "status": {
+              "type": "string",
+              "example": "UPDATED"
+            }
+          }
         }
       }
-    },
-    "protobufFieldMask": {
-      "type": "object",
-      "properties": {
-        "paths": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "The set of field mask paths."
-        }
-      },
-      "description": "paths: \"f.a\"\n    paths: \"f.b.d\"\n\nHere `f` represents a field in some root message, `a` and `b`\nfields in the message found in `f`, and `d` a field found in the\nmessage in `f.b`.\n\nField masks are used to specify a subset of fields that should be\nreturned by a get operation or modified by an update operation.\nField masks also have a custom JSON encoding (see below).\n\n# Field Masks in Projections\n\nWhen used in the context of a projection, a response message or\nsub-message is filtered by the API to only contain those fields as\nspecified in the mask. For example, if the mask in the previous\nexample is applied to a response message as follows:\n\n    f {\n      a : 22\n      b {\n        d : 1\n        x : 2\n      }\n      y : 13\n    }\n    z: 8\n\nThe result will not contain specific values for fields x,y and z\n(their value will be set to the default, and omitted in proto text\noutput):\n\n\n    f {\n      a : 22\n      b {\n        d : 1\n      }\n    }\n\nA repeated field is not allowed except at the last position of a\npaths string.\n\nIf a FieldMask object is not present in a get operation, the\noperation applies to all fields (as if a FieldMask of all fields\nhad been specified).\n\nNote that a field mask does not necessarily apply to the\ntop-level response message. In case of a REST get operation, the\nfield mask applies directly to the response, but in case of a REST\nlist operation, the mask instead applies to each individual message\nin the returned resource list. In case of a REST custom method,\nother definitions may be used. Where the mask applies will be\nclearly documented together with its declaration in the API.  In\nany case, the effect on the returned resource/resources is required\nbehavior for APIs.\n\n# Field Masks in Update Operations\n\nA field mask in update operations specifies which fields of the\ntargeted resource are going to be updated. The API is required\nto only change the values of the fields as specified in the mask\nand leave the others untouched. If a resource is passed in to\ndescribe the updated values, the API ignores the values of all\nfields not covered by the mask.\n\nIf a repeated field is specified for an update operation, the existing\nrepeated values in the target resource will be overwritten by the new values.\nNote that a repeated field is only allowed in the last position of a `paths`\nstring.\n\nIf a sub-message is specified in the last position of the field mask for an\nupdate operation, then the existing sub-message in the target resource is\noverwritten. Given the target message:\n\n    f {\n      b {\n        d : 1\n        x : 2\n      }\n      c : 1\n    }\n\nAnd an update message:\n\n    f {\n      b {\n        d : 10\n      }\n    }\n\nthen if the field mask is:\n\n paths: \"f.b\"\n\nthen the result will be:\n\n    f {\n      b {\n        d : 10\n      }\n      c : 1\n    }\n\nHowever, if the update mask was:\n\n paths: \"f.b.d\"\n\nthen the result would be:\n\n    f {\n      b {\n        d : 10\n        x : 2\n      }\n      c : 1\n    }\n\nIn order to reset a field's value to the default, the field must\nbe in the mask and set to the default value in the provided resource.\nHence, in order to reset all fields of a resource, provide a default\ninstance of the resource and set all fields in the mask, or do\nnot provide a mask as described below.\n\nIf a field mask is not present on update, the operation applies to\nall fields (as if a field mask of all fields has been specified).\nNote that in the presence of schema evolution, this may mean that\nfields the client does not know and has therefore not filled into\nthe request will be reset to their default. If this is unwanted\nbehavior, a specific service may require a client to always specify\na field mask, producing an error if not.\n\nAs with get operations, the location of the resource which\ndescribes the updated values in the request message depends on the\noperation kind. In any case, the effect of the field mask is\nrequired to be honored by the API.\n\n## Considerations for HTTP REST\n\nThe HTTP kind of an update operation which uses a field mask must\nbe set to PATCH instead of PUT in order to satisfy HTTP semantics\n(PUT must only be used for full updates).\n\n# JSON Encoding of Field Masks\n\nIn JSON, a field mask is encoded as a single string where paths are\nseparated by a comma. Fields name in each path are converted\nto/from lower-camel naming conventions.\n\nAs an example, consider the following message declarations:\n\n    message Profile {\n      User user = 1;\n      Photo photo = 2;\n    }\n    message User {\n      string display_name = 1;\n      string address = 2;\n    }\n\nIn proto a field mask for `Profile` may look as such:\n\n    mask {\n      paths: \"user.display_name\"\n      paths: \"photo\"\n    }\n\nIn JSON, the same mask is represented as below:\n\n    {\n      mask: \"user.displayName,photo\"\n    }\n\n# Field Masks and Oneof Fields\n\nField masks treat fields in oneofs just as regular fields. Consider the\nfollowing message:\n\n    message SampleMessage {\n      oneof test_oneof {\n        string name = 4;\n        SubMessage sub_message = 9;\n      }\n    }\n\nThe field mask can be:\n\n    mask {\n      paths: \"name\"\n    }\n\nOr:\n\n    mask {\n      paths: \"sub_message\"\n    }\n\nNote that oneof type names (\"test_oneof\" in this case) cannot be used in\npaths.",
-      "title": "`FieldMask` represents a set of symbolic field paths, for example:"
     },
     "typesJSONValue": {
       "type": "object",
