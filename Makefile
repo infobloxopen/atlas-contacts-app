@@ -91,12 +91,3 @@ nginx-up:
 .PHONY: nginx-down
 nginx-down:
 	kubectl delete -f deploy/nginx.yaml
-
-.PHONY: db-up
-db-up:
-	kubectl apply -f deploy/ns.yaml
-	kubectl apply -f deploy/contacts-localdb.yaml
-
-.PHONY: db-down
-db-down:
-	kubectl delete -f deploy/contacts-localdb.yaml
