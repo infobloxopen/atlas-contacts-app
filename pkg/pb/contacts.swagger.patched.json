@@ -62,28 +62,7 @@
         "responses": {
           "200": {
             "schema": {
-              "properties": {
-                "results": {
-                  "$ref": "#/definitions/contactsListContactsResponse"
-                },
-                "success": {
-                  "properties": {
-                    "code": {
-                      "type": "integer",
-                      "format": "int32",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "\u003cresponse message\u003e"
-                    },
-                    "status": {
-                      "type": "string",
-                      "example": "OK"
-                    }
-                  }
-                }
-              }
+              "$ref": "#/definitions/contactsListContactsResponse"
             }
           }
         }
@@ -107,28 +86,7 @@
         "responses": {
           "201": {
             "schema": {
-              "properties": {
-                "results": {
-                  "$ref": "#/definitions/contactsCreateContactResponse"
-                },
-                "success": {
-                  "properties": {
-                    "code": {
-                      "type": "integer",
-                      "format": "int32",
-                      "example": 201
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "\u003cresponse message\u003e"
-                    },
-                    "status": {
-                      "type": "string",
-                      "example": "CREATED"
-                    }
-                  }
-                }
-              }
+              "$ref": "#/definitions/contactsCreateContactResponse"
             }
           }
         }
@@ -161,28 +119,7 @@
         "responses": {
           "202": {
             "schema": {
-              "properties": {
-                "results": {
-                  "$ref": "#/definitions/contactsUpdateContactResponse"
-                },
-                "success": {
-                  "properties": {
-                    "code": {
-                      "type": "integer",
-                      "format": "int32",
-                      "example": 202
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "\u003cresponse message\u003e"
-                    },
-                    "status": {
-                      "type": "string",
-                      "example": "UPDATED"
-                    }
-                  }
-                }
-              }
+              "$ref": "#/definitions/contactsUpdateContactResponse"
             }
           }
         }
@@ -215,28 +152,7 @@
         "responses": {
           "201": {
             "schema": {
-              "properties": {
-                "results": {
-                  "$ref": "#/definitions/contactsSMSResponse"
-                },
-                "success": {
-                  "properties": {
-                    "code": {
-                      "type": "integer",
-                      "format": "int32",
-                      "example": 201
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "\u003cresponse message\u003e"
-                    },
-                    "status": {
-                      "type": "string",
-                      "example": "CREATED"
-                    }
-                  }
-                }
-              }
+              "$ref": "#/definitions/contactsSMSResponse"
             }
           }
         }
@@ -283,28 +199,7 @@
         "responses": {
           "200": {
             "schema": {
-              "properties": {
-                "results": {
-                  "$ref": "#/definitions/contactsListGroupsResponse"
-                },
-                "success": {
-                  "properties": {
-                    "code": {
-                      "type": "integer",
-                      "format": "int32",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "\u003cresponse message\u003e"
-                    },
-                    "status": {
-                      "type": "string",
-                      "example": "OK"
-                    }
-                  }
-                }
-              }
+              "$ref": "#/definitions/contactsListGroupsResponse"
             }
           }
         }
@@ -328,40 +223,19 @@
         "responses": {
           "201": {
             "schema": {
-              "properties": {
-                "results": {
-                  "$ref": "#/definitions/contactsCreateGroupResponse"
-                },
-                "success": {
-                  "properties": {
-                    "code": {
-                      "type": "integer",
-                      "format": "int32",
-                      "example": 201
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "\u003cresponse message\u003e"
-                    },
-                    "status": {
-                      "type": "string",
-                      "example": "CREATED"
-                    }
-                  }
-                }
-              }
+              "$ref": "#/definitions/contactsCreateGroupResponse"
             }
           }
         }
       }
     },
     "/groups/{id}": {
-      "put": {
+      "get": {
         "tags": [
           "Groups"
         ],
-        "summary": "Use this method to update user profile.",
-        "operationId": "Update",
+        "summary": "Use this method to retrieve the list of user profiles.",
+        "operationId": "Read",
         "parameters": [
           {
             "type": "string",
@@ -369,41 +243,35 @@
             "name": "id",
             "in": "path",
             "required": true
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/contactsGroup"
-            }
           }
         ],
         "responses": {
-          "202": {
+          "200": {
             "schema": {
-              "properties": {
-                "results": {
-                  "$ref": "#/definitions/contactsUpdateGroupResponse"
-                },
-                "success": {
-                  "properties": {
-                    "code": {
-                      "type": "integer",
-                      "format": "int32",
-                      "example": 202
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "\u003cresponse message\u003e"
-                    },
-                    "status": {
-                      "type": "string",
-                      "example": "UPDATED"
-                    }
-                  }
-                }
-              }
+              "$ref": "#/definitions/contactsReadGroupResponse"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Groups"
+        ],
+        "summary": "Use this method to delete a profile.",
+        "operationId": "Delete",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "An application specific resource identity of a resource",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "203": {
+            "schema": {
+              "$ref": "#/definitions/contactsDeleteGroupResponse"
             }
           }
         }
@@ -450,28 +318,7 @@
         "responses": {
           "200": {
             "schema": {
-              "properties": {
-                "results": {
-                  "$ref": "#/definitions/contactsListProfilesResponse"
-                },
-                "success": {
-                  "properties": {
-                    "code": {
-                      "type": "integer",
-                      "format": "int32",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "\u003cresponse message\u003e"
-                    },
-                    "status": {
-                      "type": "string",
-                      "example": "OK"
-                    }
-                  }
-                }
-              }
+              "$ref": "#/definitions/contactsListProfilesResponse"
             }
           }
         }
@@ -495,40 +342,19 @@
         "responses": {
           "201": {
             "schema": {
-              "properties": {
-                "results": {
-                  "$ref": "#/definitions/contactsCreateProfileResponse"
-                },
-                "success": {
-                  "properties": {
-                    "code": {
-                      "type": "integer",
-                      "format": "int32",
-                      "example": 201
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "\u003cresponse message\u003e"
-                    },
-                    "status": {
-                      "type": "string",
-                      "example": "CREATED"
-                    }
-                  }
-                }
-              }
+              "$ref": "#/definitions/contactsCreateProfileResponse"
             }
           }
         }
       }
     },
     "/profiles/{id}": {
-      "get": {
+      "put": {
         "tags": [
           "Profiles"
         ],
-        "summary": "Use this method to retrieve the list of user profiles.",
-        "operationId": "Read",
+        "summary": "Use this method to update user profile.",
+        "operationId": "Update",
         "parameters": [
           {
             "type": "string",
@@ -536,77 +362,20 @@
             "name": "id",
             "in": "path",
             "required": true
-          }
-        ],
-        "responses": {
-          "200": {
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
             "schema": {
-              "properties": {
-                "results": {
-                  "$ref": "#/definitions/contactsReadProfileResponse"
-                },
-                "success": {
-                  "properties": {
-                    "code": {
-                      "type": "integer",
-                      "format": "int32",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "\u003cresponse message\u003e"
-                    },
-                    "status": {
-                      "type": "string",
-                      "example": "OK"
-                    }
-                  }
-                }
-              }
+              "$ref": "#/definitions/contactsProfile"
             }
           }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Profiles"
-        ],
-        "summary": "Use this method to delete a profile.",
-        "operationId": "Delete",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "An application specific resource identity of a resource",
-            "name": "id",
-            "in": "path",
-            "required": true
-          }
         ],
         "responses": {
-          "203": {
+          "202": {
             "schema": {
-              "properties": {
-                "results": {
-                  "$ref": "#/definitions/contactsDeleteProfileResponse"
-                },
-                "success": {
-                  "properties": {
-                    "code": {
-                      "type": "integer",
-                      "format": "int32",
-                      "example": 203
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "\u003cresponse message\u003e"
-                    },
-                    "status": {
-                      "type": "string",
-                      "example": "DELETED"
-                    }
-                  }
-                }
-              }
+              "$ref": "#/definitions/contactsUpdateProfileResponse"
             }
           }
         }
@@ -615,8 +384,6 @@
   },
   "definitions": {
     "apicontactsContact": {
-      "description": "Contact represents a particular person in an contacts list.",
-      "type": "object",
       "properties": {
         "emails": {
           "description": "The list of emails associated with person.",
@@ -630,10 +397,9 @@
           "type": "string"
         },
         "groups": {
-          "description": "The list of groups contact is attached to.",
           "type": "array",
           "items": {
-            "$ref": "#/definitions/contactsGroupInapicontactsContact"
+            "$ref": "#/definitions/contactsGroup_In_apicontactsContact"
           }
         },
         "home_address": {
@@ -667,8 +433,59 @@
         },
         "profile_id": {
           "description": "The resource identifier.",
+          "type": "string"
+        },
+        "work_address": {
+          "title": "The work address of the person",
+          "$ref": "#/definitions/contactsAddress"
+        }
+      }
+    },
+    "apicontactsContact_In_contactsGroup": {
+      "properties": {
+        "emails": {
+          "description": "The list of emails associated with person.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/contactsEmail"
+          }
+        },
+        "first_name": {
+          "description": "The first name of the person.",
+          "type": "string"
+        },
+        "home_address": {
+          "description": "The home address of the person.",
+          "$ref": "#/definitions/contactsAddress"
+        },
+        "id": {
+          "description": "The resource identifier.",
           "type": "string",
           "readOnly": true
+        },
+        "last_name": {
+          "description": "The last name of the person.",
+          "type": "string"
+        },
+        "middle_name": {
+          "description": "The middle name of the person.",
+          "type": "string"
+        },
+        "nicknames": {
+          "description": "nicknames is arbitrary json, but should be used for a list of strings.",
+          "$ref": "#/definitions/typesJSONValue"
+        },
+        "notes": {
+          "description": "Brief description associated with contact.",
+          "type": "string"
+        },
+        "primary_email": {
+          "description": "The person's primary email.",
+          "type": "string"
+        },
+        "profile_id": {
+          "description": "The resource identifier.",
+          "type": "string"
         },
         "work_address": {
           "title": "The work address of the person",
@@ -707,6 +524,23 @@
       "properties": {
         "result": {
           "$ref": "#/definitions/apicontactsContact"
+        },
+        "success": {
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 201
+            },
+            "message": {
+              "type": "string",
+              "example": "\u003cresponse message\u003e"
+            },
+            "status": {
+              "type": "string",
+              "example": "CREATED"
+            }
+          }
         }
       }
     },
@@ -715,6 +549,23 @@
       "properties": {
         "result": {
           "$ref": "#/definitions/contactsGroup"
+        },
+        "success": {
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 201
+            },
+            "message": {
+              "type": "string",
+              "example": "\u003cresponse message\u003e"
+            },
+            "status": {
+              "type": "string",
+              "example": "CREATED"
+            }
+          }
         }
       }
     },
@@ -723,17 +574,91 @@
       "properties": {
         "result": {
           "$ref": "#/definitions/contactsProfile"
+        },
+        "success": {
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 201
+            },
+            "message": {
+              "type": "string",
+              "example": "\u003cresponse message\u003e"
+            },
+            "status": {
+              "type": "string",
+              "example": "CREATED"
+            }
+          }
         }
       }
     },
     "contactsDeleteContactResponse": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "success": {
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 203
+            },
+            "message": {
+              "type": "string",
+              "example": "\u003cresponse message\u003e"
+            },
+            "status": {
+              "type": "string",
+              "example": "DELETED"
+            }
+          }
+        }
+      }
     },
     "contactsDeleteGroupResponse": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "success": {
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 203
+            },
+            "message": {
+              "type": "string",
+              "example": "\u003cresponse message\u003e"
+            },
+            "status": {
+              "type": "string",
+              "example": "DELETED"
+            }
+          }
+        }
+      }
     },
     "contactsDeleteProfileResponse": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "success": {
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 203
+            },
+            "message": {
+              "type": "string",
+              "example": "\u003cresponse message\u003e"
+            },
+            "status": {
+              "type": "string",
+              "example": "DELETED"
+            }
+          }
+        }
+      }
     },
     "contactsEmail": {
       "description": "Email respresents the e-mail address.",
@@ -751,14 +676,11 @@
       }
     },
     "contactsGroup": {
-      "description": "Group is used to group the contacts, e. g. 'Friends', 'Family'.",
-      "type": "object",
       "properties": {
         "contacts": {
-          "description": "List of contacts associated with this group.",
           "type": "array",
           "items": {
-            "$ref": "#/definitions/apicontactsContact"
+            "$ref": "#/definitions/apicontactsContact_In_contactsGroup"
           }
         },
         "id": {
@@ -776,12 +698,11 @@
         },
         "profile_id": {
           "description": "The resource identifier.",
-          "type": "string",
-          "readOnly": true
+          "type": "string"
         }
       }
     },
-    "contactsGroupInapicontactsContact": {
+    "contactsGroup_In_apicontactsContact": {
       "properties": {
         "id": {
           "description": "The resource identifier.",
@@ -798,8 +719,7 @@
         },
         "profile_id": {
           "description": "The resource identifier.",
-          "type": "string",
-          "readOnly": true
+          "type": "string"
         }
       }
     },
@@ -810,6 +730,23 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/apicontactsContact"
+          }
+        },
+        "success": {
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 200
+            },
+            "message": {
+              "type": "string",
+              "example": "\u003cresponse message\u003e"
+            },
+            "status": {
+              "type": "string",
+              "example": "OK"
+            }
           }
         }
       }
@@ -822,6 +759,23 @@
           "items": {
             "$ref": "#/definitions/contactsGroup"
           }
+        },
+        "success": {
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 200
+            },
+            "message": {
+              "type": "string",
+              "example": "\u003cresponse message\u003e"
+            },
+            "status": {
+              "type": "string",
+              "example": "OK"
+            }
+          }
         }
       }
     },
@@ -832,6 +786,23 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/contactsProfile"
+          }
+        },
+        "success": {
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 200
+            },
+            "message": {
+              "type": "string",
+              "example": "\u003cresponse message\u003e"
+            },
+            "status": {
+              "type": "string",
+              "example": "OK"
+            }
           }
         }
       }
@@ -874,6 +845,23 @@
       "properties": {
         "result": {
           "$ref": "#/definitions/apicontactsContact"
+        },
+        "success": {
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 200
+            },
+            "message": {
+              "type": "string",
+              "example": "\u003cresponse message\u003e"
+            },
+            "status": {
+              "type": "string",
+              "example": "OK"
+            }
+          }
         }
       }
     },
@@ -882,6 +870,23 @@
       "properties": {
         "result": {
           "$ref": "#/definitions/contactsGroup"
+        },
+        "success": {
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 200
+            },
+            "message": {
+              "type": "string",
+              "example": "\u003cresponse message\u003e"
+            },
+            "status": {
+              "type": "string",
+              "example": "OK"
+            }
+          }
         }
       }
     },
@@ -890,6 +895,23 @@
       "properties": {
         "result": {
           "$ref": "#/definitions/contactsProfile"
+        },
+        "success": {
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 200
+            },
+            "message": {
+              "type": "string",
+              "example": "\u003cresponse message\u003e"
+            },
+            "status": {
+              "type": "string",
+              "example": "OK"
+            }
+          }
         }
       }
     },
@@ -906,13 +928,49 @@
       }
     },
     "contactsSMSResponse": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "success": {
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 201
+            },
+            "message": {
+              "type": "string",
+              "example": "\u003cresponse message\u003e"
+            },
+            "status": {
+              "type": "string",
+              "example": "CREATED"
+            }
+          }
+        }
+      }
     },
     "contactsUpdateContactResponse": {
       "type": "object",
       "properties": {
         "result": {
           "$ref": "#/definitions/apicontactsContact"
+        },
+        "success": {
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 202
+            },
+            "message": {
+              "type": "string",
+              "example": "\u003cresponse message\u003e"
+            },
+            "status": {
+              "type": "string",
+              "example": "UPDATED"
+            }
+          }
         }
       }
     },
@@ -921,6 +979,23 @@
       "properties": {
         "result": {
           "$ref": "#/definitions/contactsGroup"
+        },
+        "success": {
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 202
+            },
+            "message": {
+              "type": "string",
+              "example": "\u003cresponse message\u003e"
+            },
+            "status": {
+              "type": "string",
+              "example": "UPDATED"
+            }
+          }
         }
       }
     },
@@ -929,6 +1004,23 @@
       "properties": {
         "result": {
           "$ref": "#/definitions/contactsProfile"
+        },
+        "success": {
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 202
+            },
+            "message": {
+              "type": "string",
+              "example": "\u003cresponse message\u003e"
+            },
+            "status": {
+              "type": "string",
+              "example": "UPDATED"
+            }
+          }
         }
       }
     },

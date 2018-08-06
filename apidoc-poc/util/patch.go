@@ -143,22 +143,31 @@ func main() {
 			// Wrap responses
 			if op.Responses.StatusCodeResponses != nil {
 				rsp := op.Responses.StatusCodeResponses[200]
-				if rsp.Schema != nil {
-					if rsp.Schema.Properties == nil {
-						rsp.Schema.Properties = map[string]spec.Schema{}
+				if !isNilRef(rsp.Schema.Ref) {
+					s, _, err := rsp.Schema.Ref.GetPointer().Get(sw)
+					if err != nil {
+						panic(err)
 					}
-					rsp.Schema.Properties["success"] = *(&spec.Schema{}).WithProperties(
+
+					schema, ok := s.(spec.Schema)
+					if !ok {
+						panic("cannot cast interface to spec.Schema")
+					}
+
+					if schema.Properties == nil {
+						schema.Properties = map[string]spec.Schema{}
+					}
+
+					schema.Properties["success"] = *(&spec.Schema{}).WithProperties(
 						map[string]spec.Schema{
 							"status":  *spec.StringProperty().WithExample(opToStatus(on)),
 							"code":    *spec.Int32Property().WithExample(opToCode(on)),
 							"message": *spec.StringProperty().WithExample("<response message>"),
 						})
 
-					if !isNilRef(rsp.Schema.Ref) {
-						refs = append(refs, rsp.Schema.Ref)
-						rsp.Schema.Properties["results"] = spec.Schema{SchemaProps: spec.SchemaProps{Ref: rsp.Schema.Ref}}
-						rsp.Schema.Ref = spec.Ref{}
-					}
+					sw.Definitions[trim(rsp.Schema.Ref)] = schema
+
+					refs = append(refs, rsp.Schema.Ref)
 
 					delete(op.Responses.StatusCodeResponses, 200)
 
@@ -179,11 +188,18 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		recurseCheck(s.(spec.Schema), r, []string{})
+		checkRecursion(s.(spec.Schema), r, []string{})
 	}
 
 	// Cleanup unused definitions.
-	for dn, _ := range sw.Definitions {
+	for dn, v := range sw.Definitions {
+		// hidden definitions should become explicit.
+		if strings.HasPrefix(dn, "_") {
+			sw.Definitions[strings.TrimPrefix(dn, "_")] = v
+			delete(sw.Definitions, dn)
+			seenRefs[dn] = true
+		}
+
 		if seenRefs[dn] == false {
 			delete(sw.Definitions, dn)
 		}
@@ -198,76 +214,91 @@ func main() {
 	fmt.Printf("%s", bOut)
 }
 
-func recurseCheck(s spec.Schema, r spec.Ref, path []string) spec.Ref {
-	var patchedName string
+func getPropRef(p spec.Schema) spec.Ref {
+	if len(p.Type) == 1 && p.Type[0] == "array" {
+		return p.Items.Schema.Ref
+	}
+
+	return p.Ref
+}
+
+func setPropRef(p *spec.Schema, r spec.Ref) {
+	if len(p.Type) == 1 && p.Type[0] == "array" {
+		p.Items.Schema.Ref = r
+	} else {
+		p.Ref = r
+	}
+}
+
+func checkRecursion(s spec.Schema, r spec.Ref, path []string) spec.Ref {
+	var newRefLength int
+	var newRefName string
+
+	var newProps = map[string]spec.Schema{}
 
 	npath := path[:]
-	newProps := map[string]spec.Schema{}
+	npath = append(npath, trim(r))
 
-	if s.Properties != nil {
-		npath = append(npath, trim(r))
-		for np, p := range s.Properties {
-			isArray := len(p.Type) == 1 && p.Type[0] == "array"
-
-			var sref spec.Ref
-			if isArray {
-				sref = p.Items.Schema.Ref
-			} else {
-				sref = p.Ref
-			}
-			var hasRecursion bool
-			if !isNilRef(sref) {
-				srefName := trim(sref)
-				for i, np := range npath {
-					if np == srefName {
-						patchedName = strings.Join(reverse(npath[i:]), "In")
-						hasRecursion = true
-					}
-				}
-
-				if !hasRecursion {
-					s, _, err := sref.GetPointer().Get(sw)
-					if err != nil {
-						panic(err)
-					}
-
-					// If we cannot resolve, it is a new ref.
-					if _, ok := s.(spec.Schema); !ok {
-						s = sw.Definitions[srefName]
-					}
-
-					newRef := recurseCheck(s.(spec.Schema), sref, npath)
-					seenRefs[trim(newRef)] = true
-
-					if isArray {
-						p.Items.Schema.Ref = newRef
-					} else {
-						p.Ref = newRef
-					}
-				}
-
-			}
-
-			// Skip over recursive property.
-			if hasRecursion {
-				continue
-			}
-
-			if p.Description == "atlas.api.identifier" {
-				p.Description = "The resource identifier."
+	newProps = map[string]spec.Schema{}
+	for np, p := range s.Properties {
+		if p.Description == "atlas.api.identifier" {
+			p.Description = "The resource identifier."
+			if np == "id" {
 				p.ReadOnly = true
 			}
+		}
 
-			newProps[np] = p
+		newProps[np] = p
+
+		sr := getPropRef(p)
+
+		if isNilRef(sr) {
+			continue
+		}
+
+		for i, prefs := range npath {
+			if trim(sr) == prefs {
+				delete(newProps, np)
+				if newRefLength < len(npath)-i {
+					newRefName = strings.Join(reverse(npath[i:]), "_In_")
+					newRefLength = len(npath) - i
+				}
+			}
+		}
+
+		if _, ok := newProps[np]; !ok {
+			continue
+		}
+
+		ss, _, _ := sr.GetPointer().Get(sw)
+		if _, ok := ss.(spec.Schema); !ok {
+			continue
+		}
+
+		nr := checkRecursion(ss.(spec.Schema), sr, npath)
+
+		if trim(nr) != trim(sr) {
+			if newRefName == "" {
+				newRefName = strings.TrimPrefix(trim(nr), trim(sr)+"_In_")
+			}
+
+			delete(newProps, np)
+
+			if len(p.Type) == 1 && p.Type[0] == "array" {
+				newProps[np] = *spec.ArrayProperty(spec.RefProperty(nr.String()))
+			} else {
+				newProps[np] = *spec.RefProperty(nr.String())
+			}
+		} else {
+			seenRefs[trim(sr)] = true
 		}
 	}
 
-	// Recursion has been detected and Properties should be patched with new properties.
-	if len(s.Properties) != len(newProps) {
-		sw.Definitions[patchedName] = *(&spec.Schema{}).WithProperties(newProps)
-		return spec.MustCreateRef("#/definitions/" + patchedName)
-		// No recursion occured, just update Properties in case if any changes to fields were
-		// performed during recursion check.
+	if newRefName != "" {
+		seenRefs[newRefName] = true
+		// underscore hides definitions from following along recursive path.
+		sw.Definitions["_"+newRefName] = *(&spec.Schema{}).WithProperties(newProps)
+		return spec.MustCreateRef("#/definitions/" + newRefName)
 	} else {
 		s.Properties = newProps
 		sw.Definitions[trim(r)] = s
