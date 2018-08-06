@@ -93,12 +93,12 @@
       }
     },
     "/contacts/{id}": {
-      "get": {
+      "put": {
         "tags": [
           "Contacts"
         ],
-        "summary": "Use this method to retrieve the list of user profiles.",
-        "operationId": "Read",
+        "summary": "Use this method to update user profile.",
+        "operationId": "Update",
         "parameters": [
           {
             "type": "string",
@@ -106,35 +106,20 @@
             "name": "id",
             "in": "path",
             "required": true
-          }
-        ],
-        "responses": {
-          "200": {
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
             "schema": {
-              "$ref": "#/definitions/contactsReadContactResponse"
+              "$ref": "#/definitions/apicontactsContact"
             }
           }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Contacts"
-        ],
-        "summary": "Use this method to delete a profile.",
-        "operationId": "Delete",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "An application specific resource identity of a resource",
-            "name": "id",
-            "in": "path",
-            "required": true
-          }
         ],
         "responses": {
-          "203": {
+          "202": {
             "schema": {
-              "$ref": "#/definitions/contactsDeleteContactResponse"
+              "$ref": "#/definitions/contactsUpdateContactResponse"
             }
           }
         }

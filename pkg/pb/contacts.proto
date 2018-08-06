@@ -13,15 +13,26 @@ import "github.com/infobloxopen/atlas-app-toolkit/rpc/resource/resource.proto";
 
 option go_package = "github.com/infobloxopen/atlas-contacts-app/pkg/pb;pb";
 
+// Profile represents a summary of details regarding user contacts and groups.
 message Profile {
     option (gorm.opts) = {
       ormable: true,
       multi_account: true
     };
+
+    // The profile identifier.
     atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "serial" primary_key: true}];
+
+    // Contacts profile name.
     string name = 2;
+
+    // Contacts profile notes.
     string notes = 3;
+
+    // List of contacts associated with profile.
     repeated Contact contacts = 4;
+
+    // List of groups associated with profile.
     repeated Group groups = 5;
 }
 
@@ -68,6 +79,8 @@ message ListProfilesResponse {
 
 service Profiles {
     option (gorm.server).autogen = true;
+
+    // Use this method to create a user profile.
     rpc Create (CreateProfileRequest) returns (CreateProfileResponse) {
         option (google.api.http) = {
             post: "/profiles"
@@ -75,12 +88,14 @@ service Profiles {
         };
     }
 
+    // Use this method to retrieve the list of user profiles.
     rpc Read (ReadProfileRequest) returns (ReadProfileResponse) {
         option (google.api.http) = {
             get: "/profiles/{id.resource_id}"
         };
     }
 
+    // Use this method to update user profile.
     rpc Update (UpdateProfileRequest) returns (UpdateProfileResponse) {
         option (google.api.http) = {
             put: "/profiles/{payload.id.resource_id}"
@@ -88,6 +103,7 @@ service Profiles {
         };
     }
 
+    // Use this method to delete a profile.
     rpc Delete (DeleteProfileRequest) returns (DeleteProfileResponse) {
         option (google.api.http) = {
             delete: "/profiles/{id.resource_id}"
@@ -103,15 +119,26 @@ service Profiles {
 
 }
 
+// Group is used to group the contacts, e. g. 'Friends', 'Family'.
 message Group {
     option (gorm.opts) = {
       ormable: true,
       multi_account: true
     };
+
+    // The contacts group identifier.
     atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "serial" primary_key: true}];
+
+    // The contacts group name.
     string name = 2;
+
+    // Brief description of group.
     string notes = 3;
+
+    // The profile the group is associated with.
     atlas.rpc.Identifier profile_id = 4;
+
+    // List of contacts associated with this group.
     repeated Contact contacts = 5 [(gorm.field).many_to_many = {}];
 }
 
@@ -158,6 +185,8 @@ message ListGroupsResponse {
 
 service Groups {
     option (gorm.server).autogen = true;
+
+    // Use this method to create a specific contacts group.
     rpc Create (CreateGroupRequest) returns (CreateGroupResponse) {
         option (google.api.http) = {
             post: "/groups"
@@ -165,12 +194,14 @@ service Groups {
         };
     }
 
+    // Use this method to retrieve a particular contacts group.
     rpc Read (ReadGroupRequest) returns (ReadGroupResponse) {
         option (google.api.http) = {
             get: "/groups/{id.resource_id}"
         };
     }
 
+    // Use this method to update a particular contacts group.
     rpc Update (UpdateGroupRequest) returns (UpdateGroupResponse) {
         option (google.api.http) = {
             put: "/groups/{payload.id.resource_id}"
@@ -178,6 +209,7 @@ service Groups {
         };
     }
 
+    // Use this method to remove a selected contacts group.
     rpc Delete (DeleteGroupRequest) returns (DeleteGroupResponse) {
         option (google.api.http) = {
             delete: "/groups/{id.resource_id}"
@@ -185,6 +217,7 @@ service Groups {
         option (gorm.method).object_type = "Group";
     }
 
+    // Use this method to retrieve all the contact groups.
     rpc List (ListGroupRequest) returns (ListGroupsResponse) {
         option (google.api.http) = {
             get: "/groups"
@@ -193,26 +226,51 @@ service Groups {
 
 }
 
+// Contact represents a particular person in an contacts list.
 message Contact {
     option (gorm.opts) = {
       ormable: true,
       multi_account: true
     };
+
+    // The contact identifier.
     atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "serial"  primary_key: true}];
+
+    // The first name of the person.
     string first_name = 2;
+
+    // The middle name of the person.
     string middle_name = 3;
+
+    // The last name of the person.
     string last_name = 4;
+
+    // The person's primary email.
     string primary_email = 5 [(gorm.field).drop = true, (validate.rules).string.email = true];
+
+    // Brief description associated with contact.
     string notes = 6;
+
+    // The list of emails associated with person.
     repeated Email emails = 7;
+
+    // The home address of the person.
     Address home_address = 8;
+
+    // The work address of the person
     Address work_address = 9;
+
+    // The profile the contact belongs to.
     atlas.rpc.Identifier profile_id = 10;
+
+    // The list of groups contact is attached to.
     repeated Group groups = 11 [(gorm.field).many_to_many = {jointable: "group_contacts"}];
-    // nicknames is arbitrary json, but should be used for a list of strings
+
+    // nicknames is arbitrary json, but should be used for a list of strings.
     gorm.types.JSONValue nicknames = 12;
 }
 
+// Email respresents the e-mail address.
 message Email {
     option (gorm.opts) = {
       ormable: true,
@@ -220,19 +278,34 @@ message Email {
       include: [
       {type: "*bool", name: "is_primary"}]
     };
+
+    // The e-mail address identifier.
     uint64 id = 1;
+
+    // The value of the e-mail address.
     string address = 2 [(gorm.field).tag.unique = true, (validate.rules).string.email = true];
 }
 
+// Address represents information about contact location.
 message Address {
     option (gorm.opts) = {
       ormable: true,
       multi_account: true
     };
+
+    // The address value.
     string address = 1;
+
+    // The city name.
     string city = 2;
+
+    // State name abbrivated to two letters.
     string state = 3;
+
+    // ZIP code.
     string zip = 4;
+
+    // Country name.
     string country = 5;
 }
 
@@ -288,6 +361,8 @@ message ListContactRequest {
 
 service Contacts {
     option (gorm.server).autogen = true;
+
+    // Use this method to create a contact information.
     rpc Create (CreateContactRequest) returns (CreateContactResponse) {
         option (google.api.http) = {
             post: "/contacts"
@@ -295,12 +370,14 @@ service Contacts {
         };
     }
 
+    // Use this method to read a contact information by identifier.
     rpc Read (ReadContactRequest) returns (ReadContactResponse) {
         option (google.api.http) = {
             get: "/contacts/{id.resource_id}"
         };
     }
 
+    // Use this method to update a contact information.
     rpc Update (UpdateContactRequest) returns (UpdateContactResponse) {
         option (google.api.http) = {
             put: "/contacts/{payload.id.resource_id}"
@@ -308,6 +385,7 @@ service Contacts {
         };
     }
 
+    // Use this method to delete a particular contact.
     rpc Delete (DeleteContactRequest) returns (DeleteContactResponse) {
         option (google.api.http) = {
             delete: "/contacts/{id.resource_id}"
@@ -315,12 +393,14 @@ service Contacts {
         option (gorm.method).object_type = "Contact";
     }
 
+    // Use this method to retrieve all the contacts.
     rpc List (ListContactRequest) returns (ListContactsResponse) {
         option (google.api.http) = {
             get: "/contacts"
         };
     }
 
+    // Use this method to Send an SMS to a given contact.
     rpc SendSMS (SMSRequest) returns (SMSResponse) {
         option (google.api.http) = {
             post: "/contacts/{id}/sms"
@@ -343,4 +423,22 @@ option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
   schemes: HTTPS;
   consumes: "application/json";
   produces: "application/json";
+  base_path: "/v1/";
+  security_definitions: {
+    security: {
+      key: "ApiKeyAuth";
+      value: {
+        type: TYPE_API_KEY;
+        in: IN_HEADER;
+        name: "Authorization";
+      };
+    };
+  };
+  security: {
+    security_requirement: {
+      key: "ApiKeyAuth";
+      value: {};
+    }
+  };
+
 };
