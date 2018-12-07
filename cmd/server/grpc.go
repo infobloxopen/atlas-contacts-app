@@ -3,12 +3,11 @@ package main
 import (
 	"github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
-	toolkit_auth "github.com/infobloxopen/atlas-app-toolkit/auth"
+	"github.com/infobloxopen/atlas-app-toolkit/auth"
 	"github.com/infobloxopen/atlas-app-toolkit/errors"
 	"github.com/infobloxopen/atlas-app-toolkit/errors/mappers/validationerrors"
 	"github.com/infobloxopen/atlas-app-toolkit/gateway"
 	"github.com/infobloxopen/atlas-app-toolkit/requestid"
-	"github.com/infobloxopen/atlas-contacts-app/cmd"
 	"github.com/infobloxopen/atlas-contacts-app/pkg/pb"
 	"github.com/infobloxopen/atlas-contacts-app/pkg/svc"
 	"github.com/jinzhu/gorm"
@@ -25,11 +24,7 @@ func NewGRPCServer(logger *logrus.Logger, db *gorm.DB) (*grpc.Server, error) {
 		// validation interceptor
 		validationerrors.UnaryServerInterceptor(),
 		gateway.UnaryServerInterceptor(),
-	}
-	// add authorization interceptor if authz service address is provided
-	if AuthzAddr != "" {
-		// authorization interceptor
-		interceptors = append(interceptors, toolkit_auth.UnaryServerInterceptor(AuthzAddr, cmd.ApplicationID))
+		auth.LogrusUnaryServerInterceptor(),
 	}
 
 	// create new gRPC grpcServer with middleware chain

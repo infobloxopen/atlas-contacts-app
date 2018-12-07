@@ -32,7 +32,6 @@ var (
 	InternalAddress    string
 	SwaggerDir         string
 	DBConnectionString string
-	AuthzAddr          string
 	LogLevel           string
 )
 
@@ -55,7 +54,6 @@ func init() {
 	flag.StringVar(&InternalAddress, "internal-addr", cmd.InternalAddress, "address of an internal http server, for endpoints that shouldn't be exposed to the public")
 	flag.StringVar(&SwaggerDir, "swagger-dir", cmd.SwaggerFile, "directory of the swagger.json file")
 	flag.StringVar(&DBConnectionString, "db", cmd.DBConnectionString, "the database address")
-	flag.StringVar(&AuthzAddr, "authz", "", "address of the authorization service")
 	flag.StringVar(&LogLevel, "log", "info", "log level")
 	flag.Parse()
 	resource.RegisterApplication(cmd.ApplicationID)

@@ -170,7 +170,7 @@ func (m *ContactsDefaultServer) CustomList(ctx context.Context, in *ListContactR
 			db = db.Joins(join)
 		}
 	}
-	res, err := DefaultListContact(ctx, db, in)
+	res, err := DefaultListContact(ctx, db, in.Filter, in.OrderBy, in.Paging, in.Fields)
 	if err != nil {
 		return nil, err
 	}

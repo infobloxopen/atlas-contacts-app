@@ -2,28 +2,35 @@
 
 
 [[projects]]
+  digest = "1:b520b55fc1146c5b0eea03b07233f7a3d4a9be985c037c91ea6b82ecb81bd521"
   name = "github.com/bitly/go-simplejson"
   packages = ["."]
+  pruneopts = "UT"
   revision = "aabad6e819789e569bd6aabf444c935aa9ba1e44"
   version = "v0.5.0"
 
 [[projects]]
   branch = "master"
+  digest = "1:5771b86b64a5e64d8e3d70337813686586210131ac4fb4c6a97b43c8e25e2253"
   name = "github.com/dgrijalva/jwt-go"
   packages = ["."]
-  revision = "0b96aaa707760d6ab28d9b9d1913ff5993328bae"
+  pruneopts = "UT"
+  revision = "3af4c746e1c248ee8491a3e0c6f7a9cd831e95f8"
 
 [[projects]]
+  digest = "1:ae5d8cbf9034fc6d50b2d42472907d018911dd3bff870e190a757b6394d5ff24"
   name = "github.com/gogo/protobuf"
   packages = [
     "proto",
-    "protoc-gen-gogo/descriptor"
+    "protoc-gen-gogo/descriptor",
   ]
+  pruneopts = "UT"
   revision = "636bf0302bc95575d69441b25a2603156ffdddf1"
   version = "v1.1.1"
 
 [[projects]]
   branch = "master"
+  digest = "1:f8cb896615dee17426405b1413a12aeb5616abfed956c19160bf7d8c50fe900d"
   name = "github.com/golang/protobuf"
   packages = [
     "jsonpb",
@@ -36,18 +43,21 @@
     "ptypes/any",
     "ptypes/duration",
     "ptypes/struct",
-    "ptypes/timestamp"
+    "ptypes/timestamp",
   ]
-  revision = "11bd559057bb9c65e24d1bd7f436d375323a8565"
+  pruneopts = "UT"
+  revision = "1d3f30b51784bec5aad268e59fd3c2fc1c2fe73f"
 
 [[projects]]
+  digest = "1:236d7e1bdb50d8f68559af37dbcf9d142d56b431c9b2176d41e2a009b664cda8"
   name = "github.com/google/uuid"
   packages = ["."]
-  revision = "064e2069ce9c359c118179501254f67d7d37ba24"
-  version = "0.2"
+  pruneopts = "UT"
+  revision = "9b3b1e0f5f99ae461456d768e7d301a7acdaa2d8"
+  version = "v1.1.0"
 
 [[projects]]
-  branch = "master"
+  digest = "1:c99635434bee2cce9e75a864ca17f8085fcdd43cd564057b431ee01aef2bdd12"
   name = "github.com/grpc-ecosystem/go-grpc-middleware"
   packages = [
     ".",
@@ -57,29 +67,28 @@
     "logging/logrus/ctxlogrus",
     "tags",
     "tags/logrus",
-    "util/metautils"
+    "util/metautils",
   ]
-  revision = "e9c5d9645c437ab1b204cff969a2c0fb16cd4276"
+  pruneopts = "UT"
+  revision = "c250d6563d4d4c20252cd865923440e829844f4e"
+  version = "v1.0.0"
 
 [[projects]]
+  digest = "1:36d8bdf4367306ad70e7fb62c6cd6735a3c448a5ef3ac912b384fd143a36ff3a"
   name = "github.com/grpc-ecosystem/grpc-gateway"
   packages = [
     "protoc-gen-swagger/options",
     "runtime",
     "runtime/internal",
-    "utilities"
+    "utilities",
   ]
+  pruneopts = "UT"
   revision = "92583770e3f01b09a0d3e9bdf64321d8bebd48f2"
   version = "v1.4.1"
 
 [[projects]]
   branch = "master"
-  name = "github.com/grpc-ecosystem/grpc-opentracing"
-  packages = ["go/otgrpc"]
-  revision = "8e809c8a86450a29b90dcc9efbf062d0fe6d9746"
-
-[[projects]]
-  branch = "master"
+  digest = "1:f3562bc27e85c82f647ba448b58afd37814a204814a07e223eaafb2b0823e8fb"
   name = "github.com/infobloxopen/atlas-app-toolkit"
   packages = [
     "auth",
@@ -95,108 +104,89 @@
     "rpc/errdetails",
     "rpc/errfields",
     "rpc/resource",
-    "server"
+    "server",
+    "util",
   ]
-  revision = "1a2f7ec496d026937d1a5d24f9827088abbadc9d"
+  pruneopts = "UT"
+  revision = "7ae94b9ed501d566362addbb6c32c1831d16696d"
 
 [[projects]]
-  branch = "master"
-  name = "github.com/infobloxopen/go-trees"
-  packages = [
-    "dltree",
-    "domain",
-    "domaintree",
-    "iptree",
-    "numtree",
-    "strtree",
-    "uintX/domaintree16",
-    "uintX/domaintree32",
-    "uintX/domaintree64",
-    "uintX/domaintree8",
-    "uintX/iptree16",
-    "uintX/iptree32",
-    "uintX/iptree64",
-    "uintX/iptree8",
-    "uintX/strtree16",
-    "uintX/strtree32",
-    "uintX/strtree64",
-    "uintX/strtree8"
-  ]
-  revision = "a1e500cde93cdca91ae6c7366e0cb9f477c63603"
-
-[[projects]]
+  digest = "1:190fa8216e7830786680c3db8e34018cd6c39fb67c208a9598814741cd7e0c2b"
   name = "github.com/infobloxopen/protoc-gen-gorm"
   packages = [
     "options",
-    "types"
+    "types",
   ]
-  revision = "e6bd77027471ac6251693f5813f5e4fc565fa15c"
-  version = "v0.9.0"
+  pruneopts = "UT"
+  revision = "f1104159d74010117c86600129ab7edc95421619"
+  version = "v0.14.1"
 
 [[projects]]
-  name = "github.com/infobloxopen/themis"
-  packages = [
-    "pdp",
-    "pdp-service",
-    "pep"
-  ]
-  revision = "d62bb103665cf16dfcee5083f4557163fb7a68ff"
-
-[[projects]]
+  digest = "1:7e63b12cdd7bef2c411d736cb67e28134d39f5d236aa1bfb8f3d55e3ad709eca"
   name = "github.com/jinzhu/gorm"
   packages = [
     ".",
-    "dialects/postgres"
+    "dialects/postgres",
   ]
-  revision = "6ed508ec6a4ecb3531899a69cbc746ccf65a4166"
-  version = "v1.9.1"
+  pruneopts = "UT"
+  revision = "472c70caa40267cb89fd8facb07fe6454b578626"
+  version = "v1.9.2"
 
 [[projects]]
   branch = "master"
+  digest = "1:fd97437fbb6b7dce04132cf06775bd258cce305c44add58eb55ca86c6c325160"
   name = "github.com/jinzhu/inflection"
   packages = ["."]
+  pruneopts = "UT"
   revision = "04140366298a54a039076d798123ffa108fff46c"
 
 [[projects]]
+  digest = "1:0a69a1c0db3591fcefb47f115b224592c8dfa4368b7ba9fae509d5e16cdc95c8"
+  name = "github.com/konsorten/go-windows-terminal-sequences"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "5c8c8bd35d3832f5d134ae1e1e375b69a4d25242"
+  version = "v1.0.1"
+
+[[projects]]
   branch = "master"
+  digest = "1:eccb7932085ab3d943b3272216bbe1cbbdc5a06a6056d6c2b0ea0cf7f0519e6d"
   name = "github.com/lib/pq"
   packages = [
     ".",
     "hstore",
-    "oid"
+    "oid",
   ]
-  revision = "90697d60dd844d5ef6ff15135d0203f65d2f53b8"
+  pruneopts = "UT"
+  revision = "9eb73efc1fcc404148b56765b0d3f61d9a5ef8ee"
 
 [[projects]]
+  digest = "1:53258c295c6d2eb4f69f6008bd7648df4ffaee52ffbf5aae3d5203440d31f669"
   name = "github.com/lyft/protoc-gen-validate"
   packages = ["validate"]
+  pruneopts = "UT"
   revision = "8e6aaf55f4954f1ef9d3ee2e8f5a50e79cc04f8f"
   version = "v0.0.5"
 
 [[projects]]
-  name = "github.com/opentracing/opentracing-go"
-  packages = [
-    ".",
-    "ext",
-    "log"
-  ]
-  revision = "1949ddbfd147afd4d964a9f00b24eb291e0e7c38"
-  version = "v1.0.2"
-
-[[projects]]
+  digest = "1:69b1cc331fca23d702bd72f860c6a647afd0aa9fcbc1d0659b1365e26546dd70"
   name = "github.com/sirupsen/logrus"
   packages = ["."]
-  revision = "3e01752db0189b9157070a0e1668a620f9a85da2"
-  version = "v1.0.6"
+  pruneopts = "UT"
+  revision = "bcd833dfe83d3cebad139e4a29ed79cb2318bf95"
+  version = "v1.2.0"
 
 [[projects]]
   branch = "master"
+  digest = "1:38f553aff0273ad6f367cb0a0f8b6eecbaef8dc6cb8b50e57b6a81c1d5b1e332"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
-  revision = "c126467f60eb25f8f27e5a981f32a87e3965053f"
+  pruneopts = "UT"
+  revision = "505ab145d0a99da450461ae2c1a9f6cd10d1f447"
 
 [[projects]]
   branch = "master"
+  digest = "1:7a2e3d6819e7a97a877f8604e737901c6941e76d56ae98a51a1ca2f13de351fb"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -205,20 +195,24 @@
     "http2/hpack",
     "idna",
     "internal/timeseries",
-    "trace"
+    "trace",
   ]
-  revision = "a0f8a16cb08c06df97cbdf9c47f4731ba548c33c"
+  pruneopts = "UT"
+  revision = "351d144fa1fc0bd934e2408202be0c29f25e35a0"
 
 [[projects]]
   branch = "master"
+  digest = "1:b9dceb1408ba5105803d5859193bc7d89ac3199b611cf8681dbaa0aa09c10d9c"
   name = "golang.org/x/sys"
   packages = [
     "unix",
-    "windows"
+    "windows",
   ]
-  revision = "bd9dbc187b6e1dacfdd2722a87e83093c2d7bd6e"
+  pruneopts = "UT"
+  revision = "70b957f3b65e069b4930ea94e2721eefa0f8f695"
 
 [[projects]]
+  digest = "1:a2ab62866c75542dd18d2b069fec854577a20211d7c0ea6ae746072a1dccdd18"
   name = "golang.org/x/text"
   packages = [
     "collate",
@@ -234,39 +228,50 @@
     "unicode/bidi",
     "unicode/cldr",
     "unicode/norm",
-    "unicode/rangetable"
+    "unicode/rangetable",
   ]
+  pruneopts = "UT"
   revision = "f21a4dfb5e38f5895301dc265a8def02365cc3d0"
   version = "v0.3.0"
 
 [[projects]]
   branch = "master"
+  digest = "1:6c77f111c026bfad4e9beee46f0ecb9af263ae6576109ddc2bc0659e790ef985"
   name = "google.golang.org/genproto"
   packages = [
     "googleapis/api/annotations",
     "googleapis/rpc/code",
     "googleapis/rpc/status",
-    "protobuf/field_mask"
+    "protobuf/field_mask",
   ]
-  revision = "2a72893556e4d1f6c795a4c039314c9fa751eedb"
+  pruneopts = "UT"
+  revision = "bd91e49a0898e27abb88c339b432fa53d7497ac0"
 
 [[projects]]
+  digest = "1:9edd250a3c46675d0679d87540b30c9ed253b19bd1fd1af08f4f5fb3c79fc487"
   name = "google.golang.org/grpc"
   packages = [
     ".",
     "balancer",
     "balancer/base",
     "balancer/roundrobin",
+    "binarylog/grpc_binarylog_v1",
     "codes",
     "connectivity",
     "credentials",
+    "credentials/internal",
     "encoding",
     "encoding/proto",
     "grpclog",
     "internal",
     "internal/backoff",
+    "internal/binarylog",
     "internal/channelz",
+    "internal/envconfig",
     "internal/grpcrand",
+    "internal/grpcsync",
+    "internal/syscall",
+    "internal/transport",
     "keepalive",
     "metadata",
     "naming",
@@ -277,14 +282,52 @@
     "stats",
     "status",
     "tap",
-    "transport"
   ]
-  revision = "168a6198bcb0ef175f7dacec0b8691fc141dc9b8"
-  version = "v1.13.0"
+  pruneopts = "UT"
+  revision = "df014850f6dee74ba2fc94874043a9f3f75fbfd8"
+  version = "v1.17.0"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "9bc03c17f434ea3278a0cf370eea9a82ef177837d338d0f2e7093fb830b73e9c"
+  input-imports = [
+    "github.com/bitly/go-simplejson",
+    "github.com/dgrijalva/jwt-go",
+    "github.com/golang/protobuf/proto",
+    "github.com/golang/protobuf/ptypes",
+    "github.com/grpc-ecosystem/go-grpc-middleware",
+    "github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus",
+    "github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus/ctxlogrus",
+    "github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger/options",
+    "github.com/grpc-ecosystem/grpc-gateway/runtime",
+    "github.com/grpc-ecosystem/grpc-gateway/utilities",
+    "github.com/infobloxopen/atlas-app-toolkit/auth",
+    "github.com/infobloxopen/atlas-app-toolkit/errors",
+    "github.com/infobloxopen/atlas-app-toolkit/errors/mappers/pqerrors",
+    "github.com/infobloxopen/atlas-app-toolkit/errors/mappers/validationerrors",
+    "github.com/infobloxopen/atlas-app-toolkit/gateway",
+    "github.com/infobloxopen/atlas-app-toolkit/gorm",
+    "github.com/infobloxopen/atlas-app-toolkit/gorm/resource",
+    "github.com/infobloxopen/atlas-app-toolkit/health",
+    "github.com/infobloxopen/atlas-app-toolkit/query",
+    "github.com/infobloxopen/atlas-app-toolkit/requestid",
+    "github.com/infobloxopen/atlas-app-toolkit/rpc/errdetails",
+    "github.com/infobloxopen/atlas-app-toolkit/rpc/resource",
+    "github.com/infobloxopen/atlas-app-toolkit/server",
+    "github.com/infobloxopen/protoc-gen-gorm/options",
+    "github.com/infobloxopen/protoc-gen-gorm/types",
+    "github.com/jinzhu/gorm",
+    "github.com/jinzhu/gorm/dialects/postgres",
+    "github.com/lyft/protoc-gen-validate/validate",
+    "github.com/sirupsen/logrus",
+    "golang.org/x/net/context",
+    "google.golang.org/genproto/googleapis/api/annotations",
+    "google.golang.org/genproto/protobuf/field_mask",
+    "google.golang.org/grpc",
+    "google.golang.org/grpc/codes",
+    "google.golang.org/grpc/grpclog",
+    "google.golang.org/grpc/metadata",
+    "google.golang.org/grpc/status",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1
