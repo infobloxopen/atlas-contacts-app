@@ -1960,6 +1960,12 @@ type ContactsContactWithBeforeCreate interface {
 
 // Read ...
 func (m *ContactsDefaultServer) Read(ctx context.Context, in *ReadContactRequest) (*ReadContactResponse, error) {
+	// if se, ok := interface{}(m).(interface {
+	// 	CustomRead(context.Context, *ReadContactRequest) (*ReadContactResponse, error)
+	// }); ok {
+	// 	return se.CustomRead(ctx, in)
+	// }
+
 	db := m.DB
 	if custom, ok := interface{}(in).(ContactsContactWithBeforeRead); ok {
 		var err error
@@ -2028,6 +2034,12 @@ type ContactsContactWithBeforeDelete interface {
 
 // List ...
 func (m *ContactsDefaultServer) List(ctx context.Context, in *ListContactRequest) (*ListContactsResponse, error) {
+	if se, ok := interface{}(m).(interface {
+		CustomList(context.Context, *ListContactRequest) (*ListContactsResponse, error)
+	}); ok {
+		return se.CustomList(ctx, in)
+	}
+
 	db := m.DB
 	if custom, ok := interface{}(in).(ContactsContactWithBeforeList); ok {
 		var err error

@@ -20,8 +20,8 @@ import (
 	"github.com/infobloxopen/atlas-contacts-app/cmd"
 	"github.com/infobloxopen/atlas-contacts-app/pkg/pb"
 
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/grpc-ecosystem/go-grpc-middleware"
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 
 	"google.golang.org/grpc"
 )
@@ -137,14 +137,15 @@ func ServeExternal(logger *logrus.Logger) error {
 			gateway.WithGatewayOptions(
 				runtime.WithMetadata(gateway.NewPresenceAnnotator("PUT")),
 			),
-			 gateway.WithDialOptions(
+			gateway.WithDialOptions(
 				[]grpc.DialOption{grpc.WithInsecure(), grpc.WithUnaryInterceptor(
 					grpc_middleware.ChainUnaryClient(
 						[]grpc.UnaryClientInterceptor{gateway.ClientUnaryInterceptor, gateway.PresenceClientInterceptor()}...,
 					),
 				)}...,
 			),
-			gateway.WithServerAddress(ServerAddress),
+			// TODO: 这里最好还是只取端口号使用，不能直接使用0000
+			gateway.WithServerAddress("localhost:9090"),
 			gateway.WithEndpointRegistration("/v1/", pb.RegisterProfilesHandlerFromEndpoint, pb.RegisterGroupsHandlerFromEndpoint, pb.RegisterContactsHandlerFromEndpoint),
 		),
 		// serve swagger at the root
