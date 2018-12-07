@@ -28,7 +28,7 @@ DATABASE_ADDRESS ?= localhost:5432
 # configuration for building on host machine
 GO_CACHE       := -pkgdir $(BUILD_PATH)/go-cache
 GO_BUILD_FLAGS ?= $(GO_CACHE) -i -v
-GO_TEST_FLAGS  ?= -v -cover -count=1 
+GO_TEST_FLAGS  ?= -v -cover -count=1
 GO_PACKAGES    := $(shell go list ./... | grep -v vendor)
 
 .PHONY: all

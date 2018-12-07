@@ -127,6 +127,11 @@ func ServeExternal(logger *logrus.Logger) error {
 		return err
 	}
 
+	_, serverPort, err := net.SplitHostPort(ServerAddress)
+	if err != nil {
+		return err
+	}
+
 	s, err := server.NewServer(
 		// register our grpc server
 		server.WithGrpcServer(grpcServer),
@@ -142,8 +147,7 @@ func ServeExternal(logger *logrus.Logger) error {
 					),
 				)}...,
 			),
-			// TODO: 这里最好还是只取端口号使用，不能直接使用0000
-			gateway.WithServerAddress("localhost:9090"),
+			gateway.WithServerAddress(net.JoinHostPort("localhost", serverPort)),
 			gateway.WithEndpointRegistration("/v1/", pb.RegisterProfilesHandlerFromEndpoint, pb.RegisterGroupsHandlerFromEndpoint, pb.RegisterContactsHandlerFromEndpoint),
 		),
 		// serve swagger at the root
