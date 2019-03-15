@@ -1,3 +1,7 @@
+# [!!! Deprecated !!!]
+
+This repository is not maintained anymore (since August 2018).
+
 # atlas-contacts-app
 
 _This generated README.md file loosely follows a [popular template](https://gist.github.com/PurpleBooth/109311bb0361f32d87a2)._
