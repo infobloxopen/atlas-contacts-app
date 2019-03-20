@@ -118,7 +118,7 @@ func TestReadContact_REST(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unable to get contact id from response json: %v", err)
 	}
-	id = strings.TrimPrefix(id, fmt.Sprintf("%s/%s/", cmd.ApplicationID, "contacts"))
+	id = strings.TrimPrefix(id, fmt.Sprintf("%s/%s/", cmd.ApplicationID, "contact"))
 	resRead, err := MakeRequestWithDefaults(
 		http.MethodGet, fmt.Sprintf("http://localhost:8080/v1/contacts/%s", id),
 		nil,
@@ -247,7 +247,7 @@ func TestDeleteContact_REST(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unable to get contact id from response json: %v", err)
 	}
-	id = strings.TrimPrefix(id, fmt.Sprintf("%s/%s/", cmd.ApplicationID, "contacts"))
+	id = strings.TrimPrefix(id, fmt.Sprintf("%s/%s/", cmd.ApplicationID, "contact"))
 	resDelete, err := MakeRequestWithDefaults(
 		http.MethodDelete,
 		fmt.Sprintf("http://localhost:8080/v1/contacts/%s", id),

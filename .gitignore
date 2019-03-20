@@ -5,3 +5,4 @@ vendor
 # IDE stuff
 .vscode
 .idea
+.DS_Store

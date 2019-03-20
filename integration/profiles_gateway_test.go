@@ -44,7 +44,7 @@ func TestCreateProfile_gateway(t *testing.T) {
 		{
 			name:   "profile id",
 			json:   createJSON.GetPath("result", "id"),
-			expect: `"atlas-contacts-app/profiles/1"`,
+			expect: `"atlas-contacts-app/profile/1"`,
 		},
 		{
 			name:   "profile notes",
@@ -96,7 +96,8 @@ func TestReadProfile_gateway(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unable to get profile id from json response: %v", err)
 	}
-	id = strings.TrimPrefix(id, fmt.Sprintf("%s/%s/", cmd.ApplicationID, "profiles"))
+
+	id = strings.TrimPrefix(id, fmt.Sprintf("%s/%s/", cmd.ApplicationID, "profile"))
 	resRead, err := MakeRequestWithDefaults(
 		http.MethodGet, fmt.Sprintf("http://localhost:8080/v1/profiles/%s", id),
 		nil,
@@ -109,6 +110,7 @@ func TestReadProfile_gateway(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unable to get profile id from json response: %v", err)
 	}
+
 	var tests = []struct {
 		name   string
 		json   *simplejson.Json
@@ -117,7 +119,7 @@ func TestReadProfile_gateway(t *testing.T) {
 		{
 			name:   "profile id",
 			json:   readJSON.GetPath("result", "id"),
-			expect: `"atlas-contacts-app/profiles/1"`,
+			expect: `"atlas-contacts-app/profile/1"`,
 		},
 		{
 			name:   "profile notes",
@@ -170,7 +172,7 @@ func TestUpdateProfile_gateway(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unable to get profile id from json response: %v", err)
 	}
-	id = strings.TrimPrefix(id, fmt.Sprintf("%s/%s/", cmd.ApplicationID, "profiles"))
+	id = strings.TrimPrefix(id, fmt.Sprintf("%s/%s/", cmd.ApplicationID, "profile"))
 	updated := pb.Profile{
 		Name:  "woodworking",
 		Notes: "profile to show my woodworking portfolio",
@@ -194,7 +196,7 @@ func TestUpdateProfile_gateway(t *testing.T) {
 		{
 			name:   "profile id",
 			json:   updateJSON.GetPath("result", "id"),
-			expect: `"atlas-contacts-app/profiles/1"`,
+			expect: `"atlas-contacts-app/profile/1"`,
 		},
 		{
 			name:   "profile notes",
@@ -245,7 +247,7 @@ func TestDeleteProfile_gateway(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unable to get profile id from json response: %v", err)
 	}
-	id = strings.TrimPrefix(id, fmt.Sprintf("%s/%s/", cmd.ApplicationID, "profiles"))
+	id = strings.TrimPrefix(id, fmt.Sprintf("%s/%s/", cmd.ApplicationID, "profile"))
 	resDelete, err := MakeRequestWithDefaults(
 		http.MethodDelete,
 		fmt.Sprintf("http://localhost:8080/v1/profiles/%s", id),
@@ -312,12 +314,12 @@ func TestListProfiles_gateway(t *testing.T) {
 		{
 			name:   "first profile",
 			json:   listJSON.Get("results").GetIndex(0),
-			expect: `{"id":"atlas-contacts-app/profiles/1","name":"cooking","notes":"profile for cooking projects"}`,
+			expect: `{"id":"atlas-contacts-app/profile/1","name":"cooking","notes":"profile for cooking projects"}`,
 		},
 		{
 			name:   "second profile",
 			json:   listJSON.Get("results").GetIndex(1),
-			expect: `{"id":"atlas-contacts-app/profiles/2","name":"family","notes":"profile for family information"}`,
+			expect: `{"id":"atlas-contacts-app/profile/2","name":"family","notes":"profile for family information"}`,
 		},
 		{
 			name:   "success response",

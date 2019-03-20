@@ -7,8 +7,8 @@
   name = "github.com/golang/protobuf"
 
 [[constraint]]
-  branch = "master"
   name = "github.com/grpc-ecosystem/go-grpc-middleware"
+  version = "1.0.0"
 
 [[constraint]]
   name = "github.com/grpc-ecosystem/grpc-gateway"
@@ -17,6 +17,10 @@
 [[constraint]]
   name = "github.com/lyft/protoc-gen-validate"
   version = "0.0.5"
+
+[[constraint]]
+  name = "github.com/sirupsen/logrus"
+  version = "1.0.4"
 
 [[constraint]]
   branch = "master"

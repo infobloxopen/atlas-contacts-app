@@ -20,8 +20,8 @@ import (
 	"github.com/infobloxopen/atlas-contacts-app/cmd"
 	"github.com/infobloxopen/atlas-contacts-app/pkg/pb"
 
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/grpc-ecosystem/go-grpc-middleware"
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 
 	"google.golang.org/grpc"
 )
@@ -32,7 +32,6 @@ var (
 	InternalAddress    string
 	SwaggerDir         string
 	DBConnectionString string
-	AuthzAddr          string
 	LogLevel           string
 )
 
@@ -55,7 +54,6 @@ func init() {
 	flag.StringVar(&InternalAddress, "internal-addr", cmd.InternalAddress, "address of an internal http server, for endpoints that shouldn't be exposed to the public")
 	flag.StringVar(&SwaggerDir, "swagger-dir", cmd.SwaggerFile, "directory of the swagger.json file")
 	flag.StringVar(&DBConnectionString, "db", cmd.DBConnectionString, "the database address")
-	flag.StringVar(&AuthzAddr, "authz", "", "address of the authorization service")
 	flag.StringVar(&LogLevel, "log", "info", "log level")
 	flag.Parse()
 	resource.RegisterApplication(cmd.ApplicationID)
@@ -129,6 +127,11 @@ func ServeExternal(logger *logrus.Logger) error {
 		return err
 	}
 
+	_, serverPort, err := net.SplitHostPort(ServerAddress)
+	if err != nil {
+		return err
+	}
+
 	s, err := server.NewServer(
 		// register our grpc server
 		server.WithGrpcServer(grpcServer),
@@ -137,14 +140,14 @@ func ServeExternal(logger *logrus.Logger) error {
 			gateway.WithGatewayOptions(
 				runtime.WithMetadata(gateway.NewPresenceAnnotator("PUT")),
 			),
-			 gateway.WithDialOptions(
+			gateway.WithDialOptions(
 				[]grpc.DialOption{grpc.WithInsecure(), grpc.WithUnaryInterceptor(
 					grpc_middleware.ChainUnaryClient(
 						[]grpc.UnaryClientInterceptor{gateway.ClientUnaryInterceptor, gateway.PresenceClientInterceptor()}...,
 					),
 				)}...,
 			),
-			gateway.WithServerAddress(ServerAddress),
+			gateway.WithServerAddress(net.JoinHostPort("localhost", serverPort)),
 			gateway.WithEndpointRegistration("/v1/", pb.RegisterProfilesHandlerFromEndpoint, pb.RegisterGroupsHandlerFromEndpoint, pb.RegisterContactsHandlerFromEndpoint),
 		),
 		// serve swagger at the root
