@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/grpc-ecosystem/go-grpc-middleware"
-	"github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_logrus "github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
+	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	toolkit_auth "github.com/infobloxopen/atlas-app-toolkit/auth"
 	"github.com/infobloxopen/atlas-app-toolkit/errors"
 	"github.com/infobloxopen/atlas-app-toolkit/errors/mappers/validationerrors"
@@ -20,6 +21,7 @@ import (
 func NewGRPCServer(logger *logrus.Logger, db *gorm.DB) (*grpc.Server, error) {
 	interceptors := []grpc.UnaryServerInterceptor{
 		grpc_logrus.UnaryServerInterceptor(logrus.NewEntry(logger)),
+		grpc_prometheus.UnaryServerInterceptor,
 		requestid.UnaryServerInterceptor(),
 		errors.UnaryServerInterceptor(ErrorMappings...),
 		// validation interceptor
@@ -53,6 +55,10 @@ func NewGRPCServer(logger *logrus.Logger, db *gorm.DB) (*grpc.Server, error) {
 		return nil, err
 	}
 	pb.RegisterContactsServer(grpcServer, cs)
+
+	// After all your registrations, make sure all of the Prometheus metrics are initialized.
+	grpc_prometheus.Register(grpcServer)
+	grpc_prometheus.EnableHandlingTimeHistogram()
 
 	return grpcServer, nil
 }

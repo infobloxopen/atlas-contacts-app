@@ -14,6 +14,7 @@ import (
 	"github.com/infobloxopen/atlas-app-toolkit/server"
 	"github.com/infobloxopen/atlas-contacts-app/cmd"
 	"github.com/infobloxopen/atlas-contacts-app/pkg/pb"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
@@ -153,6 +154,7 @@ func ServeExternal(logger *logrus.Logger) error {
 		server.WithHandler("/swagger", http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 			http.ServeFile(writer, request, SwaggerDir)
 		})),
+		server.WithHandler("/metrics", promhttp.Handler()),
 	)
 	if err != nil {
 		return err
