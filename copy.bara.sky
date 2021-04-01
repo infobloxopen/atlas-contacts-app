@@ -1,0 +1,23 @@
+core.workflow(
+    name = "default",
+    origin = git.github_origin(
+      url = "https://github.com/infobloxopen/atlas-contacts-app.git",
+      ref = "master",
+    ),
+    destination = git.destination(
+      url = "https://github.com/infobloxopen/apis.git",
+      fetch = "main",
+      push = "main",
+    ),
+
+    origin_files = glob(["pkg/pb/*.proto"]),
+
+    # Copy everything but don't remove a README_INTERNAL.txt file if it exists.
+    destination_files = glob(["atlas/example/contacts/**"], exclude = []),
+
+    authoring = authoring.pass_thru("Codebara  <dwells+codebara@infoblox.com>"),
+
+    transformations = [
+        core.move("pkg/pb", "atlas/example/contacts/v1")
+    ],
+)

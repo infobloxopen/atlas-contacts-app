@@ -1,0 +1,26 @@
+name: Publish Protobufs
+on:
+  push:
+    branches:
+      - master
+      - main
+      - publishProtos # debug only, remove
+    paths:
+      - pkg/pb/contacts.proto
+jobs:
+  test:
+    name: Publish Protobuf Changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: ./src/github.com/${{ github.repository }}
+    steps:
+    - uses: actions/checkout@v1
+    - uses: wilmol/copybara-action@v1
+      with:
+        git_name: wilmol
+        git_email: willjoemolloy@gmail.com
+        ssh_key: ${{ secrets.CODEBARABOT_DWELLS }}
+        ssh_known_hosts: ${{ secrets.CODEBARABOT_KNOWN_HOSTS }}
+        path: copy.bara.sky
