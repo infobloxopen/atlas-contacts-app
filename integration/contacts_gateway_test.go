@@ -212,23 +212,33 @@ func TestDeleteContact_REST(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unable to get contact id from response json: %v", err)
 	}
-	id = strings.TrimPrefix(id, fmt.Sprintf("%s/%s/", cmd.ApplicationID, "contacts"))
+	parts := strings.Split(id, "/")
+
+	path := fmt.Sprintf("http://localhost:8080/v1/contacts/%s", parts[len(parts)-1])
 	resDelete, err := MakeRequestWithDefaults(
 		http.MethodDelete,
-		fmt.Sprintf("http://localhost:8080/v1/contacts/%s", id),
+		path,
 		nil,
 	)
 	if err != nil {
 		t.Fatalf("unable to delete contact: %v", err)
 	}
-	ValidateResponseCode(t, resDelete, http.StatusOK)
-	deleteJSON, err := simplejson.NewFromReader(resDelete.Body)
-	if err != nil {
-		t.Fatalf("unable to marshal json response: %v", err)
+
+	if e := http.StatusOK; resDelete.StatusCode != e {
+		t.Errorf("got: %d wanted: %d", resDelete.StatusCode, http.StatusOK)
 	}
-	t.Run("success response", func(t *testing.T) {
-		ValidateJSONSchema(t, deleteJSON, `{"success":{"code":"OK","status":200}}`)
-	})
+
+	bs, err := ioutil.ReadAll(resDelete.Body)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	e := `{}`
+
+	if body := string(bs); e != body {
+		t.Errorf("got: %s wanted: %s", body, e)
+	}
+
 }
 
 // ValidateResponseCode checks the http status of a given request and will
