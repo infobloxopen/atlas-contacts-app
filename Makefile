@@ -44,16 +44,17 @@ test: fmt
 
 .PHONY: test-with-integration
 test-with-integration: fmt
-	@go test $(GO_TEST_FLAGS) -tags=integration $(GO_PACKAGES)
+	go test $(GO_TEST_FLAGS) -tags=integration $(GO_PACKAGES)
 
 .PHONY: docker
 docker:
-	@docker build -f $(SERVER_DOCKERFILE) -t $(SERVER_IMAGE):$(IMAGE_VERSION) .
-	@docker tag $(SERVER_IMAGE):$(IMAGE_VERSION) $(SERVER_IMAGE):latest
-	@docker image prune -f --filter label=stage=server-intermediate
+	docker build -f $(SERVER_DOCKERFILE) -t $(SERVER_IMAGE):$(IMAGE_VERSION) .
+	docker tag $(SERVER_IMAGE):$(IMAGE_VERSION) $(SERVER_IMAGE):latest
+	docker image prune -f --filter label=stage=server-intermediate
+
 .PHONY: push
 push:
-	@docker push $(SERVER_IMAGE)
+	docker push $(SERVER_IMAGE)
 
 .PHONY: protobuf
 protobuf:

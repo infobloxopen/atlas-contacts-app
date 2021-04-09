@@ -1,16 +1,16 @@
 package main
 
 import (
-	"github.com/grpc-ecosystem/go-grpc-middleware"
-	"github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
-	toolkit_auth "github.com/infobloxopen/atlas-app-toolkit/auth"
 	"github.com/infobloxopen/atlas-app-toolkit/errors"
 	"github.com/infobloxopen/atlas-app-toolkit/errors/mappers/validationerrors"
 	"github.com/infobloxopen/atlas-app-toolkit/gateway"
 	"github.com/infobloxopen/atlas-app-toolkit/requestid"
-	"github.com/infobloxopen/atlas-contacts-app/cmd"
+	grpc_opa "github.com/infobloxopen/atlas-authz-middleware/grpc_opa"
 	"github.com/infobloxopen/atlas-contacts-app/pkg/pb"
 	"github.com/infobloxopen/atlas-contacts-app/pkg/svc"
+
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_logrus "github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/sirupsen/logrus"
@@ -29,7 +29,7 @@ func NewGRPCServer(logger *logrus.Logger, db *gorm.DB) (*grpc.Server, error) {
 	// add authorization interceptor if authz service address is provided
 	if AuthzAddr != "" {
 		// authorization interceptor
-		interceptors = append(interceptors, toolkit_auth.UnaryServerInterceptor(AuthzAddr, cmd.ApplicationID))
+		interceptors = append(interceptors, grpc_opa.UnaryServerInterceptor("contacts"))
 	}
 
 	// create new gRPC grpcServer with middleware chain
