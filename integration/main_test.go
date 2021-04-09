@@ -45,7 +45,7 @@ func TestMain(m *testing.M) {
 
 	// start the gRPC server; stop processes when finished
 	log.Printf("running the server binary")
-	closeServer, err := RunBinary("server", "-db", dbTest.GetDSN())
+	closeServer, err := RunBinary("server", "-db", dbTest.GetDSN(), "-log", "debug")
 	if err != nil {
 		log.Fatalf("failed to run the server: %v", err)
 	}

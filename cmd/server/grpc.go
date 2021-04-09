@@ -26,6 +26,7 @@ func NewGRPCServer(logger *logrus.Logger, db *gorm.DB) (*grpc.Server, error) {
 		validationerrors.UnaryServerInterceptor(),
 		gateway.UnaryServerInterceptor(),
 	}
+
 	// add authorization interceptor if authz service address is provided
 	if AuthzAddr != "" {
 		// authorization interceptor

@@ -64,7 +64,7 @@ func AddDefaultTokenToRequest(req *http.Request) {
 	if err != nil {
 		log.Fatalf("unable to create token")
 	}
-	AddTokenToRequest("token", token, req)
+	AddTokenToRequest("Bearer", token, req)
 }
 
 // AddTokenToRequest adds an authorization token to the http request header
