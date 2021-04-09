@@ -10,7 +10,6 @@ import (
 	"testing"
 
 	"github.com/bitly/go-simplejson"
-	"github.com/infobloxopen/atlas-contacts-app/cmd"
 	"github.com/infobloxopen/atlas-contacts-app/pkg/pb"
 )
 
@@ -83,7 +82,8 @@ func TestReadContact_REST(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unable to get contact id from response json: %v", err)
 	}
-	id = strings.TrimPrefix(id, fmt.Sprintf("%s/%s/", cmd.ApplicationID, "contacts"))
+	parts := strings.Split(id, "/")
+	id = parts[len(parts)-1]
 	resRead, err := MakeRequestWithDefaults(
 		http.MethodGet, fmt.Sprintf("http://localhost:8080/v1/contacts/%s", id),
 		nil,
@@ -127,11 +127,6 @@ func TestReadContact_REST(t *testing.T) {
 			name:   "contact email list",
 			json:   readJSON.GetPath("result", "emails"),
 			expect: `[{"address":"test@test.com","id":"1"}]`,
-		},
-		{
-			name:   "success response",
-			json:   readJSON.GetPath("success"),
-			expect: `{"code":"OK","status":200}`,
 		},
 	}
 	for _, test := range tests {
@@ -213,7 +208,6 @@ func TestDeleteContact_REST(t *testing.T) {
 		t.Fatalf("unable to get contact id from response json: %v", err)
 	}
 	parts := strings.Split(id, "/")
-
 	path := fmt.Sprintf("http://localhost:8080/v1/contacts/%s", parts[len(parts)-1])
 	resDelete, err := MakeRequestWithDefaults(
 		http.MethodDelete,

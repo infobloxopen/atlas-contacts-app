@@ -37,7 +37,7 @@ func DefaultContext(t *testing.T) context.Context {
 func ContextWithToken(ctx context.Context, token string) context.Context {
 	c := metadata.AppendToOutgoingContext(
 		ctx,
-		"Authorization", fmt.Sprintf("token %s", token),
+		"Authorization", fmt.Sprintf("Bearer %s", token),
 	)
 	return c
 }

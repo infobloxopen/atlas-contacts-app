@@ -10,7 +10,6 @@ import (
 	"testing"
 
 	simplejson "github.com/bitly/go-simplejson"
-	"github.com/infobloxopen/atlas-contacts-app/cmd"
 	"github.com/infobloxopen/atlas-contacts-app/pkg/pb"
 )
 
@@ -75,7 +74,8 @@ func TestReadProfile_gateway(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unable to get profile id from json response: %v", err)
 	}
-	id = strings.TrimPrefix(id, fmt.Sprintf("%s/%s/", cmd.ApplicationID, "profiles"))
+	parts := strings.Split(id, "/")
+	id = parts[len(parts)-1]
 	resRead, err := MakeRequestWithDefaults(
 		http.MethodGet, fmt.Sprintf("http://localhost:8080/v1/profiles/%s", id),
 		nil,
@@ -83,36 +83,18 @@ func TestReadProfile_gateway(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unable to get profile: %v", err)
 	}
+
 	ValidateResponseCode(t, resCreate, http.StatusOK)
-	readJSON, err := simplejson.NewFromReader(resRead.Body)
+
+	bs, err := ioutil.ReadAll(resRead.Body)
 	if err != nil {
-		t.Fatalf("unable to get profile id from json response: %v", err)
+		t.Fatal(err)
 	}
-	var tests = []struct {
-		name   string
-		json   *simplejson.Json
-		expect string
-	}{
-		{
-			name:   "profile id",
-			json:   readJSON.GetPath("result", "id"),
-			expect: `"atlas-contacts-app/profiles/1"`,
-		},
-		{
-			name:   "profile notes",
-			json:   readJSON.GetPath("result", "notes"),
-			expect: `"profile for personal matters"`,
-		},
-		{
-			name:   "profile name",
-			json:   readJSON.GetPath("result", "name"),
-			expect: `"personal"`,
-		},
-	}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			ValidateJSONSchema(t, test.json, test.expect)
-		})
+
+	e := `{"result":{"id":"atlas-contacts-app/profile/1","name":"personal","notes":"profile for personal matters"}}`
+
+	if body := string(bs); e != body {
+		t.Errorf("got: %s wanted: %s", body, e)
 	}
 }
 
@@ -144,7 +126,8 @@ func TestUpdateProfile_gateway(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unable to get profile id from json response: %v", err)
 	}
-	id = strings.TrimPrefix(id, fmt.Sprintf("%s/%s/", cmd.ApplicationID, "profiles"))
+	parts := strings.Split(id, "/")
+	id = parts[len(parts)-1]
 	updated := pb.Profile{
 		Name:  "woodworking",
 		Notes: "profile to show my woodworking portfolio",
@@ -168,7 +151,7 @@ func TestUpdateProfile_gateway(t *testing.T) {
 		{
 			name:   "profile id",
 			json:   updateJSON.GetPath("result", "id"),
-			expect: `"atlas-contacts-app/profiles/1"`,
+			expect: `"atlas-contacts-app/profile/1"`,
 		},
 		{
 			name:   "profile notes",
@@ -179,11 +162,6 @@ func TestUpdateProfile_gateway(t *testing.T) {
 			name:   "profile name",
 			json:   updateJSON.GetPath("result", "name"),
 			expect: `"woodworking"`,
-		},
-		{
-			name:   "success response",
-			json:   updateJSON.GetPath("success"),
-			expect: `{"code":"OK","status":200}`,
 		},
 	}
 	for _, test := range tests {
@@ -219,7 +197,8 @@ func TestDeleteProfile_gateway(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unable to get profile id from json response: %v", err)
 	}
-	id = strings.TrimPrefix(id, fmt.Sprintf("%s/%s/", cmd.ApplicationID, "profiles"))
+	parts := strings.Split(id, "/")
+	id = parts[len(parts)-1]
 	resDelete, err := MakeRequestWithDefaults(
 		http.MethodDelete,
 		fmt.Sprintf("http://localhost:8080/v1/profiles/%s", id),
@@ -233,9 +212,8 @@ func TestDeleteProfile_gateway(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unable to unmarshal json response: %v", err)
 	}
-	t.Run("success response", func(t *testing.T) {
-		ValidateJSONSchema(t, deleteJSON, `{"success":{"code":"OK","status":200}}`)
-	})
+
+	ValidateJSONSchema(t, deleteJSON, `{}`)
 }
 
 // TestListProfiles_gateway uses the REST gateway to create two profiles and
