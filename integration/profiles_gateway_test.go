@@ -4,6 +4,7 @@ package integration
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strings"
 	"testing"
@@ -31,41 +32,19 @@ func TestCreateProfile_gateway(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unable to create profile: %v", err)
 	}
-	ValidateResponseCode(t, resCreate, http.StatusOK)
-	createJSON, err := simplejson.NewFromReader(resCreate.Body)
+	if e := http.StatusOK; resCreate.StatusCode != e {
+		t.Errorf("got: %d wanted: %d", resCreate.StatusCode, http.StatusOK)
+	}
+
+	bs, err := ioutil.ReadAll(resCreate.Body)
 	if err != nil {
-		t.Fatalf("unable to unmarshal json response: %v", err)
+		t.Fatal(err)
 	}
-	var tests = []struct {
-		name   string
-		json   *simplejson.Json
-		expect string
-	}{
-		{
-			name:   "profile id",
-			json:   createJSON.GetPath("result", "id"),
-			expect: `"atlas-contacts-app/profiles/1"`,
-		},
-		{
-			name:   "profile notes",
-			json:   createJSON.GetPath("result", "notes"),
-			expect: `"profile for work-related topics"`,
-		},
-		{
-			name:   "profile name",
-			json:   createJSON.GetPath("result", "name"),
-			expect: `"work"`,
-		},
-		{
-			name:   "success response",
-			json:   createJSON.GetPath("success"),
-			expect: `{"code":"OK","status":200}`,
-		},
-	}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			ValidateJSONSchema(t, test.json, test.expect)
-		})
+
+	e := `{"result":{"id":"atlas-contacts-app/profile/1","name":"work","notes":"profile for work-related topics"}}`
+
+	if body := string(bs); e != body {
+		t.Errorf("got: %s wanted: %s", body, e)
 	}
 }
 
@@ -128,11 +107,6 @@ func TestReadProfile_gateway(t *testing.T) {
 			name:   "profile name",
 			json:   readJSON.GetPath("result", "name"),
 			expect: `"personal"`,
-		},
-		{
-			name:   "success response",
-			json:   readJSON.GetPath("success"),
-			expect: `{"code":"OK","status":200}`,
 		},
 	}
 	for _, test := range tests {
@@ -299,35 +273,20 @@ func TestListProfiles_gateway(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unable to list profiles %v", err)
 	}
-	ValidateResponseCode(t, resList, http.StatusOK)
-	listJSON, err := simplejson.NewFromReader(resList.Body)
+
+	if e := http.StatusOK; resList.StatusCode != e {
+		t.Errorf("got: %d wanted: %d", resList.StatusCode, http.StatusOK)
+	}
+
+	bs, err := ioutil.ReadAll(resList.Body)
 	if err != nil {
-		t.Fatalf("unable to unmarshal json response: %v", err)
+		t.Fatal(err)
 	}
-	var tests = []struct {
-		name   string
-		json   *simplejson.Json
-		expect string
-	}{
-		{
-			name:   "first profile",
-			json:   listJSON.Get("results").GetIndex(0),
-			expect: `{"id":"atlas-contacts-app/profiles/1","name":"cooking","notes":"profile for cooking projects"}`,
-		},
-		{
-			name:   "second profile",
-			json:   listJSON.Get("results").GetIndex(1),
-			expect: `{"id":"atlas-contacts-app/profiles/2","name":"family","notes":"profile for family information"}`,
-		},
-		{
-			name:   "success response",
-			json:   listJSON.GetPath("success"),
-			expect: `{"code":"OK","status":200}`,
-		},
+
+	e := `{"results":[{"id":"atlas-contacts-app/profile/1","name":"cooking","notes":"profile for cooking projects"},{"id":"atlas-contacts-app/profile/2","name":"family","notes":"profile for family information"}]}`
+
+	if body := string(bs); e != body {
+		t.Errorf("got: %s wanted: %s", body, e)
 	}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			ValidateJSONSchema(t, test.json, test.expect)
-		})
-	}
+
 }
