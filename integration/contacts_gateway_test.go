@@ -4,12 +4,12 @@ package integration
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strings"
 	"testing"
 
 	"github.com/bitly/go-simplejson"
-	"github.com/infobloxopen/atlas-contacts-app/cmd"
 	"github.com/infobloxopen/atlas-contacts-app/pkg/pb"
 )
 
@@ -35,57 +35,21 @@ func TestCreateContact_REST(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unable to create contact: %v", err)
 	}
-	ValidateResponseCode(t, resCreate, http.StatusOK)
-	createJSON, err := simplejson.NewFromReader(resCreate.Body)
+	if e := http.StatusOK; resCreate.StatusCode != e {
+		t.Errorf("got: %d wanted: %d", resCreate.StatusCode, http.StatusOK)
+	}
+
+	bs, err := ioutil.ReadAll(resCreate.Body)
 	if err != nil {
-		t.Fatalf("unable to marshal json response: %v", err)
+		t.Fatal(err)
 	}
-	var tests = []struct {
-		name   string
-		json   *simplejson.Json
-		expect string
-	}{
-		{
-			name:   "contact first name",
-			json:   createJSON.GetPath("result", "first_name"),
-			expect: `"Steven"`,
-		},
-		{
-			name:   "contact middle name",
-			json:   createJSON.GetPath("result", "middle_name"),
-			expect: `"James"`,
-		},
-		{
-			name:   "contact last",
-			json:   createJSON.GetPath("result", "last_name"),
-			expect: `"McKubernetes"`,
-		},
-		{
-			name:   "contact notes",
-			json:   createJSON.GetPath("result", "notes"),
-			expect: `"set sail at sunrise"`,
-		},
-		{
-			name:   "contact primary email",
-			json:   createJSON.GetPath("result", "primary_email"),
-			expect: `"test@test.com"`,
-		},
-		{
-			name:   "contact email list",
-			json:   createJSON.GetPath("result", "emails"),
-			expect: `[{"address":"test@test.com","id":"1"}]`,
-		},
-		{
-			name:   "success response",
-			json:   createJSON.GetPath("success"),
-			expect: `{"code":"OK","status":200}`,
-		},
+
+	e := `{"result":{"emails":[{"address":"test@test.com","id":"1"}],"first_name":"Steven","id":"atlas-contacts-app/contact/1","last_name":"McKubernetes","middle_name":"James","notes":"set sail at sunrise","primary_email":"test@test.com"}}`
+
+	if body := string(bs); e != body {
+		t.Errorf("got: %s wanted: %s", body, e)
 	}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			ValidateJSONSchema(t, test.json, test.expect)
-		})
-	}
+
 }
 
 // TestReadContact_REST uses the REST gateway to create a new contact and
@@ -118,7 +82,8 @@ func TestReadContact_REST(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unable to get contact id from response json: %v", err)
 	}
-	id = strings.TrimPrefix(id, fmt.Sprintf("%s/%s/", cmd.ApplicationID, "contacts"))
+	parts := strings.Split(id, "/")
+	id = parts[len(parts)-1]
 	resRead, err := MakeRequestWithDefaults(
 		http.MethodGet, fmt.Sprintf("http://localhost:8080/v1/contacts/%s", id),
 		nil,
@@ -162,11 +127,6 @@ func TestReadContact_REST(t *testing.T) {
 			name:   "contact email list",
 			json:   readJSON.GetPath("result", "emails"),
 			expect: `[{"address":"test@test.com","id":"1"}]`,
-		},
-		{
-			name:   "success response",
-			json:   readJSON.GetPath("success"),
-			expect: `{"code":"OK","status":200}`,
 		},
 	}
 	for _, test := range tests {
@@ -247,23 +207,32 @@ func TestDeleteContact_REST(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unable to get contact id from response json: %v", err)
 	}
-	id = strings.TrimPrefix(id, fmt.Sprintf("%s/%s/", cmd.ApplicationID, "contacts"))
+	parts := strings.Split(id, "/")
+	path := fmt.Sprintf("http://localhost:8080/v1/contacts/%s", parts[len(parts)-1])
 	resDelete, err := MakeRequestWithDefaults(
 		http.MethodDelete,
-		fmt.Sprintf("http://localhost:8080/v1/contacts/%s", id),
+		path,
 		nil,
 	)
 	if err != nil {
 		t.Fatalf("unable to delete contact: %v", err)
 	}
-	ValidateResponseCode(t, resDelete, http.StatusOK)
-	deleteJSON, err := simplejson.NewFromReader(resDelete.Body)
-	if err != nil {
-		t.Fatalf("unable to marshal json response: %v", err)
+
+	if e := http.StatusOK; resDelete.StatusCode != e {
+		t.Errorf("got: %d wanted: %d", resDelete.StatusCode, http.StatusOK)
 	}
-	t.Run("success response", func(t *testing.T) {
-		ValidateJSONSchema(t, deleteJSON, `{"success":{"code":"OK","status":200}}`)
-	})
+
+	bs, err := ioutil.ReadAll(resDelete.Body)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	e := `{}`
+
+	if body := string(bs); e != body {
+		t.Errorf("got: %s wanted: %s", body, e)
+	}
+
 }
 
 // ValidateResponseCode checks the http status of a given request and will
@@ -279,6 +248,7 @@ func ValidateResponseCode(t *testing.T, res *http.Response, expected int) {
 // ValidateJSONSchema ensures a given json field matches an expcted json
 // string
 func ValidateJSONSchema(t *testing.T, json *simplejson.Json, expected string) {
+	t.Helper()
 	if json == nil {
 		t.Fatalf("validation error: json schema for is nil")
 	}

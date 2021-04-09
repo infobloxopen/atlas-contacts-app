@@ -1,17 +1,12 @@
 package main
 
 import (
+	"database/sql"
 	"flag"
-	"net"
-
-	"github.com/jinzhu/gorm"
-	"github.com/sirupsen/logrus"
-
 	"fmt"
+	"net"
 	"net/http"
 	"time"
-
-	"database/sql"
 
 	"github.com/infobloxopen/atlas-app-toolkit/gateway"
 	"github.com/infobloxopen/atlas-app-toolkit/gorm/resource"
@@ -20,9 +15,10 @@ import (
 	"github.com/infobloxopen/atlas-contacts-app/cmd"
 	"github.com/infobloxopen/atlas-contacts-app/pkg/pb"
 
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/grpc-ecosystem/go-grpc-middleware"
-
+	"github.com/jinzhu/gorm"
+	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 )
 
@@ -137,7 +133,7 @@ func ServeExternal(logger *logrus.Logger) error {
 			gateway.WithGatewayOptions(
 				runtime.WithMetadata(gateway.NewPresenceAnnotator("PUT")),
 			),
-			 gateway.WithDialOptions(
+			gateway.WithDialOptions(
 				[]grpc.DialOption{grpc.WithInsecure(), grpc.WithUnaryInterceptor(
 					grpc_middleware.ChainUnaryClient(
 						[]grpc.UnaryClientInterceptor{gateway.ClientUnaryInterceptor, gateway.PresenceClientInterceptor()}...,
